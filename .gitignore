@@ -1,0 +1,92 @@
+# Archivos de Visual Studio
+.vs/
+*.suo
+*.user
+*.vcxproj.user
+*.filters
+
+# Archivos de compilación
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.ilk
+*.idb
+*.lib
+*.exp
+*.iobj
+*.ipdb
+
+# Archivos de paquetes y dependencias
+*.nuget
+packages/
+*.nupkg
+project.lock.json
+global.json
+
+# Archivos de configuración de usuario
+*.config
+*.cache
+*.log
+*.env
+secrets.json
+
+# Archivos de depuración y perfiles
+*.dotCover
+*.coverage
+*.tmd
+*.pyc
+*.pyo
+*.pyd
+
+# Archivos de IDEs
+.idea/
+*.sln.iml
+
+# Otros archivos no deseados
+*.tmp
+*.swp
+*.sln.docstates
+
+
+# Ignorar carpetas de compilación
+bin/
+obj/
+
+# Ignorar archivos de Visual Studio
+.vs/
+*.suo
+*.user
+*.vscode/
+
+# Ignorar archivos de compilación
+*.dll
+*.exe
+*.pdb
+*.cache
+*.log
+*.tmp
+*.bak
+
+# Ignorar archivos de configuración de proyecto
+*.csproj.user
+*.csproj.FileListAbsolute.txt
+project.lock.json
+*.nuget
+
+# Ignorar configuraciones específicas
+secrets.json
+obj/Debug/net8.0/refint/MiTaller.dll
+obj/Debug/net8.0/ref/MiTaller.dll
+obj/Debug/net8.0/MiTaller.pdb
+
+# Credenciales reales (usar appsettings.json con placeholders)
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.local.json
+firebase-*-service-account.json
+
+# Artefactos de despliegue
+deploy.zip
+publish/

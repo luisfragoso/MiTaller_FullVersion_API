@@ -1,0 +1,6 @@
+@MiTaller_HostAddress = http://localhost:5191
+
+GET {{MiTaller_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
