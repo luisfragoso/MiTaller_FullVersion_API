@@ -16,6 +16,7 @@ using MiTaller.Models.Notification;
 using MiTaller.Models.Advertisement;
 using MiTaller.Models.Services;
 using MiTaller.Models.Inspections;
+using MiTaller.Models.Audit;
 
 namespace MiTaller.Data
 {
@@ -23,6 +24,9 @@ namespace MiTaller.Data
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
 
+
+        // Admin (cuenta única de administrador de plataforma)
+        public DbSet<Admin> Admins { get; set; }
 
         // Customer
         public DbSet<Customer> Customers { get; set; }
@@ -35,7 +39,7 @@ namespace MiTaller.Data
         public DbSet<Workshop> Workshops { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<WorkshopFile> WorkshopFiles { get; set; }
-        //public DbSet<WorkshopCustomers> WorkshopCustomers { get; set; } // Customers associated to a workshop
+        public DbSet<WorkshopCustomers> WorkshopCustomers { get; set; } // Customers associated to a workshop
         public DbSet<WorkshopEmployees> WorkshopEmployees { get; set; }
         public DbSet<WorkshopServices> WorkshopServices { get; set; }
         public DbSet<WorkshopNote> WorkshopNotes { get; set; }
@@ -103,14 +107,27 @@ namespace MiTaller.Data
         // Workshop-Customer Notes
         public DbSet<WorkshopCustomerNotes> WorkshopCustomerNotes { get; set; }
 
+        // Audit log (historial global de cambios, solo lectura para el portal admin)
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
 
+            // AuditLog - índices para las consultas del portal admin (por registro,
+            // por fecha, y por quién hizo el cambio).
+            builder.Entity<AuditLog>()
+                   .HasIndex(a => new { a.EntityName, a.EntityId });
+            builder.Entity<AuditLog>()
+                   .HasIndex(a => a.ChangedAt);
+            builder.Entity<AuditLog>()
+                   .HasIndex(a => new { a.ChangedByUserId, a.ChangedAt });
+
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Workshop>().ToTable("Workshops");
             builder.Entity<Employee>().ToTable("Employees");
+            builder.Entity<Admin>().ToTable("Admins");
 
             // Seeding del valor "Other" en cada tabla usando Id = -1
             builder.Entity<Brand>().HasData(new Brand { Id = -1, Name = "Other", Type = "Generic" });

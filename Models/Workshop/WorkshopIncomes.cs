@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MiTaller.Models.Audit;
 
 namespace MiTaller.Models.Workshop
 {
-    public class WorkshopIncomes
+    public class WorkshopIncomes : INotAudited
     {
         [Key]
         public int Id { get; set; }

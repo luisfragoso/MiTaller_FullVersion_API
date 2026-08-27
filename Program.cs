@@ -9,6 +9,7 @@ using MiTaller.Data;
 using MiTaller.Models.Auth;
 using MiTaller.Models.Customer;
 using MiTaller.Services;
+using MiTaller.Services.Audit;
 using QuestPDF.Infrastructure;
 using System.Text;
 using static System.Net.WebRequestMethods;
@@ -81,9 +82,21 @@ try
         options.AddPolicy("AllowAll", policy =>
         {
             policy
-                .AllowAnyOrigin() 
-                .AllowAnyHeader()   
-                .AllowAnyMethod();  
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+
+        // Política dedicada y restrictiva para /api/Admin - no esperamos a la limpieza
+        // general de CORS (AllowAll) para proteger el endpoint de mayor valor si se filtra.
+        var adminOrigins = (builder.Configuration["Admin:AllowedOrigins"] ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        options.AddPolicy("AdminPortal", policy =>
+        {
+            policy
+                .WithOrigins(adminOrigins)
+                .AllowAnyHeader()
+                .WithMethods("GET", "POST", "PUT", "DELETE");
         });
     });
 
@@ -117,6 +130,19 @@ try
 
     // JWT
     builder.Services.AddScoped<JwtService>();
+
+    // Audit log (historial global de cambios) - necesita saber quién hizo la request.
+    builder.Services.AddHttpContextAccessor();
+    builder.Services.AddScoped<AuditSaveChangesInterceptor>();
+
+    // Autorización específica para el portal admin - claim propio, no roles de Identity
+    // (ver plan: una sola cuenta fija, sin infraestructura de roles sin usar en el resto
+    // del proyecto).
+    builder.Services.AddAuthorization(options =>
+    {
+        options.AddPolicy("PlatformAdmin", policy =>
+            policy.RequireClaim("IsPlatformAdmin", "true"));
+    });
     var jwtKey = builder.Configuration["Jwt:Key"];
     var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 
@@ -147,13 +173,14 @@ try
 
 
     // DBContext
-    builder.Services.AddDbContext<DataContext>(options =>
+    builder.Services.AddDbContext<DataContext>((serviceProvider, options) =>
     {
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
             sqlServerOptionsAction: sqlOptions =>
             {
                 sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(5), errorNumbersToAdd: null);
             });
+        options.AddInterceptors(serviceProvider.GetRequiredService<AuditSaveChangesInterceptor>());
     });
 
     // QuestPDF licencia gratuita
@@ -161,6 +188,13 @@ try
 
     var app = builder.Build();
 
+    // Comando de un solo uso para crear la cuenta de administrador de plataforma -
+    // nunca un endpoint HTTP. Uso: dotnet run -- seed-admin correo@ejemplo.com ContraseñaSegura!
+    if (args.Length > 0 && args[0] == "seed-admin")
+    {
+        await SeedAdminAsync(app.Services, args);
+        return;
+    }
 
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -178,5 +212,50 @@ catch (Exception)
 {
 
 	throw;
+}
+
+static async Task SeedAdminAsync(IServiceProvider services, string[] args)
+{
+    if (args.Length < 3)
+    {
+        Console.WriteLine("Uso: dotnet run -- seed-admin <correo> <contraseña>");
+        return;
+    }
+
+    var email = args[1];
+    var password = args[2];
+
+    using var scope = services.CreateScope();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<BaseIdentityUser>>();
+
+    var existing = await userManager.FindByEmailAsync(email);
+    if (existing != null)
+    {
+        Console.WriteLine($"Ya existe una cuenta con ese correo (Id={existing.Id}, UserType={existing.UserType}). No se creó nada.");
+        return;
+    }
+
+    var admin = new Admin
+    {
+        UserName = email,
+        Email = email,
+        FullName = "Administrador",
+        UserType = UserType.Admin,
+        EmailConfirmed = true,
+    };
+
+    var result = await userManager.CreateAsync(admin, password);
+    if (!result.Succeeded)
+    {
+        Console.WriteLine("No se pudo crear la cuenta admin:");
+        foreach (var error in result.Errors)
+        {
+            Console.WriteLine($" - {error.Description}");
+        }
+        return;
+    }
+
+    Console.WriteLine($"Cuenta admin creada correctamente. Id = {admin.Id}");
+    Console.WriteLine("Copia ese Id al appsettings correspondiente como \"Admin:UserId\" para que el login de esta cuenta reciba el claim IsPlatformAdmin.");
 }
 

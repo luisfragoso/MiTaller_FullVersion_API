@@ -21,6 +21,9 @@ namespace MiTaller.Models.Auth
     {
         Customer,
         Workshop,
-        Employee
+        Employee,
+        // Cuenta única de administrador de plataforma - ver Models/Auth/Admin.cs y
+        // scripts/seed-admin (nunca se crea por ningún endpoint público).
+        Admin
     }
 }

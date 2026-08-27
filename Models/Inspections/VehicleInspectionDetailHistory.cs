@@ -1,10 +1,11 @@
 ﻿using MiTaller.Models.Vehicle;
+using MiTaller.Models.Audit;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MiTaller.Models.Inspections
 {
-    public class VehicleInspectionDetailHistory
+    public class VehicleInspectionDetailHistory : INotAudited
     {
         [Key]
         public int Id { get; set; }

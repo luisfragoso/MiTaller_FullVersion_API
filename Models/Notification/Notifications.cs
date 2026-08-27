@@ -1,8 +1,9 @@
 ﻿using MiTaller.Models.Auth;
+using MiTaller.Models.Audit;
 
 namespace MiTaller.Models.Notification
 {
-    public class Notifications
+    public class Notifications : INotAudited
     {
         public int Id { get; set; }
         public Guid UserId { get; set; }

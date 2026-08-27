@@ -10,6 +10,7 @@ using MiTaller.Models.Auth;
 using MiTaller.Models.Customer;
 using MiTaller.Models.Notification;
 using MiTaller.Models.Workshop;
+using System.Security.Claims;
 
 namespace MiTaller.Controllers
 {
@@ -312,6 +313,17 @@ namespace MiTaller.Controllers
                 };
 
                 await _context.NotificationSettings.AddAsync(notificationSettings);
+
+                var workshopIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (Guid.TryParse(workshopIdClaim, out var workshopId))
+                {
+                    await _context.WorkshopCustomers.AddAsync(new WorkshopCustomers
+                    {
+                        WorkshopId = workshopId,
+                        CustomerId = customer.Id,
+                    });
+                }
+
                 await _context.SaveChangesAsync();
 
                 return Ok(new { customerId = customer.Id, message = "customer-created" });

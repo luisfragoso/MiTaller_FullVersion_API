@@ -973,7 +973,7 @@ namespace MiTaller.Controllers
             try
             {
                 var quotations = await _context.Quotations
-                    .Where(q => q.WorkshopId == workshopId && q.Status == "Canceled" || q.Status == "Expired")
+                    .Where(q => q.WorkshopId == workshopId && (q.Status == "Canceled" || q.Status == "Expired"))
                     .Include(q => q.Vehicle)
                         .ThenInclude(v => v.Brand)
                     .Include(q => q.Vehicle)
@@ -1275,8 +1275,10 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotations(workshopId);
+
                 var quotations = await _context.Quotations
-                    .Where(q => q.WorkshopId == workshopId && q.Status == "InProgress" || q.Status == "Quoted")
+                    .Where(q => q.WorkshopId == workshopId && (q.Status == "InProgress" || q.Status == "Quoted"))
                     .Include(q => q.Vehicle)
                         .ThenInclude(v => v.Brand)
                     .Include(q => q.Vehicle)
@@ -1372,6 +1374,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotations(workshopId);
+
                 var query = _context.Quotations
                     .Where(q => q.WorkshopId == workshopId && (q.Status == "InProgress" || q.Status == "Quoted"))
                     .Include(q => q.Vehicle)
@@ -1475,6 +1479,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotations(workshopId);
+
                 var query = _context.Quotations
                     .Where(q => q.WorkshopId == workshopId && (q.Status == "InProgress"))
                     .Include(q => q.Vehicle)
@@ -1578,6 +1584,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotations(workshopId);
+
                 var query = _context.Quotations
                     .Where(q => q.WorkshopId == workshopId && (q.Status == "Quoted"))
                     .Include(q => q.Vehicle)
@@ -1681,6 +1689,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotationsForCustomer(customerId);
+
                 var query = _context.Quotations
                     .Where(q => q.CustomerId == customerId && (q.Status == "InProgress" || q.Status == "Quoted"))
                     .Include(q => q.Vehicle)
@@ -1784,6 +1794,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotationsForCustomer(customerId);
+
                 var query = _context.Quotations
                     .Where(q => q.CustomerId == customerId && (q.Status == "Quoted"))
                     .Include(q => q.Vehicle)
@@ -1887,6 +1899,8 @@ namespace MiTaller.Controllers
         {
             try
             {
+                await UpdateExpiredQuotationsForCustomer(customerId);
+
                 var query = _context.Quotations
                     .Where(q => q.CustomerId == customerId && (q.Status == "InProgress"))
                     .Include(q => q.Vehicle)
@@ -2314,6 +2328,35 @@ namespace MiTaller.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"[UpdateExpiredQuotations] Error: {ex.Message}");
+            }
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public async Task UpdateExpiredQuotationsForCustomer(Guid customerId)
+        {
+            try
+            {
+                var oneMonthAgo = DateTime.Now.AddMonths(-1);
+
+                var expiredQuotations = await _context.Quotations
+                    .Where(q => q.CustomerId == customerId &&
+                                (q.Status == "InProgress" || q.Status == "Quoted") &&
+                                q.CreatedAt < oneMonthAgo)
+                    .ToListAsync();
+
+                if (expiredQuotations.Any())
+                {
+                    foreach (var quotation in expiredQuotations)
+                    {
+                        quotation.Status = "Expired";
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[UpdateExpiredQuotationsForCustomer] Error: {ex.Message}");
             }
         }
 

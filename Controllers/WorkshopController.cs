@@ -1155,10 +1155,16 @@ namespace MiTaller.Controllers
                     .Select(m => m.CustomerId)
                     .ToListAsync();
 
+                var customerDirectlyAddedIds = await _context.WorkshopCustomers
+                    .Where(wc => wc.WorkshopId == workshopId)
+                    .Select(wc => wc.CustomerId)
+                    .ToListAsync();
+
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
                     .Concat(customerVehicleInspectionIds)
                     .Concat(customerMotocycleInspectionIds)
+                    .Concat(customerDirectlyAddedIds)
                     .Distinct()
                     .ToList();
 
@@ -1221,10 +1227,16 @@ namespace MiTaller.Controllers
                     .Select(m => m.CustomerId)
                     .ToListAsync();
 
+                var customerDirectlyAddedIds = await _context.WorkshopCustomers
+                    .Where(wc => wc.WorkshopId == workshopId)
+                    .Select(wc => wc.CustomerId)
+                    .ToListAsync();
+
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
                     .Concat(customerVehicleInspectionIds)
                     .Concat(customerMotocycleInspectionIds)
+                    .Concat(customerDirectlyAddedIds)
                     .Distinct()
                     .ToList();
 
