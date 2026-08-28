@@ -7,7 +7,10 @@ namespace MiTaller.Models.Auth
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }
+        public DateTime? LastLoginAt { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public bool IsPurged { get; set; } = false;
+        public DateTime? PurgedAt { get; set; }
         public UserType UserType { get; set; }
         public string NormalizedPhoneNumber { get; set; } = string.Empty;
         public string? PasswordResetCode { get; set; }

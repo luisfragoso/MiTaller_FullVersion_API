@@ -29,6 +29,10 @@ namespace MiTaller.Services.Audit
             "NormalizedPhoneNumber",
             "AccessFailedCount",
             "LockoutEnd",
+            // Cambia en cada login - es ruido de actividad rutinaria, no un
+            // cambio de datos digno de auditoría. Se muestra aparte como
+            // "Última conexión" en el detalle del usuario.
+            "LastLoginAt",
         };
 
         // Filas de auditoría de entidades nuevas cuyo EntityId todavía no se conocía

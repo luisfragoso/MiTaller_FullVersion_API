@@ -8,6 +8,8 @@ using MiTaller.DTO.Admin;
 using MiTaller.DTO.Pager;
 using MiTaller.Models.Audit;
 using MiTaller.Models.Auth;
+using MiTaller.Models.Customer;
+using MiTaller.Models.Workshop;
 
 namespace MiTaller.Controllers
 {
@@ -36,10 +38,18 @@ namespace MiTaller.Controllers
 
         [HttpGet("users")]
         public async Task<ActionResult<PagerWithCountResponseDto<AdminUserListItemDto>>> GetUsers(
-            [FromQuery] string? query, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
+            [FromQuery] string? query, [FromQuery] string? userType, [FromQuery] bool deletedOnly = false,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
-            var customersQuery = _context.Customers.AsQueryable();
-            var workshopsQuery = _context.Workshops.AsQueryable();
+            var includeCustomers = userType == null || userType == "Customer";
+            var includeWorkshops = userType == null || userType == "Workshop";
+
+            var customersQuery = _context.Customers
+                .Where(c => !c.IsPurged && c.IsDeleted == deletedOnly)
+                .AsQueryable();
+            var workshopsQuery = _context.Workshops
+                .Where(w => !w.IsPurged && w.IsDeleted == deletedOnly)
+                .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(query))
             {
@@ -50,31 +60,39 @@ namespace MiTaller.Controllers
                     w.Email.Contains(query) || w.PhoneNumber.Contains(query));
             }
 
-            var customers = await customersQuery
-                .Select(c => new AdminUserListItemDto
-                {
-                    Id = c.Id,
-                    UserType = "Customer",
-                    Name = c.FullName,
-                    Email = c.Email ?? string.Empty,
-                    Phone = c.PhoneNumber,
-                    CreatedAt = c.CreatedAt,
-                    IsDeleted = c.IsDeleted,
-                })
-                .ToListAsync();
+            var customers = includeCustomers
+                ? await customersQuery
+                    .Select(c => new AdminUserListItemDto
+                    {
+                        Id = c.Id,
+                        UserType = "Customer",
+                        Name = c.FullName,
+                        Email = c.Email ?? string.Empty,
+                        Phone = c.PhoneNumber,
+                        CreatedAt = c.CreatedAt,
+                        IsDeleted = c.IsDeleted,
+                        DeletedAt = c.DeletedAt,
+                        LastLoginAt = c.LastLoginAt,
+                    })
+                    .ToListAsync()
+                : new List<AdminUserListItemDto>();
 
-            var workshops = await workshopsQuery
-                .Select(w => new AdminUserListItemDto
-                {
-                    Id = w.Id,
-                    UserType = "Workshop",
-                    Name = w.WorkshopName,
-                    Email = w.Email ?? string.Empty,
-                    Phone = w.PhoneNumber,
-                    CreatedAt = w.CreatedAt,
-                    IsDeleted = w.IsDeleted,
-                })
-                .ToListAsync();
+            var workshops = includeWorkshops
+                ? await workshopsQuery
+                    .Select(w => new AdminUserListItemDto
+                    {
+                        Id = w.Id,
+                        UserType = "Workshop",
+                        Name = w.WorkshopName,
+                        Email = w.Email ?? string.Empty,
+                        Phone = w.PhoneNumber,
+                        CreatedAt = w.CreatedAt,
+                        IsDeleted = w.IsDeleted,
+                        DeletedAt = w.DeletedAt,
+                        LastLoginAt = w.LastLoginAt,
+                    })
+                    .ToListAsync()
+                : new List<AdminUserListItemDto>();
 
             // Combinados y paginados en memoria: los volúmenes de talleres/clientes hoy
             // no justifican un UNION a nivel SQL; revisar si esto crece mucho.
@@ -98,7 +116,7 @@ namespace MiTaller.Controllers
         [HttpGet("users/{id}/detail")]
         public async Task<ActionResult<AdminUserDetailDto>> GetUserDetail(Guid id)
         {
-            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == id && !c.IsPurged);
             if (customer != null)
             {
                 var dto = new AdminUserDetailDto
@@ -111,6 +129,8 @@ namespace MiTaller.Controllers
                     CreatedAt = customer.CreatedAt,
                     EmailConfirmed = customer.EmailConfirmed,
                     IsDeleted = customer.IsDeleted,
+                    DeletedAt = customer.DeletedAt,
+                    LastLoginAt = customer.LastLoginAt,
                 };
 
                 dto.Vehicles = await _context.Vehicles
@@ -151,10 +171,45 @@ namespace MiTaller.Controllers
                     })
                     .ToListAsync();
 
+                var customerAddress = await _context.CustomerAddresses
+                    .Where(a => a.CustomerId == id && !a.IsDeleted)
+                    .Include(a => a.Suburb).ThenInclude(s => s.Town).ThenInclude(t => t.State)
+                    .OrderByDescending(a => a.CreatedAt)
+                    .FirstOrDefaultAsync();
+                dto.Address = customerAddress != null
+                    ? $"{customerAddress.Street}, {customerAddress.Suburb.Name}, " +
+                      $"{customerAddress.Suburb.Town.Name}, {customerAddress.Suburb.Town.State.Name}, " +
+                      $"CP {customerAddress.Suburb.Zipcode}"
+                    : null;
+
+                dto.VisitedWorkshops = await _context.WorkshopCustomers
+                    .Where(wc => wc.CustomerId == id)
+                    .Include(wc => wc.Workshop)
+                    .Select(wc => new AdminWorkshopSummaryDto
+                    {
+                        Id = wc.WorkshopId,
+                        Name = wc.Workshop.WorkshopName,
+                    })
+                    .Distinct()
+                    .ToListAsync();
+
+                dto.Tags = await _context.CustomerAssociatedTags
+                    .Where(t => t.CustomerId == id)
+                    .Include(t => t.Tag)
+                    .Include(t => t.Workshop)
+                    .Select(t => new AdminTagSummaryDto
+                    {
+                        Id = t.TagId,
+                        Value = t.Tag.Value,
+                        HexColor = t.Tag.HexColor,
+                        WorkshopName = t.Workshop.WorkshopName,
+                    })
+                    .ToListAsync();
+
                 return Ok(dto);
             }
 
-            var workshop = await _context.Workshops.FirstOrDefaultAsync(w => w.Id == id);
+            var workshop = await _context.Workshops.FirstOrDefaultAsync(w => w.Id == id && !w.IsPurged);
             if (workshop != null)
             {
                 var dto = new AdminUserDetailDto
@@ -167,6 +222,8 @@ namespace MiTaller.Controllers
                     CreatedAt = workshop.CreatedAt,
                     EmailConfirmed = workshop.EmailConfirmed,
                     IsDeleted = workshop.IsDeleted,
+                    DeletedAt = workshop.DeletedAt,
+                    LastLoginAt = workshop.LastLoginAt,
                 };
 
                 dto.WorkshopServices = await _context.WorkshopServices
@@ -180,8 +237,45 @@ namespace MiTaller.Controllers
                     })
                     .ToListAsync();
 
-                dto.LinkedCustomersCount = await _context.WorkshopCustomers
-                    .CountAsync(wc => wc.WorkshopId == id);
+                dto.LinkedCustomers = await _context.WorkshopCustomers
+                    .Where(wc => wc.WorkshopId == id)
+                    .Include(wc => wc.Customer)
+                    .Select(wc => new AdminCustomerSummaryDto
+                    {
+                        Id = wc.CustomerId,
+                        Name = wc.Customer.FullName,
+                        Email = wc.Customer.Email ?? string.Empty,
+                    })
+                    .ToListAsync();
+
+                dto.Reviews = await _context.Reviews
+                    .Where(r => r.WorkshopId == id)
+                    .Include(r => r.Customer)
+                    .OrderByDescending(r => r.Date)
+                    .Select(r => new AdminReviewSummaryDto
+                    {
+                        Id = r.Id,
+                        CustomerName = r.Customer.FullName,
+                        Rate = r.Rate,
+                        Comment = r.Comment,
+                        Date = r.Date,
+                    })
+                    .ToListAsync();
+
+                dto.AverageRating = dto.Reviews.Count > 0
+                    ? dto.Reviews.Average(r => r.Rate)
+                    : null;
+
+                var workshopAddress = await _context.WorkshopAddresses
+                    .Where(a => a.WorkshopId == id && !a.IsDeleted)
+                    .Include(a => a.Suburb).ThenInclude(s => s.Town).ThenInclude(t => t.State)
+                    .OrderByDescending(a => a.CreatedAt)
+                    .FirstOrDefaultAsync();
+                dto.Address = workshopAddress != null
+                    ? $"{workshopAddress.Street}, {workshopAddress.Suburb.Name}, " +
+                      $"{workshopAddress.Suburb.Town.Name}, {workshopAddress.Suburb.Town.State.Name}, " +
+                      $"CP {workshopAddress.Suburb.Zipcode}"
+                    : null;
 
                 return Ok(dto);
             }
@@ -207,6 +301,129 @@ namespace MiTaller.Controllers
             }
 
             return Ok("password-reset");
+        }
+
+        [HttpPut("users/{id}")]
+        public async Task<ActionResult> UpdateUser(Guid id, [FromBody] AdminUpdateUserRequestDto model)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound("not-found");
+            }
+
+            var duplicate = await _userManager.Users
+                .AnyAsync(u => u.Id != id && u.UserType == user.UserType &&
+                    (u.Email == model.Email || (model.Phone != null && u.NormalizedPhoneNumber == model.Phone)));
+            if (duplicate)
+            {
+                return BadRequest("Ya existe otro usuario con ese correo o teléfono.");
+            }
+
+            if (user is Customer customer)
+            {
+                customer.FullName = model.Name;
+                customer.Email = model.Email;
+                if (model.Phone != null)
+                {
+                    customer.NormalizedPhoneNumber = model.Phone;
+                    customer.PhoneNumber = model.Phone + "_customer";
+                }
+            }
+            else if (user is Workshop workshop)
+            {
+                workshop.WorkshopName = model.Name;
+                workshop.Email = model.Email;
+                if (model.Phone != null)
+                {
+                    workshop.NormalizedPhoneNumber = model.Phone;
+                    workshop.PhoneNumber = model.Phone + "_workshop";
+                }
+            }
+            else
+            {
+                return BadRequest("Este tipo de usuario no se puede editar desde aquí.");
+            }
+
+            user.UpdatedAt = DateTime.Now;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Ok("user-updated");
+        }
+
+        [HttpPost("users/{id}/soft-delete")]
+        public async Task<ActionResult> SoftDeleteUser(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound("not-found");
+            }
+
+            user.IsDeleted = true;
+            user.DeletedAt = DateTime.Now;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Ok("user-deleted");
+        }
+
+        [HttpPost("users/{id}/reactivate")]
+        public async Task<ActionResult> ReactivateUser(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound("not-found");
+            }
+
+            user.IsDeleted = false;
+            user.DeletedAt = null;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Ok("user-reactivated");
+        }
+
+        // "Purgar" no borra ninguna fila ni historial: solo oculta el registro
+        // para siempre en el admin. Se eligió así porque casi todas las
+        // relaciones (vehículos, cotizaciones, reseñas, etc.) están
+        // configuradas como Restrict en la base de datos - un borrado físico
+        // real requeriría cascadear manualmente docenas de tablas y sería
+        // irreversible sobre datos de producción.
+        [HttpPost("users/{id}/purge")]
+        public async Task<ActionResult> PurgeUser(Guid id)
+        {
+            var user = await _userManager.FindByIdAsync(id.ToString());
+            if (user == null)
+            {
+                return NotFound("not-found");
+            }
+
+            if (!user.IsDeleted)
+            {
+                return BadRequest("El usuario debe estar eliminado antes de poder purgarse.");
+            }
+
+            user.IsPurged = true;
+            user.PurgedAt = DateTime.Now;
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors.Select(e => e.Description));
+            }
+
+            return Ok("user-purged");
         }
 
         [HttpGet("audit-log")]

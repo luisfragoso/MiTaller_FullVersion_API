@@ -70,8 +70,8 @@ namespace MiTaller.Controllers
                 // Registrar el token del dispositivo si se proporciona
                 if (!string.IsNullOrEmpty(model.DeviceToken))
                 {
-                    var tokens = string.IsNullOrEmpty(user.DeviceTokens) 
-                        ? new List<string>() 
+                    var tokens = string.IsNullOrEmpty(user.DeviceTokens)
+                        ? new List<string>()
                         : user.DeviceTokens.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
                     // Agregar el token solo si no existe ya
@@ -79,9 +79,11 @@ namespace MiTaller.Controllers
                     {
                         tokens.Add(model.DeviceToken);
                         user.DeviceTokens = string.Join(",", tokens);
-                        await _userManager.UpdateAsync(user);
                     }
                 }
+
+                user.LastLoginAt = DateTime.Now;
+                await _userManager.UpdateAsync(user);
 
                 var token = _jwtService.GenerateToken(user);
                 string shortId = user.Id.ToString().Substring(0,13);
