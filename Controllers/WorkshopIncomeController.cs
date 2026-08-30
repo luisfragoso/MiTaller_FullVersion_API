@@ -32,11 +32,11 @@ namespace MiTaller.Controllers
                 var income = await _context.WorkshopIncomes
                     .Where(b => b.Id == id)
                     .Include(b => b.WorkshopServices)
-                    .ThenInclude(b => b.Service)
-                    .Select(b => new 
+                    .ThenInclude(b => b!.Service)
+                    .Select(b => new
                     {
                         WorkshopId = b.WorkshopId,
-                        Name = b.WorkshopServices.Service.Name,
+                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name : (b.CustomDescription ?? "Otro"),
                         Amount = b.Amount
                     })
                     .FirstOrDefaultAsync();
@@ -68,11 +68,11 @@ namespace MiTaller.Controllers
                 var incomes = await _context.WorkshopIncomes
                     .Where(b => b.WorkshopId == workshopId && b.CreatedAt >= startDate && b.CreatedAt <= endDate)
                     .Include(b => b.WorkshopServices)
-                    .ThenInclude(b => b.Service)
+                    .ThenInclude(b => b!.Service)
                     .Select(b => new WorkshopIncomeResponseDto
                     {
-                        WorkshopServiceId = b.WorkshopServices.Id,
-                        Name = b.WorkshopServices.Service.Name,
+                        WorkshopServiceId = b.WorkshopServices != null ? b.WorkshopServices.Id : 0,
+                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name : (b.CustomDescription ?? "Otro"),
                         Amount = b.Amount
                     })
                     .ToListAsync();
@@ -80,6 +80,26 @@ namespace MiTaller.Controllers
                 if (!incomes.Any()) return NotFound("not-found");
 
                 return Ok(incomes);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpGet("workshop/{workshopId}/ytd/{year}")]
+        public async Task<ActionResult<YtdIncomeResponseDto>> GetYtdIncome(Guid workshopId, int year)
+        {
+            try
+            {
+                var startDate = new DateTime(year, 1, 1);
+                var endDate = new DateTime(year, 12, 31, 23, 59, 59);
+
+                var sum = await _context.WorkshopIncomes
+                    .Where(b => b.WorkshopId == workshopId && b.CreatedAt >= startDate && b.CreatedAt <= endDate)
+                    .SumAsync(b => (float?)b.Amount) ?? 0f;
+
+                return Ok(new YtdIncomeResponseDto { SumIncomes = sum });
             }
             catch (Exception)
             {
@@ -98,19 +118,37 @@ namespace MiTaller.Controllers
                     .FirstOrDefaultAsync();
                 if (workshop == null) return NotFound("not-found");
 
-                var workshopService = await _context.WorkshopServices
-                    .Where(w => w.Id == model.WorkshopServiceId)
-                    .FirstOrDefaultAsync();
-                if (workshopService == null) return NotFound("not-found");
+                WorkshopIncomes income;
 
-                if (workshop.Id != workshopService.WorkshopId) return BadRequest("wrong-workshop-service");
-
-                var income = new WorkshopIncomes
+                if (model.WorkshopServiceId > 0)
                 {
-                    WorkshopId = model.WorkshopId,
-                    WorkshopServiceId = model.WorkshopServiceId,
-                    Amount = model.Amount
-                };
+                    var workshopService = await _context.WorkshopServices
+                        .Where(w => w.Id == model.WorkshopServiceId)
+                        .FirstOrDefaultAsync();
+                    if (workshopService == null) return NotFound("not-found");
+
+                    if (workshop.Id != workshopService.WorkshopId) return BadRequest("wrong-workshop-service");
+
+                    income = new WorkshopIncomes
+                    {
+                        WorkshopId = model.WorkshopId,
+                        WorkshopServiceId = model.WorkshopServiceId,
+                        Amount = model.Amount
+                    };
+                }
+                else
+                {
+                    // "Otro" - no linked service, requires a free-text description.
+                    if (string.IsNullOrWhiteSpace(model.CustomDescription)) return BadRequest("description-required");
+
+                    income = new WorkshopIncomes
+                    {
+                        WorkshopId = model.WorkshopId,
+                        WorkshopServiceId = null,
+                        CustomDescription = model.CustomDescription.Trim(),
+                        Amount = model.Amount
+                    };
+                }
 
                 _context.WorkshopIncomes.Add(income);
                 await _context.SaveChangesAsync();

@@ -70,7 +70,7 @@ namespace MiTaller.Controllers
                         Description = a.Description,
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
-                        //Status = a.Status,
+                        Status = a.Status,
                     })
                     .FirstOrDefaultAsync();
 
@@ -121,7 +121,7 @@ namespace MiTaller.Controllers
                         Description = a.Description,
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
-                        //Status = a.Status,
+                        Status = a.Status,
                         Image = a.Image,
                     })
                     .ToListAsync();
@@ -177,7 +177,7 @@ namespace MiTaller.Controllers
                         Description = a.Description,
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
-                        //Status = a.Status,
+                        Status = a.Status,
                     })
                     .ToListAsync();
 
@@ -335,6 +335,30 @@ namespace MiTaller.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok("appointment-updated");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        private static readonly string[] ValidAppointmentStatuses =
+            { "Pendiente", "Confirmada", "En taller", "Completada", "Cancelada" };
+
+        [HttpPatch("{appointmentId}/status")]
+        public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, [FromBody] UpdateAppointmentStatusDto model)
+        {
+            try
+            {
+                if (!ValidAppointmentStatuses.Contains(model.Status)) return BadRequest("invalid-status");
+
+                var appointment = await _context.Appointments.FindAsync(appointmentId);
+                if (appointment == null) return NotFound("not-found");
+
+                appointment.Status = model.Status;
+                await _context.SaveChangesAsync();
+
+                return Ok("appointment-status-updated");
             }
             catch (Exception)
             {

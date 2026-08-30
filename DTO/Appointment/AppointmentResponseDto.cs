@@ -16,7 +16,7 @@ namespace MiTaller.DTO.Appointment
         public DateTime Date { get; set; }
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
-        //public string Status { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
         public string AppointmentType { get; set; } = string.Empty;
         public NotificationType NotificationType { get; set; }
         public byte[]? Image { get; set; }

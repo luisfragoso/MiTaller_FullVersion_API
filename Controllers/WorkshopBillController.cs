@@ -19,6 +19,12 @@ namespace MiTaller.Controllers
     {
         private readonly DataContext _context;
 
+        private static readonly string[] ValidCategories =
+            { "Renta", "Servicios", "Refacciones", "Salarios", "Equipo", "Otro" };
+
+        private static string NormalizeCategory(string? category) =>
+            category != null && ValidCategories.Contains(category) ? category : "Otro";
+
         public WorkshopBillController(DataContext context)
         {
             _context = context;
@@ -36,6 +42,7 @@ namespace MiTaller.Controllers
                         Id = b.Id,
                         WorkshopId = b.WorkshopId,
                         Description = b.Description,
+                        Category = b.Category,
                         Amount = b.Amount
                     })
                     .FirstOrDefaultAsync();
@@ -61,6 +68,7 @@ namespace MiTaller.Controllers
                     {
                         Id = b.Id,
                         Description = b.Description,
+                        Category = b.Category,
                         Amount = b.Amount
                     })
                     .ToListAsync();
@@ -88,6 +96,7 @@ namespace MiTaller.Controllers
                 {
                     WorkshopId = model.WorkshopId,
                     Description = model.Description,
+                    Category = NormalizeCategory(model.Category),
                     Amount = model.Amount
                 };
 
@@ -112,6 +121,7 @@ namespace MiTaller.Controllers
                 if (bill == null) return NotFound("not-found");
 
                 bill.Description = model.Description;
+                bill.Category = NormalizeCategory(model.Category);
                 bill.Amount = model.Amount;
 
                 await _context.SaveChangesAsync();

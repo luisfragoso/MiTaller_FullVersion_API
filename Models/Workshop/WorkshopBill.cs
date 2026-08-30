@@ -9,6 +9,7 @@ namespace MiTaller.Models.Workshop
         [ForeignKey("WorkshopId")]
         public Workshop Workshop { get; set; }
         public string Description { get; set; } = string.Empty;
+        public string Category { get; set; } = "Otro";
         public float Amount { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.Now;
     }

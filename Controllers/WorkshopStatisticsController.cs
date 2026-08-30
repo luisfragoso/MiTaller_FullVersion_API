@@ -202,7 +202,7 @@ namespace MiTaller.Controllers
                 var incomes = await _context.WorkshopIncomes
                     .Where(i => i.WorkshopId == workshopId && i.CreatedAt >= startDate && i.CreatedAt <= endDate)
                     .Include(b => b.WorkshopServices)
-                    .ThenInclude(b => b.Service)
+                    .ThenInclude(b => b!.Service)
                     .ToListAsync();
 
                 var bills = await _context.WorkshopBills
@@ -221,8 +221,10 @@ namespace MiTaller.Controllers
                         Id = income.Id,
                         WorkshopIncomeResponseDto = new WorkshopSimpleIncomeResponseDto
                         {
-                            WorkshopServiceId = income.WorkshopServices.Id,
-                            Name = income.WorkshopServices.Service.Name,
+                            WorkshopServiceId = income.WorkshopServices?.Id ?? 0,
+                            Name = income.WorkshopServices != null
+                                ? income.WorkshopServices.Service.Name
+                                : (income.CustomDescription ?? "Otro"),
                         },
                         Amount = income.Amount,
                     };
