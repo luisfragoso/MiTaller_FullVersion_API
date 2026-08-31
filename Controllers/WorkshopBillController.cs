@@ -43,7 +43,8 @@ namespace MiTaller.Controllers
                         WorkshopId = b.WorkshopId,
                         Description = b.Description,
                         Category = b.Category,
-                        Amount = b.Amount
+                        Amount = b.Amount,
+                        CreatedDate = b.CreatedDate
                     })
                     .FirstOrDefaultAsync();
 
@@ -69,7 +70,8 @@ namespace MiTaller.Controllers
                         Id = b.Id,
                         Description = b.Description,
                         Category = b.Category,
-                        Amount = b.Amount
+                        Amount = b.Amount,
+                        CreatedDate = b.CreatedDate
                     })
                     .ToListAsync();
 
