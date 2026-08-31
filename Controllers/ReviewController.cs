@@ -91,6 +91,10 @@ namespace MiTaller.Controllers
                         i => baseQuery.Count(r => (int)Math.Truncate(r.Rate) == i)
                     );
 
+                var now = DateTime.Now;
+                var thisMonthReviews = await baseQuery.CountAsync(
+                    r => r.Date.Year == now.Year && r.Date.Month == now.Month);
+
                 var pagedReviews = await baseQuery
                     .OrderByDescending(r => r.Date)
                     .Skip((pager.PageNumber - 1) * pager.PageSize)
@@ -112,6 +116,7 @@ namespace MiTaller.Controllers
                 {
                     AverageRate = (float)Math.Round(averageRate, 1),
                     TotalReviews = totalCount,
+                    ThisMonthReviews = thisMonthReviews,
                     StarCounts = starCounts,
                     CurrentPage = pager.PageNumber,
                     MaxPage = totalPages,
