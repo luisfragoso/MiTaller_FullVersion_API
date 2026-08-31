@@ -182,6 +182,53 @@ namespace MiTaller.Controllers
             }
         }
 
+        [HttpGet("services-summary-by/{workshopId}/{monthYear}")]
+        public async Task<ActionResult<ServiceStatisticsSummaryDto>> GetServicesSummaryByWorkshop(Guid workshopId, string monthYear)
+        {
+            try
+            {
+                if (!DateTime.TryParseExact(monthYear, "MM-yyyy", null, System.Globalization.DateTimeStyles.None, out var parsedDate))
+                {
+                    return BadRequest("invalid-date-format");
+                }
+
+                var startDate = new DateTime(parsedDate.Year, parsedDate.Month, 1);
+                var endDate = startDate.AddMonths(1).AddTicks(-1);
+
+                // "Activo" = servicio seleccionado en una cotizacion aun no confirmada/cancelada.
+                var activeCount = await _context.QuotationServices
+                    .Include(qs => qs.Quotation)
+                    .Where(qs => qs.IsSelected
+                        && qs.Quotation.WorkshopId == workshopId
+                        && (qs.Quotation.Status == "InProgress" || qs.Quotation.Status == "Quoted"))
+                    .CountAsync();
+
+                // "Completado" = existe un ingreso ligado a ese servicio (se cobro/realizo).
+                var completedCount = await _context.WorkshopIncomes
+                    .Where(i => i.WorkshopId == workshopId && i.WorkshopServiceId != null)
+                    .CountAsync();
+
+                var thisMonthCount = await _context.WorkshopIncomes
+                    .Where(i => i.WorkshopId == workshopId
+                        && i.WorkshopServiceId != null
+                        && i.CreatedAt >= startDate && i.CreatedAt <= endDate)
+                    .CountAsync();
+
+                var response = new ServiceStatisticsSummaryDto
+                {
+                    Active = activeCount,
+                    Completed = completedCount,
+                    ThisMonth = thisMonthCount,
+                };
+
+                return Ok(response);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
         [HttpGet("economic-balance-by/{workshopId}/{monthYear}")]
         public async Task<ActionResult<EconomicBalanceResponseDto>> GetEconomicBalanceByWorkshop(Guid workshopId, string monthYear)
         {
