@@ -14,7 +14,6 @@ using MiTaller.DTO.Vehicle;
 using Microsoft.Identity.Client;
 using MiTaller.Models.Workshop;
 using MiTaller.Models.Auth;
-using MiTaller.Models.Notification;
 using MiTaller.Services;
 
 namespace MiTaller.Controllers
@@ -26,11 +25,16 @@ namespace MiTaller.Controllers
     {
         private readonly DataContext _context;
         private readonly FirebaseNotificationService _firebaseNotificationService;
+        private readonly AppointmentNotificationService _appointmentNotificationService;
 
-        public AppointmentController(DataContext context, FirebaseNotificationService firebaseNotificationService)
+        public AppointmentController(
+            DataContext context,
+            FirebaseNotificationService firebaseNotificationService,
+            AppointmentNotificationService appointmentNotificationService)
         {
             _context = context;
             _firebaseNotificationService = firebaseNotificationService;
+            _appointmentNotificationService = appointmentNotificationService;
         }
 
         [HttpGet("{appointmentId}")]
@@ -271,27 +275,9 @@ namespace MiTaller.Controllers
                 }
                 else
                 {
-                    // Customer Notifications
-                    var notification = new Notifications
-                    {
-                        UserId = model.CustomerId,
-                        UserType = UserType.Customer,
-                        Title = $"{workshop.WorkshopName} te ha agendado una cita para la fecha del {formattedDate} a las {formattedTime}",
-                        Content = appointment.Description,
-                        Event = "AppointmentCreated"
-                    };
-                    _context.Notifications.Add(notification);
+                    // El taller agendó la cita a nombre del cliente - debe aceptarla.
+                    await _appointmentNotificationService.NotifyAcceptRequestAsync(appointment, customer, workshop);
                     await _context.SaveChangesAsync();
-
-                    // TODO: Activar cuando se implementen las notificaciones push Firebase
-                    // Enviar notificación push al cliente
-                    //await _firebaseNotificationService.SendNotificationToCustomerAsync(
-                    //    model.CustomerId,
-                    //    notification.Title,
-                    //    notification.Content,
-                    //    notification.Event,
-                    //    new Dictionary<string, string> { { "appointmentId", appointment.Id.ToString() } }
-                    //);
                 }
 
                 _context.Appointments.Add(appointment);

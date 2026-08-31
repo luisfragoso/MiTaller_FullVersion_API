@@ -153,6 +153,11 @@ try
     // Firebase Notification Service
     builder.Services.AddScoped<FirebaseNotificationService>();
 
+    // Notificaciones de citas (in-app + correo) y el job que las dispara
+    // (recordatorio ~1 día antes, cancelación automática ~4h antes si sigue "Pendiente").
+    builder.Services.AddScoped<AppointmentNotificationService>();
+    builder.Services.AddHostedService<AppointmentSchedulerService>();
+
     builder.Services.AddAuthentication(options =>
     {
         options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

@@ -22,5 +22,8 @@ namespace MiTaller.Models
         public string AppointmentType { get; set; } = string.Empty;
         public NotificationType NotificationType { get; set; }
         public byte[]? Image { get; set; }
+        public DateTime? ReminderSentAt { get; set; }
+        public DateTime? ExpiringNoticeSentAt { get; set; }
+        public DateTime? CancelNoticeSentAt { get; set; }
     }
 }
