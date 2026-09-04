@@ -996,6 +996,8 @@ namespace MiTaller.Controllers
                     FuelTankCap = model.FuelTankCap,
                     AirConditioningFilter = model.AirConditioningFilter,
                     ReversingLights = model.ReversingLights,
+                    LicensePlateLight = model.LicensePlateLight,
+                    SeatBelts = model.SeatBelts,
 
                     InteriorAndExteriorComments = model.InteriorAndExteriorComments,
 
@@ -1006,6 +1008,10 @@ namespace MiTaller.Controllers
                     RadiatorHoses = model.RadiatorHoses,
                     HeatingHoses = model.HeatingHoses,
                     AirConditioningCondenser = model.AirConditioningCondenser,
+                    TransmissionFluidLevel = model.TransmissionFluidLevel,
+                    PowerSteeringFluidLevel = model.PowerSteeringFluidLevel,
+                    AccessoryBelt = model.AccessoryBelt,
+                    ExhaustSystem = model.ExhaustSystem,
 
                     EngineComments = model.EngineComments,
 
@@ -1015,6 +1021,14 @@ namespace MiTaller.Controllers
                     GeneralBatteryCondition = model.GeneralBatteryCondition,
 
                     BatteryComments = model.BatteryComments,
+
+                    FrontShockAbsorbers = model.FrontShockAbsorbers,
+                    RearShockAbsorbers = model.RearShockAbsorbers,
+                    BallJoints = model.BallJoints,
+                    SteeringRackAndTierods = model.SteeringRackAndTierods,
+                    SuspensionBushings = model.SuspensionBushings,
+
+                    SuspensionComments = model.SuspensionComments,
 
                     ChasisComments = model.ChasisComments,
 
@@ -1645,6 +1659,8 @@ namespace MiTaller.Controllers
                 FuelTankCap = inspection.FuelTankCap,
                 AirConditioningFilter = inspection.AirConditioningFilter,
                 ReversingLights = inspection.ReversingLights,
+                LicensePlateLight = inspection.LicensePlateLight,
+                SeatBelts = inspection.SeatBelts,
 
 
                 InteriorAndExteriorComments = inspection.InteriorAndExteriorComments,
@@ -1656,6 +1672,10 @@ namespace MiTaller.Controllers
                 RadiatorHoses = inspection.RadiatorHoses,
                 HeatingHoses = inspection.HeatingHoses,
                 AirConditioningCondenser = inspection.AirConditioningCondenser,
+                TransmissionFluidLevel = inspection.TransmissionFluidLevel,
+                PowerSteeringFluidLevel = inspection.PowerSteeringFluidLevel,
+                AccessoryBelt = inspection.AccessoryBelt,
+                ExhaustSystem = inspection.ExhaustSystem,
 
                 EngineComments = inspection.EngineComments,
 
@@ -1665,6 +1685,14 @@ namespace MiTaller.Controllers
                 GeneralBatteryCondition = inspection.GeneralBatteryCondition,
 
                 BatteryComments = inspection.BatteryComments,
+
+                FrontShockAbsorbers = inspection.FrontShockAbsorbers,
+                RearShockAbsorbers = inspection.RearShockAbsorbers,
+                BallJoints = inspection.BallJoints,
+                SteeringRackAndTierods = inspection.SteeringRackAndTierods,
+                SuspensionBushings = inspection.SuspensionBushings,
+
+                SuspensionComments = inspection.SuspensionComments,
 
                 ChasisComments = inspection.ChasisComments,
 

@@ -67,6 +67,8 @@ namespace MiTaller.DTO.Inspections
         public VehicleCondition FuelTankCap { get; set; } = VehicleCondition.Optimal; // Tapa de tanque de combustible
         public VehicleCondition AirConditioningFilter { get; set; } = VehicleCondition.Optimal; // Filtro de aire acondicionado
         public VehicleCondition ReversingLights { get; set; } = VehicleCondition.Optimal; // Luces de marcha atrás
+        public VehicleCondition LicensePlateLight { get; set; } = VehicleCondition.Optimal; // Luz de placa
+        public VehicleCondition SeatBelts { get; set; } = VehicleCondition.Optimal; // Cinturones de seguridad
 
         public string? InteriorAndExteriorComments { get; set; } = string.Empty;
 
@@ -79,6 +81,10 @@ namespace MiTaller.DTO.Inspections
         public VehicleCondition RadiatorHoses { get; set; } = VehicleCondition.Optimal; // Mangueras del sistema de refrigeración
         public VehicleCondition HeatingHoses { get; set; } = VehicleCondition.Optimal; // Mangueras de calefacción
         public VehicleCondition AirConditioningCondenser { get; set; } = VehicleCondition.Optimal; // Condensador de aire acondicionado
+        public VehicleCondition TransmissionFluidLevel { get; set; } = VehicleCondition.Optimal; // Líquido de transmisión
+        public VehicleCondition PowerSteeringFluidLevel { get; set; } = VehicleCondition.Optimal; // Líquido de dirección hidráulica
+        public VehicleCondition AccessoryBelt { get; set; } = VehicleCondition.Optimal; // Banda de accesorios (serpentina)
+        public VehicleCondition ExhaustSystem { get; set; } = VehicleCondition.Optimal; // Sistema de escape
 
         public string? EngineComments { get; set; } = string.Empty;
 
@@ -92,7 +98,17 @@ namespace MiTaller.DTO.Inspections
         public string? BatteryComments { get; set; } = string.Empty;
 
 
-        // Chasis // 
+        // Suspension and Steering //
+        public VehicleCondition FrontShockAbsorbers { get; set; } = VehicleCondition.Optimal; // Amortiguadores delanteros
+        public VehicleCondition RearShockAbsorbers { get; set; } = VehicleCondition.Optimal; // Amortiguadores traseros
+        public VehicleCondition BallJoints { get; set; } = VehicleCondition.Optimal; // Rótulas
+        public VehicleCondition SteeringRackAndTierods { get; set; } = VehicleCondition.Optimal; // Cremallera y terminales de dirección
+        public VehicleCondition SuspensionBushings { get; set; } = VehicleCondition.Optimal; // Bujes de suspensión
+
+        public string? SuspensionComments { get; set; } = string.Empty;
+
+
+        // Chasis //
         public List<IFormFile>? Files { get; set; } = new();
         public string? ChasisComments { get; set; } = string.Empty;
 

@@ -45,6 +45,7 @@ namespace MiTaller.Services.Documents
                     col.Item().Element(c => RenderInteriorExterior(c));
                     col.Item().Element(c => RenderEngine(c));
                     col.Item().Element(c => RenderBattery(c));
+                    col.Item().Element(c => RenderSuspension(c));
                     col.Item().Element(c => RenderChasis(c));
                     col.Item().Element(c => InspectionDocumentComponents.PhotosSection(c, _inspection.Photos));
                     col.Item().Element(c => RenderObservations(c));
@@ -101,6 +102,8 @@ namespace MiTaller.Services.Documents
                     ("Tapa de tanque de combustible", _inspection.FuelTankCap),
                     ("Filtro de aire acondicionado", _inspection.AirConditioningFilter),
                     ("Luces de marcha atrás", _inspection.ReversingLights),
+                    ("Luz de placa", _inspection.LicensePlateLight),
+                    ("Cinturones de seguridad", _inspection.SeatBelts),
                 },
                 _inspection.InteriorAndExteriorComments);
 
@@ -117,6 +120,10 @@ namespace MiTaller.Services.Documents
                     ("Mangueras del sistema de refrigeración", _inspection.RadiatorHoses),
                     ("Mangueras de calefacción", _inspection.HeatingHoses),
                     ("Condensador de aire acondicionado", _inspection.AirConditioningCondenser),
+                    ("Líquido de transmisión", _inspection.TransmissionFluidLevel),
+                    ("Líquido de dirección hidráulica", _inspection.PowerSteeringFluidLevel),
+                    ("Banda de accesorios", _inspection.AccessoryBelt),
+                    ("Sistema de escape", _inspection.ExhaustSystem),
                 },
                 _inspection.EngineComments);
 
@@ -132,6 +139,20 @@ namespace MiTaller.Services.Documents
                     ("Condiciones generales de la batería", _inspection.GeneralBatteryCondition),
                 },
                 _inspection.BatteryComments);
+
+        private void RenderSuspension(IContainer container) =>
+            InspectionDocumentComponents.ConditionSection(
+                container,
+                "Suspensión y Dirección",
+                new (string, VehicleCondition)[]
+                {
+                    ("Amortiguadores delanteros", _inspection.FrontShockAbsorbers),
+                    ("Amortiguadores traseros", _inspection.RearShockAbsorbers),
+                    ("Rótulas", _inspection.BallJoints),
+                    ("Cremallera y terminales de dirección", _inspection.SteeringRackAndTierods),
+                    ("Bujes de suspensión", _inspection.SuspensionBushings),
+                },
+                _inspection.SuspensionComments);
 
         private void RenderChasis(IContainer container)
         {

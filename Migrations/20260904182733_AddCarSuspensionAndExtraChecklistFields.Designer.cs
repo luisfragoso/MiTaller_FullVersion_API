@@ -4,6 +4,7 @@ using MiTaller.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MiTaller.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20260904182733_AddCarSuspensionAndExtraChecklistFields")]
+    partial class AddCarSuspensionAndExtraChecklistFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1076,9 +1079,6 @@ namespace MiTaller.Migrations
                     b.Property<Guid>("WorkshopId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("WorkshopVehicleInspectionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -1086,8 +1086,6 @@ namespace MiTaller.Migrations
                     b.HasIndex("VehicleId");
 
                     b.HasIndex("WorkshopId");
-
-                    b.HasIndex("WorkshopVehicleInspectionId");
 
                     b.ToTable("Quotations");
                 });
@@ -2418,17 +2416,11 @@ namespace MiTaller.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("MiTaller.Models.Vehicle.WorkshopVehicleInspection", "WorkshopVehicleInspection")
-                        .WithMany()
-                        .HasForeignKey("WorkshopVehicleInspectionId");
-
                     b.Navigation("Customer");
 
                     b.Navigation("Vehicle");
 
                     b.Navigation("Workshop");
-
-                    b.Navigation("WorkshopVehicleInspection");
                 });
 
             modelBuilder.Entity("MiTaller.Models.QuotationService", b =>

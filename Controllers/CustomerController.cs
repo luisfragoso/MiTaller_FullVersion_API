@@ -340,7 +340,7 @@ namespace MiTaller.Controllers
             try
             {
                 var customersWithVehicles = await _context.Customers
-                    .Where(c => c.FullName.Contains(name))
+                    .Where(c => c.FullName.Contains(name) && !c.IsDeleted)
                     .Select(c => new CustomerWithVehicleDto
                     {
                         CustomerId = c.Id,

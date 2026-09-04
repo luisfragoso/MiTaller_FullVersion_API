@@ -92,6 +92,7 @@ namespace MiTaller.Controllers
                     WorkshopId = quotation.WorkshopId,
                     WorkshopName = quotation.Workshop.WorkshopName,
                     CustomerId = quotation.CustomerId,
+                    WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                     CustomerName = quotation.Customer.FullName,
                     Vehicle = new VehicleResponseDto
                     {
@@ -184,6 +185,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -282,6 +284,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -387,6 +390,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -486,6 +490,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -558,6 +563,21 @@ namespace MiTaller.Controllers
                     return NotFound("not-found");
                 }
 
+                if (model.WorkshopVehicleInspectionId != null)
+                {
+                    var inspectionExists = await _context.WorkshopVehicleInspections.AnyAsync(i =>
+                        i.Id == model.WorkshopVehicleInspectionId
+                        && i.WorkshopId == model.WorkshopId
+                        && i.CustomerId == model.CustomerId
+                        && i.VehicleId == model.VehicleId
+                        && i.IsActive);
+
+                    if (!inspectionExists)
+                    {
+                        return NotFound("not-found");
+                    }
+                }
+
                 var workshopServices = await _context.WorkshopServices
                     .Where(ws => model.Services.Select(s => s.ServiceId).Contains(ws.Id)
                                  && ws.WorkshopId == model.WorkshopId
@@ -574,11 +594,12 @@ namespace MiTaller.Controllers
                     CustomerId = model.CustomerId,
                     WorkshopId = model.WorkshopId,
                     VehicleId = model.VehicleId,
+                    WorkshopVehicleInspectionId = model.WorkshopVehicleInspectionId,
                     Description = model.Description,
                     PriceOfLabor = model.PriceOfLabor,
                     PriceOfSpareParts = model.PriceOfSpareParts,
                     Status = model.Status,
-                    
+
                 };
 
                 _context.Quotations.Add(quotation);
@@ -839,6 +860,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -926,6 +948,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1013,6 +1036,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1115,6 +1139,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1218,6 +1243,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1318,6 +1344,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1422,6 +1449,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1527,6 +1555,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1632,6 +1661,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1737,6 +1767,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1842,6 +1873,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -1947,6 +1979,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -2045,6 +2078,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -2147,6 +2181,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {
@@ -2250,6 +2285,7 @@ namespace MiTaller.Controllers
                         WorkshopId = quotation.WorkshopId,
                         WorkshopName = quotation.Workshop.WorkshopName,
                         CustomerId = quotation.CustomerId,
+                        WorkshopVehicleInspectionId = quotation.WorkshopVehicleInspectionId,
                         CustomerName = quotation.Customer.FullName,
                         Vehicle = new VehicleResponseDto
                         {

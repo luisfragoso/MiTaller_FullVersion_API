@@ -14,6 +14,9 @@ namespace MiTaller.DTO.Quotation
         [Required]
         public int VehicleId { get; set; }
 
+        // Si se llena, esta cotización es complementaria a esa inspección de vehículo activa
+        public int? WorkshopVehicleInspectionId { get; set; }
+
         [Required]
         public List<QuotationServiceDto> Services { get; set; } = new List<QuotationServiceDto>();
         public UserType UserType { get; set; }

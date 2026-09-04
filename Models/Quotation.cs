@@ -1,4 +1,5 @@
-﻿using MiTaller.Models.Workshop;
+﻿using MiTaller.Models.Vehicle;
+using MiTaller.Models.Workshop;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -23,6 +24,11 @@ namespace MiTaller.Models
         public int VehicleId { get; set; }
         [ForeignKey("VehicleId")]
         public Vehicle.Vehicle? Vehicle { get; set; }  // Opcional
+
+        // Si se llena, esta cotización es complementaria a una inspección de vehículo ya en curso
+        public int? WorkshopVehicleInspectionId { get; set; }
+        [ForeignKey("WorkshopVehicleInspectionId")]
+        public WorkshopVehicleInspection? WorkshopVehicleInspection { get; set; }
 
         [Required]
         public List<QuotationService> Services { get; set; } = new List<QuotationService>(); // Lista de servicios en la cotización
