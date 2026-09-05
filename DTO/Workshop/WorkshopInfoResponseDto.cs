@@ -17,5 +17,6 @@ namespace MiTaller.DTO.Workshop
         public AccountAddressDto? Address { get; set; }
         public string? OneLineAddress { get; set; }
         public float ReviewAverageRate { get; set; } = 0;
+        public List<VehicleFormatSettingDto> VehicleFormats { get; set; } = new();
     }
 }

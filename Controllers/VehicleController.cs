@@ -29,6 +29,9 @@ namespace MiTaller.Controllers
                 var types = await _context.Brands
                     .Select(b => b.Type)
                     .Where(type => type != "Generic")
+                    .Union(_context.InspectionTemplateFormats
+                        .Where(f => f.Template != null && f.Template.IsActive)
+                        .Select(f => f.VehicleFormat))
                     .Distinct()
                     .ToListAsync();
 

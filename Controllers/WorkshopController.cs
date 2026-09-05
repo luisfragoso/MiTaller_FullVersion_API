@@ -64,6 +64,22 @@ namespace MiTaller.Controllers
                     averageRate = reviews.Average();
                 }
 
+                var vehicleFormats = await _context.WorkshopVehicleFormats
+                    .Where(wf => wf.WorkshopId == workshopId)
+                    .Select(wf => new VehicleFormatSettingDto { Format = wf.VehicleFormat, IsEnabled = wf.IsEnabled })
+                    .ToListAsync();
+
+                // Workshops created before this feature don't have any rows yet.
+                // Synthesize the legacy default so their visibility doesn't change.
+                if (!vehicleFormats.Any())
+                {
+                    vehicleFormats = new List<VehicleFormatSettingDto>
+                    {
+                        new VehicleFormatSettingDto { Format = "Automóvil", IsEnabled = true },
+                        new VehicleFormatSettingDto { Format = "Motocicleta", IsEnabled = true },
+                    };
+                }
+
                 AccountAddressDto accountAddressDto = null;
                 var oneLineAddress = "";
                 if (address != null)
@@ -96,6 +112,7 @@ namespace MiTaller.Controllers
                     Address = accountAddressDto,
                     OneLineAddress = oneLineAddress,
                     ReviewAverageRate = averageRate,
+                    VehicleFormats = vehicleFormats,
                 };
 
                 return Ok(workshopDto);
@@ -172,6 +189,65 @@ namespace MiTaller.Controllers
                 }
 
                 return BadRequest(result.Errors);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPut("{workshopId}/vehicle-formats")]
+        [Authorize]
+        [AuthorizeEmployee("Administrador")]
+        public async Task<ActionResult<List<VehicleFormatSettingDto>>> UpdateWorkshopVehicleFormats(Guid workshopId, [FromBody] List<VehicleFormatSettingDto> model)
+        {
+            try
+            {
+                var workshop = await _userManager.Users
+                    .OfType<Workshop>()
+                    .Where(w => w.Id == workshopId && !w.IsDeleted)
+                    .FirstOrDefaultAsync();
+
+                if (workshop == null)
+                {
+                    return NotFound("not-found");
+                }
+
+                if (model == null)
+                {
+                    return BadRequest("invalid-empty");
+                }
+
+                var existingFormats = await _context.WorkshopVehicleFormats
+                    .Where(wf => wf.WorkshopId == workshopId)
+                    .ToListAsync();
+
+                foreach (var setting in model)
+                {
+                    var existing = existingFormats.FirstOrDefault(wf => wf.VehicleFormat == setting.Format);
+                    if (existing != null)
+                    {
+                        existing.IsEnabled = setting.IsEnabled;
+                    }
+                    else
+                    {
+                        _context.WorkshopVehicleFormats.Add(new WorkshopVehicleFormat
+                        {
+                            WorkshopId = workshopId,
+                            VehicleFormat = setting.Format,
+                            IsEnabled = setting.IsEnabled,
+                        });
+                    }
+                }
+
+                await _context.SaveChangesAsync();
+
+                var result = await _context.WorkshopVehicleFormats
+                    .Where(wf => wf.WorkshopId == workshopId)
+                    .Select(wf => new VehicleFormatSettingDto { Format = wf.VehicleFormat, IsEnabled = wf.IsEnabled })
+                    .ToListAsync();
+
+                return Ok(result);
             }
             catch (Exception)
             {

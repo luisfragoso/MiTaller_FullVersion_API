@@ -541,6 +541,150 @@ namespace MiTaller.Migrations
                             Id = -1,
                             Name = "Other",
                             Type = "Generic"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "Azimut",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Name = "Sunseeker",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Name = "Ferretti",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Name = "Princess",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Name = "Sea Ray",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            Name = "Riva",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            Name = "Pershing",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -9,
+                            Name = "Viking",
+                            Type = "Yate"
+                        },
+                        new
+                        {
+                            Id = -10,
+                            Name = "Boston Whaler",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -11,
+                            Name = "Bayliner",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -12,
+                            Name = "Yamaha",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -13,
+                            Name = "Sea Fox",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -14,
+                            Name = "Grady-White",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -15,
+                            Name = "Robalo",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -16,
+                            Name = "Chaparral",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -17,
+                            Name = "Yellowfin",
+                            Type = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -18,
+                            Name = "Lund",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -19,
+                            Name = "Tracker",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -20,
+                            Name = "Zodiac",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -21,
+                            Name = "AB Inflatables",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -22,
+                            Name = "Achilles",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -23,
+                            Name = "Sea Eagle",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -24,
+                            Name = "Súper Panga",
+                            Type = "Bote"
+                        },
+                        new
+                        {
+                            Id = -25,
+                            Name = "FibraMex",
+                            Type = "Bote"
                         });
                 });
 
@@ -570,6 +714,1143 @@ namespace MiTaller.Migrations
                         {
                             Id = -1,
                             Model = "Other"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            BrandId = -2,
+                            Model = "Grande"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            BrandId = -2,
+                            Model = "Atlantis"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            BrandId = -2,
+                            Model = "Magellano"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            BrandId = -3,
+                            Model = "Predator"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            BrandId = -3,
+                            Model = "Manhattan"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            BrandId = -3,
+                            Model = "Ocean"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            BrandId = -4,
+                            Model = "500"
+                        },
+                        new
+                        {
+                            Id = -9,
+                            BrandId = -4,
+                            Model = "720"
+                        },
+                        new
+                        {
+                            Id = -10,
+                            BrandId = -4,
+                            Model = "Yachts 850"
+                        },
+                        new
+                        {
+                            Id = -11,
+                            BrandId = -5,
+                            Model = "V50"
+                        },
+                        new
+                        {
+                            Id = -12,
+                            BrandId = -5,
+                            Model = "F55"
+                        },
+                        new
+                        {
+                            Id = -13,
+                            BrandId = -5,
+                            Model = "X95"
+                        },
+                        new
+                        {
+                            Id = -14,
+                            BrandId = -6,
+                            Model = "Sundancer"
+                        },
+                        new
+                        {
+                            Id = -15,
+                            BrandId = -6,
+                            Model = "L Series"
+                        },
+                        new
+                        {
+                            Id = -16,
+                            BrandId = -7,
+                            Model = "Rivamare"
+                        },
+                        new
+                        {
+                            Id = -17,
+                            BrandId = -7,
+                            Model = "88 Domino"
+                        },
+                        new
+                        {
+                            Id = -18,
+                            BrandId = -7,
+                            Model = "Aquariva"
+                        },
+                        new
+                        {
+                            Id = -19,
+                            BrandId = -8,
+                            Model = "6X"
+                        },
+                        new
+                        {
+                            Id = -20,
+                            BrandId = -8,
+                            Model = "8X"
+                        },
+                        new
+                        {
+                            Id = -21,
+                            BrandId = -8,
+                            Model = "GTX116"
+                        },
+                        new
+                        {
+                            Id = -22,
+                            BrandId = -9,
+                            Model = "54 Convertible"
+                        },
+                        new
+                        {
+                            Id = -23,
+                            BrandId = -9,
+                            Model = "90 Enclosed Bridge"
+                        },
+                        new
+                        {
+                            Id = -24,
+                            BrandId = -9,
+                            Model = "46 Billfish"
+                        },
+                        new
+                        {
+                            Id = -25,
+                            BrandId = -10,
+                            Model = "Montauk"
+                        },
+                        new
+                        {
+                            Id = -26,
+                            BrandId = -10,
+                            Model = "Outrage"
+                        },
+                        new
+                        {
+                            Id = -27,
+                            BrandId = -10,
+                            Model = "Dauntless"
+                        },
+                        new
+                        {
+                            Id = -28,
+                            BrandId = -11,
+                            Model = "Element"
+                        },
+                        new
+                        {
+                            Id = -29,
+                            BrandId = -11,
+                            Model = "VR6"
+                        },
+                        new
+                        {
+                            Id = -30,
+                            BrandId = -11,
+                            Model = "DX2200"
+                        },
+                        new
+                        {
+                            Id = -31,
+                            BrandId = -12,
+                            Model = "190 FSH"
+                        },
+                        new
+                        {
+                            Id = -32,
+                            BrandId = -12,
+                            Model = "212X"
+                        },
+                        new
+                        {
+                            Id = -33,
+                            BrandId = -12,
+                            Model = "275SD"
+                        },
+                        new
+                        {
+                            Id = -34,
+                            BrandId = -13,
+                            Model = "200 Viper"
+                        },
+                        new
+                        {
+                            Id = -35,
+                            BrandId = -13,
+                            Model = "328 Commander"
+                        },
+                        new
+                        {
+                            Id = -36,
+                            BrandId = -14,
+                            Model = "Fisherman 236"
+                        },
+                        new
+                        {
+                            Id = -37,
+                            BrandId = -14,
+                            Model = "Freedom 275"
+                        },
+                        new
+                        {
+                            Id = -38,
+                            BrandId = -14,
+                            Model = "Canyon 456"
+                        },
+                        new
+                        {
+                            Id = -39,
+                            BrandId = -15,
+                            Model = "R222"
+                        },
+                        new
+                        {
+                            Id = -40,
+                            BrandId = -15,
+                            Model = "R242"
+                        },
+                        new
+                        {
+                            Id = -41,
+                            BrandId = -15,
+                            Model = "R302"
+                        },
+                        new
+                        {
+                            Id = -42,
+                            BrandId = -16,
+                            Model = "19 SSi"
+                        },
+                        new
+                        {
+                            Id = -43,
+                            BrandId = -16,
+                            Model = "277 SSX"
+                        },
+                        new
+                        {
+                            Id = -44,
+                            BrandId = -16,
+                            Model = "23 Fish"
+                        },
+                        new
+                        {
+                            Id = -45,
+                            BrandId = -17,
+                            Model = "24 Bay"
+                        },
+                        new
+                        {
+                            Id = -46,
+                            BrandId = -17,
+                            Model = "32"
+                        },
+                        new
+                        {
+                            Id = -47,
+                            BrandId = -17,
+                            Model = "42"
+                        },
+                        new
+                        {
+                            Id = -48,
+                            BrandId = -18,
+                            Model = "1650 Rebel"
+                        },
+                        new
+                        {
+                            Id = -49,
+                            BrandId = -18,
+                            Model = "1875 Impact"
+                        },
+                        new
+                        {
+                            Id = -50,
+                            BrandId = -18,
+                            Model = "2075 Tyee"
+                        },
+                        new
+                        {
+                            Id = -51,
+                            BrandId = -19,
+                            Model = "Guide V-16"
+                        },
+                        new
+                        {
+                            Id = -52,
+                            BrandId = -19,
+                            Model = "Pro Team 175"
+                        },
+                        new
+                        {
+                            Id = -53,
+                            BrandId = -19,
+                            Model = "Targa V-19"
+                        },
+                        new
+                        {
+                            Id = -54,
+                            BrandId = -20,
+                            Model = "Cadet 310"
+                        },
+                        new
+                        {
+                            Id = -55,
+                            BrandId = -20,
+                            Model = "Open 5.5"
+                        },
+                        new
+                        {
+                            Id = -56,
+                            BrandId = -20,
+                            Model = "Medline 7.5"
+                        },
+                        new
+                        {
+                            Id = -57,
+                            BrandId = -21,
+                            Model = "Lammina 9"
+                        },
+                        new
+                        {
+                            Id = -58,
+                            BrandId = -21,
+                            Model = "Nautilus 15"
+                        },
+                        new
+                        {
+                            Id = -59,
+                            BrandId = -21,
+                            Model = "Oceanus 24"
+                        },
+                        new
+                        {
+                            Id = -60,
+                            BrandId = -22,
+                            Model = "LT-2"
+                        },
+                        new
+                        {
+                            Id = -61,
+                            BrandId = -22,
+                            Model = "HB-260"
+                        },
+                        new
+                        {
+                            Id = -62,
+                            BrandId = -22,
+                            Model = "Ranger R-400"
+                        },
+                        new
+                        {
+                            Id = -63,
+                            BrandId = -23,
+                            Model = "330"
+                        },
+                        new
+                        {
+                            Id = -64,
+                            BrandId = -23,
+                            Model = "Sport Runabout 344"
+                        },
+                        new
+                        {
+                            Id = -65,
+                            BrandId = -23,
+                            Model = "FastCat 465"
+                        },
+                        new
+                        {
+                            Id = -66,
+                            BrandId = -24,
+                            Model = "Panga 22"
+                        },
+                        new
+                        {
+                            Id = -67,
+                            BrandId = -24,
+                            Model = "Panga 26"
+                        },
+                        new
+                        {
+                            Id = -68,
+                            BrandId = -24,
+                            Model = "Panga 31"
+                        },
+                        new
+                        {
+                            Id = -69,
+                            BrandId = -25,
+                            Model = "Tiburón 23"
+                        },
+                        new
+                        {
+                            Id = -70,
+                            BrandId = -25,
+                            Model = "Marlín 28"
+                        },
+                        new
+                        {
+                            Id = -71,
+                            BrandId = -25,
+                            Model = "Delfín 19"
+                        });
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.Inspection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("GeneralObservations")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("InspectionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("TemplateId");
+
+                    b.HasIndex("VehicleId");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("Inspections");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionFile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("FileData")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InspectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionId");
+
+                    b.ToTable("InspectionFiles");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChangedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InspectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResultsSnapshotJson")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionId");
+
+                    b.ToTable("InspectionHistories");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionResultItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("InspectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TemplateItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Value")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionId");
+
+                    b.HasIndex("TemplateItemId");
+
+                    b.ToTable("InspectionResultItems");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionSectionComment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Comment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("InspectionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionId");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("InspectionSectionComments");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("VehicleFormat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("InspectionTemplates");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            IsActive = true,
+                            Name = "Inspección de Yate",
+                            VehicleFormat = "Yate"
+                        });
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateFormat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VehicleFormat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("InspectionTemplateFormats");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            TemplateId = -1,
+                            VehicleFormat = "Yate"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            TemplateId = -1,
+                            VehicleFormat = "Lancha"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            TemplateId = -1,
+                            VehicleFormat = "Bote"
+                        });
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AllowNotApplicable")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SectionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SectionId");
+
+                    b.ToTable("InspectionTemplateItems");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            AllowNotApplicable = false,
+                            Name = "Casco/gelcoat",
+                            Order = 1,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -2,
+                            AllowNotApplicable = false,
+                            Name = "Pasacascos",
+                            Order = 2,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -3,
+                            AllowNotApplicable = false,
+                            Name = "Hélices y ejes",
+                            Order = 3,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -4,
+                            AllowNotApplicable = false,
+                            Name = "Timón",
+                            Order = 4,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -5,
+                            AllowNotApplicable = false,
+                            Name = "Ánodos de sacrificio",
+                            Order = 5,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -6,
+                            AllowNotApplicable = false,
+                            Name = "Quilla",
+                            Order = 6,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -7,
+                            AllowNotApplicable = false,
+                            Name = "Hélice de proa",
+                            Order = 7,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -8,
+                            AllowNotApplicable = false,
+                            Name = "Defensas",
+                            Order = 8,
+                            SectionId = -1
+                        },
+                        new
+                        {
+                            Id = -9,
+                            AllowNotApplicable = false,
+                            Name = "Motor(es)",
+                            Order = 1,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -10,
+                            AllowNotApplicable = false,
+                            Name = "Niveles y fugas de aceite",
+                            Order = 2,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -11,
+                            AllowNotApplicable = false,
+                            Name = "Bandas y mangueras",
+                            Order = 3,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -12,
+                            AllowNotApplicable = false,
+                            Name = "Sistema de combustible",
+                            Order = 4,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -13,
+                            AllowNotApplicable = false,
+                            Name = "Sistema de escape",
+                            Order = 5,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -14,
+                            AllowNotApplicable = false,
+                            Name = "Sistema de enfriamiento",
+                            Order = 6,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -15,
+                            AllowNotApplicable = false,
+                            Name = "Transmisión/cola",
+                            Order = 7,
+                            SectionId = -2
+                        },
+                        new
+                        {
+                            Id = -16,
+                            AllowNotApplicable = false,
+                            Name = "Baterías",
+                            Order = 1,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -17,
+                            AllowNotApplicable = false,
+                            Name = "Alternador",
+                            Order = 2,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -18,
+                            AllowNotApplicable = false,
+                            Name = "Cableado",
+                            Order = 3,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -19,
+                            AllowNotApplicable = false,
+                            Name = "Bomba de sentina",
+                            Order = 4,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -20,
+                            AllowNotApplicable = false,
+                            Name = "Planta/inversor",
+                            Order = 5,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -21,
+                            AllowNotApplicable = false,
+                            Name = "Luces de navegación",
+                            Order = 6,
+                            SectionId = -3
+                        },
+                        new
+                        {
+                            Id = -22,
+                            AllowNotApplicable = false,
+                            Name = "Bombas de achique",
+                            Order = 1,
+                            SectionId = -4
+                        },
+                        new
+                        {
+                            Id = -23,
+                            AllowNotApplicable = false,
+                            Name = "Condición de la sentina",
+                            Order = 2,
+                            SectionId = -4
+                        },
+                        new
+                        {
+                            Id = -24,
+                            AllowNotApplicable = false,
+                            Name = "Válvulas de pasacascos",
+                            Order = 3,
+                            SectionId = -4
+                        },
+                        new
+                        {
+                            Id = -25,
+                            AllowNotApplicable = false,
+                            Name = "Tapones de drenaje",
+                            Order = 4,
+                            SectionId = -4
+                        },
+                        new
+                        {
+                            Id = -26,
+                            AllowNotApplicable = false,
+                            Name = "GPS/chartplotter",
+                            Order = 1,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -27,
+                            AllowNotApplicable = false,
+                            Name = "Radar",
+                            Order = 2,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -28,
+                            AllowNotApplicable = false,
+                            Name = "Radio VHF",
+                            Order = 3,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -29,
+                            AllowNotApplicable = false,
+                            Name = "Piloto automático",
+                            Order = 4,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -30,
+                            AllowNotApplicable = false,
+                            Name = "Sonda",
+                            Order = 5,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -31,
+                            AllowNotApplicable = false,
+                            Name = "Compás",
+                            Order = 6,
+                            SectionId = -5
+                        },
+                        new
+                        {
+                            Id = -32,
+                            AllowNotApplicable = false,
+                            Name = "Chalecos salvavidas",
+                            Order = 1,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -33,
+                            AllowNotApplicable = false,
+                            Name = "Extintores",
+                            Order = 2,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -34,
+                            AllowNotApplicable = false,
+                            Name = "Señales de auxilio",
+                            Order = 3,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -35,
+                            AllowNotApplicable = false,
+                            Name = "Balsa salvavidas",
+                            Order = 4,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -36,
+                            AllowNotApplicable = false,
+                            Name = "EPIRB",
+                            Order = 5,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -37,
+                            AllowNotApplicable = false,
+                            Name = "Botiquín",
+                            Order = 6,
+                            SectionId = -6
+                        },
+                        new
+                        {
+                            Id = -38,
+                            AllowNotApplicable = false,
+                            Name = "Herrajes de cubierta",
+                            Order = 1,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -39,
+                            AllowNotApplicable = false,
+                            Name = "Malacate de ancla",
+                            Order = 2,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -40,
+                            AllowNotApplicable = false,
+                            Name = "Tapicería/interior",
+                            Order = 3,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -41,
+                            AllowNotApplicable = false,
+                            Name = "Plomería y sanitarios",
+                            Order = 4,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -42,
+                            AllowNotApplicable = false,
+                            Name = "Sistema de agua dulce",
+                            Order = 5,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -43,
+                            AllowNotApplicable = false,
+                            Name = "Aire acondicionado/calefacción",
+                            Order = 6,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -44,
+                            AllowNotApplicable = true,
+                            Name = "Mástil",
+                            Order = 7,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -45,
+                            AllowNotApplicable = true,
+                            Name = "Jarcia/aparejos",
+                            Order = 8,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -46,
+                            AllowNotApplicable = true,
+                            Name = "Velas",
+                            Order = 9,
+                            SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -47,
+                            AllowNotApplicable = true,
+                            Name = "Winches",
+                            Order = 10,
+                            SectionId = -7
+                        });
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateSection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("InspectionTemplateSections");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name = "Casco y Exterior",
+                            Order = 1,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Name = "Sala de Máquinas / Motor",
+                            Order = 2,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Name = "Sistema Eléctrico",
+                            Order = 3,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Name = "Sentina y Achique",
+                            Order = 4,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Name = "Navegación y Electrónica",
+                            Order = 5,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Name = "Equipo de Seguridad",
+                            Order = 6,
+                            TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -7,
+                            Name = "Cubierta e Interior",
+                            Order = 7,
+                            TemplateId = -1
                         });
                 });
 
@@ -1060,6 +2341,9 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("InspectionId")
+                        .HasColumnType("int");
+
                     b.Property<float>("PriceOfLabor")
                         .HasColumnType("real");
 
@@ -1082,6 +2366,8 @@ namespace MiTaller.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("InspectionId");
 
                     b.HasIndex("VehicleId");
 
@@ -1407,6 +2693,456 @@ namespace MiTaller.Migrations
                         {
                             Id = -1,
                             Type = "Other"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Type = "Flybridge",
+                            VehicleVersionId = -2
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Type = "Flybridge",
+                            VehicleVersionId = -3
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -4
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -5
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Type = "Cruiser",
+                            VehicleVersionId = -6
+                        },
+                        new
+                        {
+                            Id = -7,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -7
+                        },
+                        new
+                        {
+                            Id = -8,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -8
+                        },
+                        new
+                        {
+                            Id = -9,
+                            Type = "Flybridge",
+                            VehicleVersionId = -9
+                        },
+                        new
+                        {
+                            Id = -10,
+                            Type = "Flybridge",
+                            VehicleVersionId = -10
+                        },
+                        new
+                        {
+                            Id = -11,
+                            Type = "Flybridge",
+                            VehicleVersionId = -11
+                        },
+                        new
+                        {
+                            Id = -12,
+                            Type = "Flybridge",
+                            VehicleVersionId = -12
+                        },
+                        new
+                        {
+                            Id = -13,
+                            Type = "Flybridge",
+                            VehicleVersionId = -13
+                        },
+                        new
+                        {
+                            Id = -14,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -14
+                        },
+                        new
+                        {
+                            Id = -15,
+                            Type = "Flybridge",
+                            VehicleVersionId = -15
+                        },
+                        new
+                        {
+                            Id = -16,
+                            Type = "Flybridge",
+                            VehicleVersionId = -16
+                        },
+                        new
+                        {
+                            Id = -17,
+                            Type = "Cruiser",
+                            VehicleVersionId = -17
+                        },
+                        new
+                        {
+                            Id = -18,
+                            Type = "Cruiser",
+                            VehicleVersionId = -18
+                        },
+                        new
+                        {
+                            Id = -19,
+                            Type = "Flybridge",
+                            VehicleVersionId = -19
+                        },
+                        new
+                        {
+                            Id = -20,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -20
+                        },
+                        new
+                        {
+                            Id = -21,
+                            Type = "Flybridge",
+                            VehicleVersionId = -21
+                        },
+                        new
+                        {
+                            Id = -22,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -22
+                        },
+                        new
+                        {
+                            Id = -23,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -23
+                        },
+                        new
+                        {
+                            Id = -24,
+                            Type = "Sport Yacht",
+                            VehicleVersionId = -24
+                        },
+                        new
+                        {
+                            Id = -25,
+                            Type = "Flybridge",
+                            VehicleVersionId = -25
+                        },
+                        new
+                        {
+                            Id = -26,
+                            Type = "Convertible",
+                            VehicleVersionId = -26
+                        },
+                        new
+                        {
+                            Id = -27,
+                            Type = "Flybridge",
+                            VehicleVersionId = -27
+                        },
+                        new
+                        {
+                            Id = -28,
+                            Type = "Convertible",
+                            VehicleVersionId = -28
+                        },
+                        new
+                        {
+                            Id = -29,
+                            Type = "Center Console",
+                            VehicleVersionId = -29
+                        },
+                        new
+                        {
+                            Id = -30,
+                            Type = "Center Console",
+                            VehicleVersionId = -30
+                        },
+                        new
+                        {
+                            Id = -31,
+                            Type = "Center Console",
+                            VehicleVersionId = -31
+                        },
+                        new
+                        {
+                            Id = -32,
+                            Type = "Center Console",
+                            VehicleVersionId = -32
+                        },
+                        new
+                        {
+                            Id = -33,
+                            Type = "Bowrider",
+                            VehicleVersionId = -33
+                        },
+                        new
+                        {
+                            Id = -34,
+                            Type = "Bowrider",
+                            VehicleVersionId = -34
+                        },
+                        new
+                        {
+                            Id = -35,
+                            Type = "Deck Boat",
+                            VehicleVersionId = -35
+                        },
+                        new
+                        {
+                            Id = -36,
+                            Type = "Jet Boat",
+                            VehicleVersionId = -36
+                        },
+                        new
+                        {
+                            Id = -37,
+                            Type = "Jet Boat",
+                            VehicleVersionId = -37
+                        },
+                        new
+                        {
+                            Id = -38,
+                            Type = "Jet Boat",
+                            VehicleVersionId = -38
+                        },
+                        new
+                        {
+                            Id = -39,
+                            Type = "Center Console",
+                            VehicleVersionId = -39
+                        },
+                        new
+                        {
+                            Id = -40,
+                            Type = "Center Console",
+                            VehicleVersionId = -40
+                        },
+                        new
+                        {
+                            Id = -41,
+                            Type = "Center Console",
+                            VehicleVersionId = -41
+                        },
+                        new
+                        {
+                            Id = -42,
+                            Type = "Center Console",
+                            VehicleVersionId = -42
+                        },
+                        new
+                        {
+                            Id = -43,
+                            Type = "Center Console",
+                            VehicleVersionId = -43
+                        },
+                        new
+                        {
+                            Id = -44,
+                            Type = "Center Console",
+                            VehicleVersionId = -44
+                        },
+                        new
+                        {
+                            Id = -45,
+                            Type = "Center Console",
+                            VehicleVersionId = -45
+                        },
+                        new
+                        {
+                            Id = -46,
+                            Type = "Center Console",
+                            VehicleVersionId = -46
+                        },
+                        new
+                        {
+                            Id = -47,
+                            Type = "Bowrider",
+                            VehicleVersionId = -47
+                        },
+                        new
+                        {
+                            Id = -48,
+                            Type = "Bowrider",
+                            VehicleVersionId = -48
+                        },
+                        new
+                        {
+                            Id = -49,
+                            Type = "Center Console",
+                            VehicleVersionId = -49
+                        },
+                        new
+                        {
+                            Id = -50,
+                            Type = "Center Console",
+                            VehicleVersionId = -50
+                        },
+                        new
+                        {
+                            Id = -51,
+                            Type = "Center Console",
+                            VehicleVersionId = -51
+                        },
+                        new
+                        {
+                            Id = -52,
+                            Type = "Center Console",
+                            VehicleVersionId = -52
+                        },
+                        new
+                        {
+                            Id = -53,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -53
+                        },
+                        new
+                        {
+                            Id = -54,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -54
+                        },
+                        new
+                        {
+                            Id = -55,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -55
+                        },
+                        new
+                        {
+                            Id = -56,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -56
+                        },
+                        new
+                        {
+                            Id = -57,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -57
+                        },
+                        new
+                        {
+                            Id = -58,
+                            Type = "Panga de aluminio",
+                            VehicleVersionId = -58
+                        },
+                        new
+                        {
+                            Id = -59,
+                            Type = "Inflable",
+                            VehicleVersionId = -59
+                        },
+                        new
+                        {
+                            Id = -60,
+                            Type = "Inflable",
+                            VehicleVersionId = -60
+                        },
+                        new
+                        {
+                            Id = -61,
+                            Type = "Inflable",
+                            VehicleVersionId = -61
+                        },
+                        new
+                        {
+                            Id = -62,
+                            Type = "Inflable",
+                            VehicleVersionId = -62
+                        },
+                        new
+                        {
+                            Id = -63,
+                            Type = "Inflable",
+                            VehicleVersionId = -63
+                        },
+                        new
+                        {
+                            Id = -64,
+                            Type = "Inflable",
+                            VehicleVersionId = -64
+                        },
+                        new
+                        {
+                            Id = -65,
+                            Type = "Inflable",
+                            VehicleVersionId = -65
+                        },
+                        new
+                        {
+                            Id = -66,
+                            Type = "Inflable",
+                            VehicleVersionId = -66
+                        },
+                        new
+                        {
+                            Id = -67,
+                            Type = "Inflable",
+                            VehicleVersionId = -67
+                        },
+                        new
+                        {
+                            Id = -68,
+                            Type = "Inflable",
+                            VehicleVersionId = -68
+                        },
+                        new
+                        {
+                            Id = -69,
+                            Type = "Inflable",
+                            VehicleVersionId = -69
+                        },
+                        new
+                        {
+                            Id = -70,
+                            Type = "Inflable",
+                            VehicleVersionId = -70
+                        },
+                        new
+                        {
+                            Id = -71,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -71
+                        },
+                        new
+                        {
+                            Id = -72,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -72
+                        },
+                        new
+                        {
+                            Id = -73,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -73
+                        },
+                        new
+                        {
+                            Id = -74,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -74
+                        },
+                        new
+                        {
+                            Id = -75,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -75
+                        },
+                        new
+                        {
+                            Id = -76,
+                            Type = "Panga de fibra",
+                            VehicleVersionId = -76
                         });
                 });
 
@@ -1436,6 +3172,456 @@ namespace MiTaller.Migrations
                         {
                             Id = -1,
                             Version = "Other"
+                        },
+                        new
+                        {
+                            Id = -2,
+                            VehicleModelId = -2,
+                            Version = "62"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            VehicleModelId = -2,
+                            Version = "88"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            VehicleModelId = -3,
+                            Version = "34"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            VehicleModelId = -3,
+                            Version = "44"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            VehicleModelId = -4,
+                            Version = "55"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            VehicleModelId = -5,
+                            Version = "55"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            VehicleModelId = -5,
+                            Version = "68"
+                        },
+                        new
+                        {
+                            Id = -9,
+                            VehicleModelId = -6,
+                            Version = "52"
+                        },
+                        new
+                        {
+                            Id = -10,
+                            VehicleModelId = -7,
+                            Version = "90"
+                        },
+                        new
+                        {
+                            Id = -11,
+                            VehicleModelId = -8,
+                            Version = "52"
+                        },
+                        new
+                        {
+                            Id = -12,
+                            VehicleModelId = -9,
+                            Version = "74"
+                        },
+                        new
+                        {
+                            Id = -13,
+                            VehicleModelId = -10,
+                            Version = "87"
+                        },
+                        new
+                        {
+                            Id = -14,
+                            VehicleModelId = -11,
+                            Version = "53"
+                        },
+                        new
+                        {
+                            Id = -15,
+                            VehicleModelId = -12,
+                            Version = "57"
+                        },
+                        new
+                        {
+                            Id = -16,
+                            VehicleModelId = -13,
+                            Version = "97"
+                        },
+                        new
+                        {
+                            Id = -17,
+                            VehicleModelId = -14,
+                            Version = "40"
+                        },
+                        new
+                        {
+                            Id = -18,
+                            VehicleModelId = -14,
+                            Version = "65"
+                        },
+                        new
+                        {
+                            Id = -19,
+                            VehicleModelId = -15,
+                            Version = "46"
+                        },
+                        new
+                        {
+                            Id = -20,
+                            VehicleModelId = -16,
+                            Version = "38"
+                        },
+                        new
+                        {
+                            Id = -21,
+                            VehicleModelId = -17,
+                            Version = "88"
+                        },
+                        new
+                        {
+                            Id = -22,
+                            VehicleModelId = -18,
+                            Version = "33"
+                        },
+                        new
+                        {
+                            Id = -23,
+                            VehicleModelId = -19,
+                            Version = "66"
+                        },
+                        new
+                        {
+                            Id = -24,
+                            VehicleModelId = -20,
+                            Version = "88"
+                        },
+                        new
+                        {
+                            Id = -25,
+                            VehicleModelId = -21,
+                            Version = "116"
+                        },
+                        new
+                        {
+                            Id = -26,
+                            VehicleModelId = -22,
+                            Version = "54"
+                        },
+                        new
+                        {
+                            Id = -27,
+                            VehicleModelId = -23,
+                            Version = "90"
+                        },
+                        new
+                        {
+                            Id = -28,
+                            VehicleModelId = -24,
+                            Version = "46"
+                        },
+                        new
+                        {
+                            Id = -29,
+                            VehicleModelId = -25,
+                            Version = "19"
+                        },
+                        new
+                        {
+                            Id = -30,
+                            VehicleModelId = -26,
+                            Version = "23"
+                        },
+                        new
+                        {
+                            Id = -31,
+                            VehicleModelId = -26,
+                            Version = "28"
+                        },
+                        new
+                        {
+                            Id = -32,
+                            VehicleModelId = -27,
+                            Version = "21"
+                        },
+                        new
+                        {
+                            Id = -33,
+                            VehicleModelId = -28,
+                            Version = "16"
+                        },
+                        new
+                        {
+                            Id = -34,
+                            VehicleModelId = -29,
+                            Version = "19"
+                        },
+                        new
+                        {
+                            Id = -35,
+                            VehicleModelId = -30,
+                            Version = "22"
+                        },
+                        new
+                        {
+                            Id = -36,
+                            VehicleModelId = -31,
+                            Version = "19"
+                        },
+                        new
+                        {
+                            Id = -37,
+                            VehicleModelId = -32,
+                            Version = "21"
+                        },
+                        new
+                        {
+                            Id = -38,
+                            VehicleModelId = -33,
+                            Version = "27"
+                        },
+                        new
+                        {
+                            Id = -39,
+                            VehicleModelId = -34,
+                            Version = "20"
+                        },
+                        new
+                        {
+                            Id = -40,
+                            VehicleModelId = -35,
+                            Version = "32"
+                        },
+                        new
+                        {
+                            Id = -41,
+                            VehicleModelId = -36,
+                            Version = "23"
+                        },
+                        new
+                        {
+                            Id = -42,
+                            VehicleModelId = -37,
+                            Version = "27"
+                        },
+                        new
+                        {
+                            Id = -43,
+                            VehicleModelId = -38,
+                            Version = "45"
+                        },
+                        new
+                        {
+                            Id = -44,
+                            VehicleModelId = -39,
+                            Version = "22"
+                        },
+                        new
+                        {
+                            Id = -45,
+                            VehicleModelId = -40,
+                            Version = "24"
+                        },
+                        new
+                        {
+                            Id = -46,
+                            VehicleModelId = -41,
+                            Version = "30"
+                        },
+                        new
+                        {
+                            Id = -47,
+                            VehicleModelId = -42,
+                            Version = "19"
+                        },
+                        new
+                        {
+                            Id = -48,
+                            VehicleModelId = -43,
+                            Version = "27"
+                        },
+                        new
+                        {
+                            Id = -49,
+                            VehicleModelId = -44,
+                            Version = "23"
+                        },
+                        new
+                        {
+                            Id = -50,
+                            VehicleModelId = -45,
+                            Version = "24"
+                        },
+                        new
+                        {
+                            Id = -51,
+                            VehicleModelId = -46,
+                            Version = "32"
+                        },
+                        new
+                        {
+                            Id = -52,
+                            VehicleModelId = -47,
+                            Version = "42"
+                        },
+                        new
+                        {
+                            Id = -53,
+                            VehicleModelId = -48,
+                            Version = "16"
+                        },
+                        new
+                        {
+                            Id = -54,
+                            VehicleModelId = -49,
+                            Version = "18"
+                        },
+                        new
+                        {
+                            Id = -55,
+                            VehicleModelId = -50,
+                            Version = "20"
+                        },
+                        new
+                        {
+                            Id = -56,
+                            VehicleModelId = -51,
+                            Version = "16"
+                        },
+                        new
+                        {
+                            Id = -57,
+                            VehicleModelId = -52,
+                            Version = "17"
+                        },
+                        new
+                        {
+                            Id = -58,
+                            VehicleModelId = -53,
+                            Version = "19"
+                        },
+                        new
+                        {
+                            Id = -59,
+                            VehicleModelId = -54,
+                            Version = "10"
+                        },
+                        new
+                        {
+                            Id = -60,
+                            VehicleModelId = -55,
+                            Version = "18"
+                        },
+                        new
+                        {
+                            Id = -61,
+                            VehicleModelId = -56,
+                            Version = "24"
+                        },
+                        new
+                        {
+                            Id = -62,
+                            VehicleModelId = -57,
+                            Version = "9"
+                        },
+                        new
+                        {
+                            Id = -63,
+                            VehicleModelId = -58,
+                            Version = "15"
+                        },
+                        new
+                        {
+                            Id = -64,
+                            VehicleModelId = -59,
+                            Version = "24"
+                        },
+                        new
+                        {
+                            Id = -65,
+                            VehicleModelId = -60,
+                            Version = "8"
+                        },
+                        new
+                        {
+                            Id = -66,
+                            VehicleModelId = -61,
+                            Version = "9"
+                        },
+                        new
+                        {
+                            Id = -67,
+                            VehicleModelId = -62,
+                            Version = "13"
+                        },
+                        new
+                        {
+                            Id = -68,
+                            VehicleModelId = -63,
+                            Version = "11"
+                        },
+                        new
+                        {
+                            Id = -69,
+                            VehicleModelId = -64,
+                            Version = "11"
+                        },
+                        new
+                        {
+                            Id = -70,
+                            VehicleModelId = -65,
+                            Version = "15"
+                        },
+                        new
+                        {
+                            Id = -71,
+                            VehicleModelId = -66,
+                            Version = "22"
+                        },
+                        new
+                        {
+                            Id = -72,
+                            VehicleModelId = -67,
+                            Version = "26"
+                        },
+                        new
+                        {
+                            Id = -73,
+                            VehicleModelId = -68,
+                            Version = "31"
+                        },
+                        new
+                        {
+                            Id = -74,
+                            VehicleModelId = -69,
+                            Version = "23"
+                        },
+                        new
+                        {
+                            Id = -75,
+                            VehicleModelId = -70,
+                            Version = "28"
+                        },
+                        new
+                        {
+                            Id = -76,
+                            VehicleModelId = -71,
+                            Version = "19"
                         });
                 });
 
@@ -1948,6 +4134,31 @@ namespace MiTaller.Migrations
                     b.ToTable("WorkshopServices");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopVehicleFormat", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("VehicleFormat")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("WorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkshopId");
+
+                    b.ToTable("WorkshopVehicleFormats");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2305,6 +4516,134 @@ namespace MiTaller.Migrations
                     b.Navigation("Brand");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Inspections.Inspection", b =>
+                {
+                    b.HasOne("MiTaller.Models.Customer.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplate", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Vehicle.Vehicle", "Vehicle")
+                        .WithMany()
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Workshop.Workshop", "Workshop")
+                        .WithMany()
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Template");
+
+                    b.Navigation("Vehicle");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionFile", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany("Files")
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inspection");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionHistory", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany()
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inspection");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionResultItem", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany("Results")
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplateItem", "TemplateItem")
+                        .WithMany()
+                        .HasForeignKey("TemplateItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Inspection");
+
+                    b.Navigation("TemplateItem");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionSectionComment", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany("SectionComments")
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplateSection", "Section")
+                        .WithMany()
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Inspection");
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateFormat", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplate", "Template")
+                        .WithMany()
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateItem", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplateSection", "Section")
+                        .WithMany("Items")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Section");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateSection", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplate", "Template")
+                        .WithMany("Sections")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Inspections.MotocycleInspectionDetailHistory", b =>
                 {
                     b.HasOne("MiTaller.Models.Inspections.WorkshopMotocycleInspection", "MotocycleInspection")
@@ -2406,6 +4745,11 @@ namespace MiTaller.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany()
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("MiTaller.Models.Vehicle.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
@@ -2423,6 +4767,8 @@ namespace MiTaller.Migrations
                         .HasForeignKey("WorkshopVehicleInspectionId");
 
                     b.Navigation("Customer");
+
+                    b.Navigation("Inspection");
 
                     b.Navigation("Vehicle");
 
@@ -2777,6 +5123,17 @@ namespace MiTaller.Migrations
                     b.Navigation("Workshop");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopVehicleFormat", b =>
+                {
+                    b.HasOne("MiTaller.Models.Workshop.Workshop", "Workshop")
+                        .WithMany()
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Workshop");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", null)
@@ -2862,6 +5219,25 @@ namespace MiTaller.Migrations
                         .HasForeignKey("MiTaller.Models.Workshop.Workshop", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.Inspection", b =>
+                {
+                    b.Navigation("Files");
+
+                    b.Navigation("Results");
+
+                    b.Navigation("SectionComments");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplate", b =>
+                {
+                    b.Navigation("Sections");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateSection", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("MiTaller.Models.Inspections.WorkshopMotocycleInspection", b =>

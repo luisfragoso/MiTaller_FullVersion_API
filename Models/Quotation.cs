@@ -1,5 +1,6 @@
 ﻿using MiTaller.Models.Vehicle;
 using MiTaller.Models.Workshop;
+using MiTaller.Models.Inspections;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -29,6 +30,13 @@ namespace MiTaller.Models
         public int? WorkshopVehicleInspectionId { get; set; }
         [ForeignKey("WorkshopVehicleInspectionId")]
         public WorkshopVehicleInspection? WorkshopVehicleInspection { get; set; }
+
+        // Igual que WorkshopVehicleInspectionId, pero para el sistema genérico de
+        // inspecciones (Yate y futuros formatos). Convive con el campo legacy de
+        // arriba sin reemplazarlo.
+        public int? InspectionId { get; set; }
+        [ForeignKey("InspectionId")]
+        public Inspection? Inspection { get; set; }
 
         [Required]
         public List<QuotationService> Services { get; set; } = new List<QuotationService>(); // Lista de servicios en la cotización

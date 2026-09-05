@@ -413,6 +413,21 @@ namespace MiTaller.Controllers
                     if (activeInspection == null) exists = "false";
                 }
 
+                if (vehicle.VehicleFormat != "Automóvil" && vehicle.VehicleFormat != "Motocicleta")
+                {
+                    // Cualquier otro formato (Yate, y futuros avión/especializados) usa la
+                    // tabla genérica de inspecciones en vez de una tabla hardcoded dedicada.
+                    // El template asociado ya determina el formato, así que basta con
+                    // filtrar por Workshop/Customer/Vehicle/IsActive, igual que las otras ramas.
+                    activeInspection = await _context.Inspections
+                    .Where(a => a.WorkshopId == model.WorkshopId
+                            && a.CustomerId == model.CustomerId
+                            && a.VehicleId == model.VehicleId
+                            && a.IsActive)
+                    .FirstOrDefaultAsync();
+
+                    if (activeInspection == null) exists = "false";
+                }
 
                 return Ok("true");
             }
