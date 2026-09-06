@@ -1327,6 +1327,48 @@ namespace MiTaller.Migrations
                             IsActive = true,
                             Name = "Inspección de Yate",
                             VehicleFormat = "Yate"
+                        },
+                        new
+                        {
+                            Id = -3,
+                            IsActive = true,
+                            Name = "Inspección de Radiadores",
+                            VehicleFormat = "Radiadores"
+                        },
+                        new
+                        {
+                            Id = -4,
+                            IsActive = true,
+                            Name = "Inspección Eléctrica Automotriz",
+                            VehicleFormat = "Eléctrico Automotriz"
+                        },
+                        new
+                        {
+                            Id = -5,
+                            IsActive = true,
+                            Name = "Inspección de Mofles y Escapes",
+                            VehicleFormat = "Mofles y Escapes"
+                        },
+                        new
+                        {
+                            Id = -6,
+                            IsActive = true,
+                            Name = "Inspección de Frenos",
+                            VehicleFormat = "Frenos"
+                        },
+                        new
+                        {
+                            Id = -7,
+                            IsActive = true,
+                            Name = "Inspección de Suspensión y Alineación",
+                            VehicleFormat = "Suspensión y Alineación"
+                        },
+                        new
+                        {
+                            Id = -8,
+                            IsActive = true,
+                            Name = "Inspección de Aire Acondicionado",
+                            VehicleFormat = "Aire Acondicionado"
                         });
                 });
 
@@ -1775,6 +1817,326 @@ namespace MiTaller.Migrations
                             Name = "Winches",
                             Order = 10,
                             SectionId = -7
+                        },
+                        new
+                        {
+                            Id = -99,
+                            AllowNotApplicable = false,
+                            Name = "Nivel de refrigerante",
+                            Order = 1,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -100,
+                            AllowNotApplicable = false,
+                            Name = "Fugas en radiador",
+                            Order = 2,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -101,
+                            AllowNotApplicable = false,
+                            Name = "Estado de mangueras",
+                            Order = 3,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -102,
+                            AllowNotApplicable = false,
+                            Name = "Tapón de radiador",
+                            Order = 4,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -103,
+                            AllowNotApplicable = false,
+                            Name = "Ventilador de enfriamiento",
+                            Order = 5,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -104,
+                            AllowNotApplicable = false,
+                            Name = "Termostato",
+                            Order = 6,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -105,
+                            AllowNotApplicable = false,
+                            Name = "Bomba de agua",
+                            Order = 7,
+                            SectionId = -15
+                        },
+                        new
+                        {
+                            Id = -106,
+                            AllowNotApplicable = false,
+                            Name = "Batería (carga y bornes)",
+                            Order = 1,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -107,
+                            AllowNotApplicable = false,
+                            Name = "Alternador",
+                            Order = 2,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -108,
+                            AllowNotApplicable = false,
+                            Name = "Motor de arranque",
+                            Order = 3,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -109,
+                            AllowNotApplicable = false,
+                            Name = "Fusibles y relevadores",
+                            Order = 4,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -110,
+                            AllowNotApplicable = false,
+                            Name = "Cableado y conexiones",
+                            Order = 5,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -111,
+                            AllowNotApplicable = false,
+                            Name = "Luces exteriores",
+                            Order = 6,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -112,
+                            AllowNotApplicable = false,
+                            Name = "Luces interiores",
+                            Order = 7,
+                            SectionId = -16
+                        },
+                        new
+                        {
+                            Id = -113,
+                            AllowNotApplicable = false,
+                            Name = "Mofle/silenciador",
+                            Order = 1,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -114,
+                            AllowNotApplicable = false,
+                            Name = "Tubo de escape",
+                            Order = 2,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -115,
+                            AllowNotApplicable = false,
+                            Name = "Catalizador",
+                            Order = 3,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -116,
+                            AllowNotApplicable = false,
+                            Name = "Abrazaderas y soportes",
+                            Order = 4,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -117,
+                            AllowNotApplicable = false,
+                            Name = "Fugas de escape",
+                            Order = 5,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -118,
+                            AllowNotApplicable = true,
+                            Name = "Sensor de oxígeno",
+                            Order = 6,
+                            SectionId = -17
+                        },
+                        new
+                        {
+                            Id = -119,
+                            AllowNotApplicable = false,
+                            Name = "Balatas/pastillas delanteras",
+                            Order = 1,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -120,
+                            AllowNotApplicable = false,
+                            Name = "Balatas/pastillas traseras",
+                            Order = 2,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -121,
+                            AllowNotApplicable = false,
+                            Name = "Discos/tambores",
+                            Order = 3,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -122,
+                            AllowNotApplicable = false,
+                            Name = "Nivel de líquido de frenos",
+                            Order = 4,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -123,
+                            AllowNotApplicable = false,
+                            Name = "Mangueras de freno",
+                            Order = 5,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -124,
+                            AllowNotApplicable = false,
+                            Name = "Freno de mano",
+                            Order = 6,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -125,
+                            AllowNotApplicable = true,
+                            Name = "Sistema ABS",
+                            Order = 7,
+                            SectionId = -18
+                        },
+                        new
+                        {
+                            Id = -126,
+                            AllowNotApplicable = false,
+                            Name = "Amortiguadores delanteros",
+                            Order = 1,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -127,
+                            AllowNotApplicable = false,
+                            Name = "Amortiguadores traseros",
+                            Order = 2,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -128,
+                            AllowNotApplicable = false,
+                            Name = "Rótulas",
+                            Order = 3,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -129,
+                            AllowNotApplicable = false,
+                            Name = "Terminales de dirección",
+                            Order = 4,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -130,
+                            AllowNotApplicable = false,
+                            Name = "Bujes de suspensión",
+                            Order = 5,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -131,
+                            AllowNotApplicable = false,
+                            Name = "Alineación",
+                            Order = 6,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -132,
+                            AllowNotApplicable = false,
+                            Name = "Balanceo",
+                            Order = 7,
+                            SectionId = -19
+                        },
+                        new
+                        {
+                            Id = -133,
+                            AllowNotApplicable = false,
+                            Name = "Nivel de gas refrigerante",
+                            Order = 1,
+                            SectionId = -20
+                        },
+                        new
+                        {
+                            Id = -134,
+                            AllowNotApplicable = false,
+                            Name = "Compresor",
+                            Order = 2,
+                            SectionId = -20
+                        },
+                        new
+                        {
+                            Id = -135,
+                            AllowNotApplicable = false,
+                            Name = "Condensador",
+                            Order = 3,
+                            SectionId = -20
+                        },
+                        new
+                        {
+                            Id = -136,
+                            AllowNotApplicable = false,
+                            Name = "Fugas en el sistema",
+                            Order = 4,
+                            SectionId = -20
+                        },
+                        new
+                        {
+                            Id = -137,
+                            AllowNotApplicable = false,
+                            Name = "Filtro de cabina",
+                            Order = 5,
+                            SectionId = -20
+                        },
+                        new
+                        {
+                            Id = -138,
+                            AllowNotApplicable = false,
+                            Name = "Funcionamiento general del sistema",
+                            Order = 6,
+                            SectionId = -20
                         });
                 });
 
@@ -1851,6 +2213,108 @@ namespace MiTaller.Migrations
                             Name = "Cubierta e Interior",
                             Order = 7,
                             TemplateId = -1
+                        },
+                        new
+                        {
+                            Id = -15,
+                            Name = "Sistema de Enfriamiento",
+                            Order = 1,
+                            TemplateId = -3
+                        },
+                        new
+                        {
+                            Id = -16,
+                            Name = "Sistema Eléctrico",
+                            Order = 1,
+                            TemplateId = -4
+                        },
+                        new
+                        {
+                            Id = -17,
+                            Name = "Sistema de Escape",
+                            Order = 1,
+                            TemplateId = -5
+                        },
+                        new
+                        {
+                            Id = -18,
+                            Name = "Sistema de Frenos",
+                            Order = 1,
+                            TemplateId = -6
+                        },
+                        new
+                        {
+                            Id = -19,
+                            Name = "Suspensión y Dirección",
+                            Order = 1,
+                            TemplateId = -7
+                        },
+                        new
+                        {
+                            Id = -20,
+                            Name = "Sistema de Aire Acondicionado",
+                            Order = 1,
+                            TemplateId = -8
+                        });
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateSpecialty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Specialty")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("TemplateId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TemplateId");
+
+                    b.ToTable("InspectionTemplateSpecialties");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Specialty = "Radiadores",
+                            TemplateId = -3
+                        },
+                        new
+                        {
+                            Id = -2,
+                            Specialty = "Eléctrico Automotriz",
+                            TemplateId = -4
+                        },
+                        new
+                        {
+                            Id = -3,
+                            Specialty = "Mofles y Escapes",
+                            TemplateId = -5
+                        },
+                        new
+                        {
+                            Id = -4,
+                            Specialty = "Frenos",
+                            TemplateId = -6
+                        },
+                        new
+                        {
+                            Id = -5,
+                            Specialty = "Suspensión y Alineación",
+                            TemplateId = -7
+                        },
+                        new
+                        {
+                            Id = -6,
+                            Specialty = "Aire Acondicionado",
+                            TemplateId = -8
                         });
                 });
 
@@ -4637,6 +5101,17 @@ namespace MiTaller.Migrations
                 {
                     b.HasOne("MiTaller.Models.Inspections.InspectionTemplate", "Template")
                         .WithMany("Sections")
+                        .HasForeignKey("TemplateId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Template");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionTemplateSpecialty", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.InspectionTemplate", "Template")
+                        .WithMany()
                         .HasForeignKey("TemplateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();

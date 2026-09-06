@@ -100,11 +100,17 @@ namespace MiTaller.Controllers
 
                 if (workshop == null) return NotFound("not-found");
 
+                // vehicleFormat here can be a real vehicle format (Yate, Avión, ...)
+                // or a "taller especializado" specialty key (Radiadores, ...) - the
+                // enabled-formats list surfaced to the app already mixes both, so
+                // this just resolves whichever one matches.
                 var query = _context.Inspections
                     .Where(i => i.WorkshopId == workshopId
                              && i.IsActive == isActive
-                             && _context.InspectionTemplateFormats
-                                    .Any(f => f.TemplateId == i.TemplateId && f.VehicleFormat.ToLower() == vehicleFormat.ToLower()))
+                             && (_context.InspectionTemplateFormats
+                                    .Any(f => f.TemplateId == i.TemplateId && f.VehicleFormat.ToLower() == vehicleFormat.ToLower())
+                                 || _context.InspectionTemplateSpecialties
+                                    .Any(s => s.TemplateId == i.TemplateId && s.Specialty.ToLower() == vehicleFormat.ToLower())))
                     .Include(i => i.Customer)
                     .Include(i => i.Template)
                     .Include(i => i.Vehicle)

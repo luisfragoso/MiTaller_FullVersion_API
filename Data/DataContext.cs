@@ -112,6 +112,7 @@ namespace MiTaller.Data
         // hardcoded tables above unchanged.
         public DbSet<InspectionTemplate> InspectionTemplates { get; set; }
         public DbSet<InspectionTemplateFormat> InspectionTemplateFormats { get; set; }
+        public DbSet<InspectionTemplateSpecialty> InspectionTemplateSpecialties { get; set; }
         public DbSet<InspectionTemplateSection> InspectionTemplateSections { get; set; }
         public DbSet<InspectionTemplateItem> InspectionTemplateItems { get; set; }
         public DbSet<Inspection> Inspections { get; set; }
@@ -542,6 +543,12 @@ namespace MiTaller.Data
                 .HasForeignKey(f => f.TemplateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Entity<InspectionTemplateSpecialty>()
+                .HasOne(s => s.Template)
+                .WithMany()
+                .HasForeignKey(s => s.TemplateId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Entity<InspectionTemplateSection>()
                 .HasOne(s => s.Template)
                 .WithMany(t => t.Sections)
@@ -616,6 +623,7 @@ namespace MiTaller.Data
 
             SeedYachtInspectionTemplate(builder);
             SeedBoatVehicleCatalog(builder);
+            SeedSpecialtyInspectionTemplates(builder);
         }
 
         /// <summary>
@@ -946,6 +954,135 @@ namespace MiTaller.Data
             builder.Entity<VehicleModel>().HasData(models.ToArray());
             builder.Entity<VehicleVersion>().HasData(versions.ToArray());
             builder.Entity<VehicleType>().HasData(types.ToArray());
+        }
+
+        /// <summary>
+        /// Seeds one short InspectionTemplate per "taller especializado" specialty
+        /// (Radiadores, Eléctrico Automotriz, ...). Unlike Yate/Avión these don't
+        /// map to a VehicleFormat - the vehicle being checked stays a normal
+        /// Automóvil/Motocicleta, only the checklist run against it changes. Each
+        /// specialty gets a single short section instead of the multi-section
+        /// templates used for full vehicle formats, per Luis's "más ligero" ask.
+        /// </summary>
+        private static void SeedSpecialtyInspectionTemplates(ModelBuilder builder)
+        {
+            var specialties = new (string Specialty, string TemplateName, string SectionName, (string Name, bool AllowNotApplicable)[] Items)[]
+            {
+                ("Radiadores", "Inspección de Radiadores", "Sistema de Enfriamiento", new (string, bool)[]
+                {
+                    ("Nivel de refrigerante", false),
+                    ("Fugas en radiador", false),
+                    ("Estado de mangueras", false),
+                    ("Tapón de radiador", false),
+                    ("Ventilador de enfriamiento", false),
+                    ("Termostato", false),
+                    ("Bomba de agua", false),
+                }),
+                ("Eléctrico Automotriz", "Inspección Eléctrica Automotriz", "Sistema Eléctrico", new (string, bool)[]
+                {
+                    ("Batería (carga y bornes)", false),
+                    ("Alternador", false),
+                    ("Motor de arranque", false),
+                    ("Fusibles y relevadores", false),
+                    ("Cableado y conexiones", false),
+                    ("Luces exteriores", false),
+                    ("Luces interiores", false),
+                }),
+                ("Mofles y Escapes", "Inspección de Mofles y Escapes", "Sistema de Escape", new (string, bool)[]
+                {
+                    ("Mofle/silenciador", false),
+                    ("Tubo de escape", false),
+                    ("Catalizador", false),
+                    ("Abrazaderas y soportes", false),
+                    ("Fugas de escape", false),
+                    ("Sensor de oxígeno", true),
+                }),
+                ("Frenos", "Inspección de Frenos", "Sistema de Frenos", new (string, bool)[]
+                {
+                    ("Balatas/pastillas delanteras", false),
+                    ("Balatas/pastillas traseras", false),
+                    ("Discos/tambores", false),
+                    ("Nivel de líquido de frenos", false),
+                    ("Mangueras de freno", false),
+                    ("Freno de mano", false),
+                    ("Sistema ABS", true),
+                }),
+                ("Suspensión y Alineación", "Inspección de Suspensión y Alineación", "Suspensión y Dirección", new (string, bool)[]
+                {
+                    ("Amortiguadores delanteros", false),
+                    ("Amortiguadores traseros", false),
+                    ("Rótulas", false),
+                    ("Terminales de dirección", false),
+                    ("Bujes de suspensión", false),
+                    ("Alineación", false),
+                    ("Balanceo", false),
+                }),
+                ("Aire Acondicionado", "Inspección de Aire Acondicionado", "Sistema de Aire Acondicionado", new (string, bool)[]
+                {
+                    ("Nivel de gas refrigerante", false),
+                    ("Compresor", false),
+                    ("Condensador", false),
+                    ("Fugas en el sistema", false),
+                    ("Filtro de cabina", false),
+                    ("Funcionamiento general del sistema", false),
+                }),
+            };
+
+            var templates = new List<InspectionTemplate>();
+            var templateFormats = new List<InspectionTemplateSpecialty>();
+            var sections = new List<InspectionTemplateSection>();
+            var items = new List<InspectionTemplateItem>();
+
+            var nextTemplateId = -3;
+            var nextSpecialtyId = -1;
+            var nextSectionId = -15;
+            var nextItemId = -99;
+
+            foreach (var (specialty, templateName, sectionName, specialtyItems) in specialties)
+            {
+                var templateId = nextTemplateId--;
+                templates.Add(new InspectionTemplate
+                {
+                    Id = templateId,
+                    VehicleFormat = specialty,
+                    Name = templateName,
+                    IsActive = true,
+                });
+
+                templateFormats.Add(new InspectionTemplateSpecialty
+                {
+                    Id = nextSpecialtyId--,
+                    TemplateId = templateId,
+                    Specialty = specialty,
+                });
+
+                var sectionId = nextSectionId--;
+                sections.Add(new InspectionTemplateSection
+                {
+                    Id = sectionId,
+                    TemplateId = templateId,
+                    Name = sectionName,
+                    Order = 1,
+                });
+
+                var order = 1;
+                foreach (var (name, allowNotApplicable) in specialtyItems)
+                {
+                    items.Add(new InspectionTemplateItem
+                    {
+                        Id = nextItemId--,
+                        SectionId = sectionId,
+                        Name = name,
+                        Order = order++,
+                        AllowNotApplicable = allowNotApplicable,
+                    });
+                }
+            }
+
+            builder.Entity<InspectionTemplate>().HasData(templates.ToArray());
+            builder.Entity<InspectionTemplateSpecialty>().HasData(templateFormats.ToArray());
+            builder.Entity<InspectionTemplateSection>().HasData(sections.ToArray());
+            builder.Entity<InspectionTemplateItem>().HasData(items.ToArray());
         }
 
     }
