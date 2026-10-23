@@ -120,6 +120,7 @@ namespace MiTaller.Data
         public DbSet<InspectionSectionComment> InspectionSectionComments { get; set; }
         public DbSet<InspectionFile> InspectionFiles { get; set; }
         public DbSet<InspectionHistory> InspectionHistories { get; set; }
+        public DbSet<InspectionDetailHistory> InspectionDetailHistories { get; set; }
 
         // Workshop-Customer Notes
         public DbSet<WorkshopCustomerNotes> WorkshopCustomerNotes { get; set; }
@@ -616,6 +617,12 @@ namespace MiTaller.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<InspectionHistory>()
+                .HasOne(h => h.Inspection)
+                .WithMany()
+                .HasForeignKey(h => h.InspectionId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<InspectionDetailHistory>()
                 .HasOne(h => h.Inspection)
                 .WithMany()
                 .HasForeignKey(h => h.InspectionId)

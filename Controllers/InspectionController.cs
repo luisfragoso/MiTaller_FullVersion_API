@@ -512,6 +512,129 @@ namespace MiTaller.Controllers
             }
         }
 
+        [HttpGet("detail-history/{inspectionId}")]
+        public async Task<ActionResult<ICollection<InspectionDetailHistoryResponseDto>>> GetInspectionDetailHistory(int inspectionId)
+        {
+            try
+            {
+                var detailsHistory = await _context.InspectionDetailHistories
+                    .Where(d => d.InspectionId == inspectionId)
+                    .ToListAsync();
+
+                var detailsHistoryDto = new List<InspectionDetailHistoryResponseDto>();
+
+                foreach (var model in detailsHistory)
+                {
+                    detailsHistoryDto.Add(new InspectionDetailHistoryResponseDto
+                    {
+                        InspectionDetailHistoryId = model.Id,
+                        Title = model.Title,
+                        IsCompleted = model.IsCompleted,
+                        CreatedAt = model.CreatedAt,
+                        CompletedAt = model.CompletedAt,
+                    });
+                }
+
+                return Ok(detailsHistoryDto);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPost("create-detail-history")]
+        [AuthorizeEmployee("Administrador", "Registrar vehículos")]
+        public async Task<ActionResult> CreateInspectionDetailHistory(PostInspectionDetailDto model)
+        {
+            try
+            {
+                var inspection = await _context.Inspections
+                    .Where(i => i.Id == model.InspectionId)
+                    .FirstOrDefaultAsync();
+
+                if (inspection == null) return NotFound("not-found");
+
+                var detailHistory = new InspectionDetailHistory
+                {
+                    InspectionId = model.InspectionId,
+                    Title = model.Title,
+                    IsCompleted = model.IsCompleted,
+                    CompletedAt = model.CompletedAt,
+                };
+
+                _context.InspectionDetailHistories.Add(detailHistory);
+
+                // Agregar notificación al cliente. VehicleInspectionUpdated.
+                var notification = new Notifications
+                {
+                    UserId = inspection.CustomerId,
+                    UserType = UserType.Customer,
+                    Title = "Su inspección tiene cambios",
+                    Content = $"{detailHistory.Title}",
+                    Event = "VehicleInspectionUpdated"
+                };
+                _context.Notifications.Add(notification);
+
+                await _context.SaveChangesAsync();
+
+                return Ok("inspection-detail-history-created");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPut("update-detail-history/{inspectionDetailHistoryId}")]
+        public async Task<ActionResult> UpdateInspectionDetailHistory(int inspectionDetailHistoryId, PutInspectionDetailHistoryDto model)
+        {
+            try
+            {
+                var detailHistory = await _context.InspectionDetailHistories
+                    .Where(d => d.Id == inspectionDetailHistoryId)
+                    .FirstOrDefaultAsync();
+
+                if (detailHistory == null) return NotFound("not-found");
+
+                detailHistory.Title = model.Title;
+                detailHistory.IsCompleted = model.IsCompleted;
+                detailHistory.CompletedAt = model.CompletedAt;
+
+                await _context.SaveChangesAsync();
+
+                return Ok("inspection-detail-history-updated");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPut("end-inspection/{inspectionId}")]
+        [AuthorizeEmployee("Administrador", "Registrar vehículos")]
+        public async Task<ActionResult> EndInspection(int inspectionId)
+        {
+            try
+            {
+                var inspection = await _context.Inspections
+                    .Where(i => i.Id == inspectionId && i.IsActive)
+                    .FirstOrDefaultAsync();
+
+                if (inspection == null) return NotFound("not-found");
+
+                inspection.IsActive = false;
+
+                await _context.SaveChangesAsync();
+
+                return Ok("inspection-ended");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
         [HttpGet("{id}/pdf")]
         public async Task<ActionResult> GenerateInspectionPdf(int id)
         {

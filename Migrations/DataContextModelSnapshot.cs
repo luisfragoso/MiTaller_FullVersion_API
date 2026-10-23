@@ -1183,6 +1183,37 @@ namespace MiTaller.Migrations
                     b.ToTable("Inspections");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionDetailHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("InspectionId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("InspectionId");
+
+                    b.ToTable("InspectionDetailHistories");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Inspections.InspectionFile", b =>
                 {
                     b.Property<int>("Id")
@@ -5013,6 +5044,17 @@ namespace MiTaller.Migrations
                     b.Navigation("Vehicle");
 
                     b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Inspections.InspectionDetailHistory", b =>
+                {
+                    b.HasOne("MiTaller.Models.Inspections.Inspection", "Inspection")
+                        .WithMany()
+                        .HasForeignKey("InspectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Inspection");
                 });
 
             modelBuilder.Entity("MiTaller.Models.Inspections.InspectionFile", b =>
