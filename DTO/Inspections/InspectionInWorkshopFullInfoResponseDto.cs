@@ -16,6 +16,7 @@ namespace MiTaller.DTO.Inspections
         public string PhoneNumber { get; set; } = string.Empty;
         public byte[]? ProfileImage { get; set; }
         public string Status { get; set; } = string.Empty;
+        public bool IsActive { get; set; }
         public string VehicleFormat { get; set; } = string.Empty;
         public VehicleResponseDto Vehicle { get; set; }
         public List<VehicleInspectionHistoryResponseDto> InspectionHistory { get; set; } = new();

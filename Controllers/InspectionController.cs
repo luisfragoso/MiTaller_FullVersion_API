@@ -139,6 +139,7 @@ namespace MiTaller.Controllers
                     Email = i.Customer.Email,
                     PhoneNumber = i.Customer.NormalizedPhoneNumber,
                     Status = i.Status,
+                    IsActive = i.IsActive,
                     VehicleFormat = i.Template.VehicleFormat,
                     Vehicle = new VehicleResponseDto
                     {
