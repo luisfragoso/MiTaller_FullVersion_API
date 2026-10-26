@@ -41,7 +41,7 @@ namespace MiTaller.Services
             }
 
             // Sesión de admin más corta dado el radio de daño de un token filtrado.
-            var expires = isPlatformAdmin ? DateTime.Now.AddMinutes(45) : DateTime.Now.AddHours(2);
+            var expires = isPlatformAdmin ? DateTime.Now.AddMinutes(45) : DateTime.Now.AddHours(8);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],
