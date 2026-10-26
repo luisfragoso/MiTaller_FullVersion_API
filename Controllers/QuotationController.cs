@@ -2374,7 +2374,9 @@ namespace MiTaller.Controllers
             }
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
+        // Internal helpers: without [NonAction] these public methods became routes on api/Quotation
+        // for every verb and made POST api/Quotation ambiguous (AmbiguousMatchException)
+        [NonAction]
         public async Task UpdateExpiredQuotations(Guid workshopId)
         {
             try
@@ -2403,7 +2405,7 @@ namespace MiTaller.Controllers
             }
         }
 
-        [ApiExplorerSettings(IgnoreApi = true)]
+        [NonAction]
         public async Task UpdateExpiredQuotationsForCustomer(Guid customerId)
         {
             try
