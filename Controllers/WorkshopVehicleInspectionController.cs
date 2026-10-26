@@ -754,6 +754,7 @@ namespace MiTaller.Controllers
             }
         }
 
+        [LegacyWriteRetired]
         [HttpPost]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> CreateWorkshopVehicleInspection([FromForm] PostWorkshopVehicleInspectionDto model)
@@ -1357,6 +1358,7 @@ namespace MiTaller.Controllers
             }
         }
 
+        [LegacyWriteRetired]
         [HttpPost("create-detail-history")]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> CreateVehicleInspectionDetailHistory(PostVehicleInspectionDetailDto model)
@@ -1410,6 +1412,7 @@ namespace MiTaller.Controllers
             }
         }
 
+        [LegacyWriteRetired]
         [HttpPut("update-detail-history/{vehicleInspectionDetailHistoryId}")]
         public async Task<ActionResult> UpdateVehicleInspectionDetailHistory(int vehicleInspectionDetailHistoryId, PutVehicleInspectionDetailHistoryDto model)
         {
@@ -1505,6 +1508,7 @@ namespace MiTaller.Controllers
             }
         }
 
+        [LegacyWriteRetired]
         [HttpPut("end-inspection/{inspectionId}")]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> EndVehicleInspection(int inspectionId)
