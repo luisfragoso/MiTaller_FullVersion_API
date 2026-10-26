@@ -586,6 +586,12 @@ namespace MiTaller.Data
                 .HasForeignKey(i => i.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // A legacy row can be copied only once
+            builder.Entity<Inspection>()
+                .HasIndex(i => new { i.LegacySource, i.LegacyId })
+                .IsUnique()
+                .HasFilter("[LegacySource] IS NOT NULL");
+
             builder.Entity<InspectionResultItem>()
                 .HasOne(r => r.Inspection)
                 .WithMany(i => i.Results)

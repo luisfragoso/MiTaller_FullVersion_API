@@ -1148,6 +1148,10 @@ namespace MiTaller.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Folio")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("GeneralObservations")
                         .HasColumnType("nvarchar(max)");
 
@@ -1157,12 +1161,22 @@ namespace MiTaller.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("LegacyId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LegacySource")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TemplateId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
@@ -1179,6 +1193,10 @@ namespace MiTaller.Migrations
                     b.HasIndex("VehicleId");
 
                     b.HasIndex("WorkshopId");
+
+                    b.HasIndex("LegacySource", "LegacyId")
+                        .IsUnique()
+                        .HasFilter("[LegacySource] IS NOT NULL");
 
                     b.ToTable("Inspections");
                 });

@@ -7,9 +7,10 @@ using MiTaller.Models.Vehicle;
 namespace MiTaller.Models.Inspections
 {
     /// <summary>
-    /// A generic (template-driven) vehicle inspection, used by any vehicle
-    /// format that isn't "Automóvil"/"Motocicleta" (those keep using
-    /// WorkshopVehicleInspection/WorkshopMotocycleInspection unchanged).
+    /// A generic (template-driven) vehicle inspection, used by every vehicle
+    /// format. Automóvil/Motocicleta rows from the legacy
+    /// WorkshopVehicleInspection/WorkshopMotocycleInspection tables are copied
+    /// here and keep a pointer back via LegacySource/LegacyId.
     /// </summary>
     public class Inspection
     {
@@ -43,6 +44,18 @@ namespace MiTaller.Models.Inspections
         public bool IsActive { get; set; } = true;
 
         public string? GeneralObservations { get; set; } = string.Empty;
+
+        // Visit title + folio, ported from the legacy *InspectionHistory row
+        public string? Title { get; set; }
+
+        [MaxLength(50)]
+        public string? Folio { get; set; }
+
+        // Origin of a row copied from a legacy table; null for native rows
+        [MaxLength(50)]
+        public string? LegacySource { get; set; }
+
+        public int? LegacyId { get; set; }
 
         public List<InspectionResultItem> Results { get; set; } = new();
         public List<InspectionSectionComment> SectionComments { get; set; } = new();
