@@ -41,18 +41,13 @@ namespace MiTaller.Controllers
                     .Where(q => q.WorkshopId == workshopId)
                     .Select(q => q.CustomerId)
                     .ToListAsync();
-                var customerVehicleInspectionIds = await _context.WorkshopVehicleInspections
-                    .Where(v => v.WorkshopId == workshopId)
-                    .Select(v => v.CustomerId)
-                    .ToListAsync();
-                var customerMotocycleInspectionIds = await _context.WorkshopMotocycleInspections
-                    .Where(m => m.WorkshopId == workshopId)
-                    .Select(m => m.CustomerId)
+                var customerInspectionIds = await _context.Inspections
+                    .Where(i => i.WorkshopId == workshopId)
+                    .Select(i => i.CustomerId)
                     .ToListAsync();
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
-                    .Concat(customerVehicleInspectionIds)
-                    .Concat(customerMotocycleInspectionIds)
+                    .Concat(customerInspectionIds)
                     .Distinct()
                     .ToList();
 
@@ -87,26 +82,13 @@ namespace MiTaller.Controllers
                 var startDate = new DateTime(parsedDate.Year, parsedDate.Month, 1);
                 var endDate = startDate.AddMonths(1).AddTicks(-1); // último momento del último día del mes
 
-                var vehicleInspections = await _context.WorkshopVehicleInspections
-                    .Where(v => v.WorkshopId == workshopId &&
-                                v.InspectionDate >= startDate &&
-                                v.InspectionDate <= endDate)
-                    .Select(v => v.CustomerId)
+                var totalCustomerIds = await _context.Inspections
+                    .Where(i => i.WorkshopId == workshopId &&
+                                i.InspectionDate >= startDate &&
+                                i.InspectionDate <= endDate)
+                    .Select(i => i.CustomerId)
                     .Distinct()
                     .ToListAsync();
-
-                var motocycleInspections = await _context.WorkshopMotocycleInspections
-                    .Where(m => m.WorkshopId == workshopId &&
-                                m.InspectionDate >= startDate &&
-                                m.InspectionDate <= endDate)
-                    .Select(m => m.CustomerId)
-                    .Distinct()
-                    .ToListAsync();
-
-                var totalCustomerIds = vehicleInspections
-                    .Concat(motocycleInspections)
-                    .Distinct()
-                    .ToList();
 
                 var countDto = new CountResponseDto
                 {

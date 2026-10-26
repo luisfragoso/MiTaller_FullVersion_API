@@ -1206,6 +1206,57 @@ namespace MiTaller.Controllers
             }
         }
 
+        // Per customer, the vehicles that have been inspected at this workshop (any format)
+        private async Task<Dictionary<Guid, List<WorkshopCustomerInspectedVehicleDto>>> InspectedVehiclesByCustomer(Guid workshopId, List<Guid> customerIds)
+        {
+            var rows = await _context.Inspections
+                .Where(i => i.WorkshopId == workshopId && customerIds.Contains(i.CustomerId))
+                .GroupBy(i => new { i.CustomerId, i.VehicleId })
+                .Select(g => new
+                {
+                    g.Key.CustomerId,
+                    g.Key.VehicleId,
+                    Inspections = g.Count(),
+                    LastInspectionDate = g.Max(i => i.InspectionDate),
+                    HasActiveInspection = g.Any(i => i.IsActive),
+                })
+                .ToListAsync();
+
+            var vehicleIds = rows.Select(r => r.VehicleId).Distinct().ToList();
+            var vehicles = await _context.Vehicles
+                .Where(v => vehicleIds.Contains(v.Id))
+                .Select(v => new
+                {
+                    v.Id,
+                    v.VehicleFormat,
+                    Brand = v.BrandId == -1 ? v.OtherBrand : v.Brand.Name,
+                    Model = v.VehicleModelId == -1 ? v.OtherVehicleModel : v.VehicleModel.Model,
+                    v.Plates,
+                })
+                .ToDictionaryAsync(v => v.Id);
+
+            return rows
+                .GroupBy(r => r.CustomerId)
+                .ToDictionary(g => g.Key, g => g
+                    .OrderByDescending(r => r.LastInspectionDate)
+                    .Select(r =>
+                    {
+                        var v = vehicles.GetValueOrDefault(r.VehicleId);
+                        return new WorkshopCustomerInspectedVehicleDto
+                        {
+                            VehicleId = r.VehicleId,
+                            VehicleFormat = v?.VehicleFormat ?? string.Empty,
+                            Brand = v?.Brand ?? string.Empty,
+                            Model = v?.Model ?? string.Empty,
+                            Plates = v?.Plates ?? string.Empty,
+                            Inspections = r.Inspections,
+                            LastInspectionDate = r.LastInspectionDate,
+                            HasActiveInspection = r.HasActiveInspection,
+                        };
+                    })
+                    .ToList());
+        }
+
         [HttpGet("workshop-clients/{workshopId}")]
         public async Task<ActionResult<IEnumerable<WorkshopCustomersDto>>> SearchWorkshopClients(Guid workshopId)
         {
@@ -1221,14 +1272,9 @@ namespace MiTaller.Controllers
                     .Select(q => q.CustomerId)
                     .ToListAsync();
 
-                var customerVehicleInspectionIds = await _context.WorkshopVehicleInspections
-                    .Where(v => v.WorkshopId == workshopId)
-                    .Select(v => v.CustomerId)
-                    .ToListAsync();
-
-                var customerMotocycleInspectionIds = await _context.WorkshopMotocycleInspections
-                    .Where(m => m.WorkshopId == workshopId)
-                    .Select(m => m.CustomerId)
+                var customerInspectionIds = await _context.Inspections
+                    .Where(i => i.WorkshopId == workshopId)
+                    .Select(i => i.CustomerId)
                     .ToListAsync();
 
                 var customerDirectlyAddedIds = await _context.WorkshopCustomers
@@ -1238,8 +1284,7 @@ namespace MiTaller.Controllers
 
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
-                    .Concat(customerVehicleInspectionIds)
-                    .Concat(customerMotocycleInspectionIds)
+                    .Concat(customerInspectionIds)
                     .Concat(customerDirectlyAddedIds)
                     .Distinct()
                     .ToList();
@@ -1260,6 +1305,8 @@ namespace MiTaller.Controllers
                             HexColor = t.Tag.HexColor
                         }).ToList());
 
+                var inspectedVehicles = await InspectedVehiclesByCustomer(workshopId, customers.Select(c => c.Id).ToList());
+
                 var workshopCustomers = customers.Select(c => new WorkshopCustomersDto
                 {
                     CustomerId = c.Id,
@@ -1267,7 +1314,8 @@ namespace MiTaller.Controllers
                     Email = c.Email,
                     PhoneNumber = c.NormalizedPhoneNumber,
                     ProfileImage = c.ProfileImage,
-                    Tags = tagsByCustomer.ContainsKey(c.Id) ? tagsByCustomer[c.Id] : new List<CustomerTagsDto>()
+                    Tags = tagsByCustomer.ContainsKey(c.Id) ? tagsByCustomer[c.Id] : new List<CustomerTagsDto>(),
+                    InspectedVehicles = inspectedVehicles.GetValueOrDefault(c.Id) ?? new List<WorkshopCustomerInspectedVehicleDto>()
                 }).ToList();
 
                 return Ok(workshopCustomers);
@@ -1293,14 +1341,9 @@ namespace MiTaller.Controllers
                     .Select(q => q.CustomerId)
                     .ToListAsync();
 
-                var customerVehicleInspectionIds = await _context.WorkshopVehicleInspections
-                    .Where(v => v.WorkshopId == workshopId)
-                    .Select(v => v.CustomerId)
-                    .ToListAsync();
-
-                var customerMotocycleInspectionIds = await _context.WorkshopMotocycleInspections
-                    .Where(m => m.WorkshopId == workshopId)
-                    .Select(m => m.CustomerId)
+                var customerInspectionIds = await _context.Inspections
+                    .Where(i => i.WorkshopId == workshopId)
+                    .Select(i => i.CustomerId)
                     .ToListAsync();
 
                 var customerDirectlyAddedIds = await _context.WorkshopCustomers
@@ -1310,8 +1353,7 @@ namespace MiTaller.Controllers
 
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
-                    .Concat(customerVehicleInspectionIds)
-                    .Concat(customerMotocycleInspectionIds)
+                    .Concat(customerInspectionIds)
                     .Concat(customerDirectlyAddedIds)
                     .Distinct()
                     .ToList();
@@ -1340,6 +1382,8 @@ namespace MiTaller.Controllers
                             HexColor = t.Tag.HexColor
                         }).ToList());
 
+                var inspectedVehicles = await InspectedVehiclesByCustomer(workshopId, customers.Select(c => c.Id).ToList());
+
                 var workshopCustomers = customers.Select(c => new WorkshopCustomersDto
                 {
                     CustomerId = c.Id,
@@ -1347,7 +1391,8 @@ namespace MiTaller.Controllers
                     Email = c.Email,
                     PhoneNumber = c.NormalizedPhoneNumber,
                     ProfileImage = c.ProfileImage,
-                    Tags = tagsByCustomer.ContainsKey(c.Id) ? tagsByCustomer[c.Id] : new List<CustomerTagsDto>()
+                    Tags = tagsByCustomer.ContainsKey(c.Id) ? tagsByCustomer[c.Id] : new List<CustomerTagsDto>(),
+                    InspectedVehicles = inspectedVehicles.GetValueOrDefault(c.Id) ?? new List<WorkshopCustomerInspectedVehicleDto>()
                 }).ToList();
 
                 var response = new PagerResponseDto<WorkshopCustomersDto>

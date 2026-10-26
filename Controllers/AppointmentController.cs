@@ -390,44 +390,15 @@ namespace MiTaller.Controllers
                 if (!workshopExists) return NotFound("not-found");
                 if (vehicle == null) return NotFound("not-found");
 
-                if (vehicle.VehicleFormat == "Automóvil")
-                {
-                    activeInspection = await _context.WorkshopVehicleInspections
-                    .Where(a => a.WorkshopId == model.WorkshopId
-                            && a.CustomerId == model.CustomerId
-                            && a.VehicleId == model.VehicleId
-                            && a.IsActive)
-                    .FirstOrDefaultAsync();
+                // Every format (Auto/Moto included) lives in the generic Inspections table
+                activeInspection = await _context.Inspections
+                .Where(a => a.WorkshopId == model.WorkshopId
+                        && a.CustomerId == model.CustomerId
+                        && a.VehicleId == model.VehicleId
+                        && a.IsActive)
+                .FirstOrDefaultAsync();
 
-                    if (activeInspection == null) exists = "false";
-                }
-                if (vehicle.VehicleFormat == "Motocicleta")
-                {
-                    activeInspection = await _context.WorkshopMotocycleInspections
-                    .Where(a => a.WorkshopId == model.WorkshopId
-                            && a.CustomerId == model.CustomerId
-                            && a.VehicleId == model.VehicleId
-                            && a.IsActive)
-                    .FirstOrDefaultAsync();
-
-                    if (activeInspection == null) exists = "false";
-                }
-
-                if (vehicle.VehicleFormat != "Automóvil" && vehicle.VehicleFormat != "Motocicleta")
-                {
-                    // Cualquier otro formato (Yate, y futuros avión/especializados) usa la
-                    // tabla genérica de inspecciones en vez de una tabla hardcoded dedicada.
-                    // El template asociado ya determina el formato, así que basta con
-                    // filtrar por Workshop/Customer/Vehicle/IsActive, igual que las otras ramas.
-                    activeInspection = await _context.Inspections
-                    .Where(a => a.WorkshopId == model.WorkshopId
-                            && a.CustomerId == model.CustomerId
-                            && a.VehicleId == model.VehicleId
-                            && a.IsActive)
-                    .FirstOrDefaultAsync();
-
-                    if (activeInspection == null) exists = "false";
-                }
+                if (activeInspection == null) exists = "false";
 
                 return Ok("true");
             }

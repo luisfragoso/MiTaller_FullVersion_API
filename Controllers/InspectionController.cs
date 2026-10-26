@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
+using MiTaller.DTO;
 using MiTaller.DTO.Customer;
 using MiTaller.DTO.Vehicle;
 using MiTaller.Models.Vehicle;
@@ -22,6 +23,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using MiTaller.Services;
 using QuestPDF.Fluent;
 using MiTaller.Services.Documents;
+using MiTaller.Helpers;
 using System.Collections.Generic;
 
 namespace MiTaller.Controllers
@@ -156,7 +158,17 @@ namespace MiTaller.Controllers
                         Kms = i.Vehicle.Kms,
                         VehicleFormat = i.Vehicle.VehicleFormat,
                     },
-                    InspectionHistory = new List<VehicleInspectionHistoryResponseDto>(),
+                    // One visit per inspection; its id is the inspection id (for /{id}/pdf)
+                    InspectionHistory = new List<VehicleInspectionHistoryResponseDto>
+                    {
+                        new()
+                        {
+                            VehicleInspectionHistoryId = i.Id,
+                            Title = i.Title ?? string.Empty,
+                            Folio = i.Folio ?? string.Empty,
+                            CreatedAt = i.InspectionDate,
+                        }
+                    },
                 }).ToList();
 
                 var response = new PagerResponseDto<InspectionInWorkshopFullInfoResponseDto>
@@ -397,9 +409,21 @@ namespace MiTaller.Controllers
                     IsActive = true,
                     Status = "Pendiente",
                     GeneralObservations = model.GeneralObservations,
+                    Title = "Solicitud de reparación",
+                    Folio = FolioGenerator.New(template.VehicleFormat),
                 };
 
                 _context.Inspections.Add(inspection);
+                await _context.SaveChangesAsync();
+
+                // Starts the status timeline the same way the legacy Auto/Moto flow did
+                _context.InspectionDetailHistories.Add(new InspectionDetailHistory
+                {
+                    InspectionId = inspection.Id,
+                    Title = "Entró a taller",
+                    IsCompleted = true,
+                    CompletedAt = DateTime.Now,
+                });
                 await _context.SaveChangesAsync();
 
                 if (model.Results != null && model.Results.Any())
@@ -488,6 +512,75 @@ namespace MiTaller.Controllers
                 if (file == null) return NotFound("not-found");
 
                 return File(file.FileData, file.FileType, file.FileName);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        // Visits (one per inspection, any format) of a customer at a workshop, newest
+        // first. Replaces the legacy get-history/customer-workshop* and
+        // get-vehicles-in-workshop-history* endpoints; the visit id is the inspection id.
+        private IQueryable<VehicleInspectionHistoryResponseDto> CustomerWorkshopVisits(Guid workshopId, Guid customerId, int? vehicleId)
+        {
+            return _context.Inspections
+                .Where(i => i.WorkshopId == workshopId
+                         && i.CustomerId == customerId
+                         && (vehicleId == null || i.VehicleId == vehicleId))
+                .OrderByDescending(i => i.InspectionDate)
+                .Select(i => new VehicleInspectionHistoryResponseDto
+                {
+                    VehicleInspectionHistoryId = i.Id,
+                    Title = i.Title ?? string.Empty,
+                    Folio = i.Folio ?? string.Empty,
+                    CreatedAt = i.InspectionDate,
+                });
+        }
+
+        [HttpPost("visits/customer-workshop")]
+        public async Task<ActionResult<ICollection<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVisits(CustomerWorkshopBodyDto model)
+        {
+            try
+            {
+                return Ok(await CustomerWorkshopVisits(model.WorkshopId, model.CustomerId, null).ToListAsync());
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPost("visits/customer-workshop-vehicle")]
+        public async Task<ActionResult<ICollection<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVehicleVisits(CustomerWorkshopVehicleBodyDto model)
+        {
+            try
+            {
+                return Ok(await CustomerWorkshopVisits(model.WorkshopId, model.CustomerId, model.VehicleId).ToListAsync());
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPost("visits/customer-workshop-vehicle-pager")]
+        public async Task<ActionResult<PagerResponseDto<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVehicleVisitsPaged([FromBody] CustomerWorkshopVehicleBodyDto model, [FromQuery] PagerBodyDto pager)
+        {
+            try
+            {
+                var query = CustomerWorkshopVisits(model.WorkshopId, model.CustomerId, model.VehicleId);
+                var totalCount = await query.CountAsync();
+
+                return Ok(new PagerResponseDto<VehicleInspectionHistoryResponseDto>
+                {
+                    CurrentPage = pager.PageNumber,
+                    TotalPages = (int)Math.Ceiling((double)totalCount / pager.PageSize),
+                    Elements = await query
+                        .Skip((pager.PageNumber - 1) * pager.PageSize)
+                        .Take(pager.PageSize)
+                        .ToListAsync(),
+                });
             }
             catch (Exception)
             {
