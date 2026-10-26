@@ -778,6 +778,7 @@ namespace MiTaller.Controllers
                         .ThenInclude(v => v.VehicleType)
                     .Include(i => i.Results)
                     .Include(i => i.SectionComments)
+                    .Include(i => i.Files)
                     .Where(i => i.Id == id)
                     .FirstOrDefaultAsync();
 
