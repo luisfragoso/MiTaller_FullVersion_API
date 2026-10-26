@@ -1289,8 +1289,9 @@ namespace MiTaller.Controllers
                     .Distinct()
                     .ToList();
 
+                // Same rule as the paged endpoint and the stats: deleted customers are hidden
                 var customers = await _context.Customers
-                    .Where(c => allCustomerIds.Contains(c.Id))
+                    .Where(c => allCustomerIds.Contains(c.Id) && c.IsDeleted != true)
                     .ToListAsync();
 
                 var tagsByCustomer = await _context.CustomerAssociatedTags
