@@ -38,6 +38,29 @@ namespace MiTaller.Controllers
             _appointmentNotificationService = appointmentNotificationService;
         }
 
+        // Who is calling, from the token: a customer, or a workshop (employees resolve to their workshop)
+        private async Task<(Guid? CustomerId, Guid? WorkshopId)> GetCallerAsync()
+        {
+            if (!Enum.TryParse<UserType>(User.FindFirst("UserType")?.Value, out var type)
+                || !Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id))
+                return (null, null);
+
+            return type switch
+            {
+                UserType.Customer => (id, null),
+                UserType.Workshop => (null, id),
+                UserType.Employee => (null, await _context.WorkshopEmployees
+                    .Where(we => we.EmployeeId == id && !we.IsDeleted)
+                    .Select(we => (Guid?)we.WorkshopId)
+                    .FirstOrDefaultAsync()),
+                _ => (null, null),
+            };
+        }
+
+        private static bool IsOwner(Appointment appointment, (Guid? CustomerId, Guid? WorkshopId) caller) =>
+            (caller.CustomerId != null && appointment.CustomerId == caller.CustomerId)
+            || (caller.WorkshopId != null && appointment.WorkshopId == caller.WorkshopId);
+
         [HttpGet("{appointmentId}")]
         public async Task<ActionResult<AppointmentResponseDto>> GetAppointmentById(int appointmentId)
         {
@@ -203,8 +226,14 @@ namespace MiTaller.Controllers
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> CreateAppointment([FromForm] PostAppointmentDto model)
         {
-            try 
-            { 
+            // The token decides who is booking (the body's UserType is ignored) and it must be their own side
+            var caller = await GetCallerAsync();
+            var bookedByCustomer = caller.CustomerId != null;
+            if (bookedByCustomer ? model.CustomerId != caller.CustomerId : model.WorkshopId != caller.WorkshopId || caller.WorkshopId == null)
+                return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
+
+            try
+            {
                 var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Id == model.CustomerId && !c.IsDeleted);
                 var workshop = await _context.Workshops.FirstOrDefaultAsync(w => w.Id == model.WorkshopId && !w.IsDeleted);
                 var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == model.VehicleId && v.CustomerId == model.CustomerId && !v.IsDeleted);
@@ -238,10 +267,14 @@ namespace MiTaller.Controllers
                     //Status = model.Status
                 };
 
+                // Saved first so the inbox entry and the notification carry the real appointment Id
+                _context.Appointments.Add(appointment);
+                await _context.SaveChangesAsync();
+
                 var formattedDate = appointment.Date.ToString("dd/MM/yy");
                 var formattedTime = appointment.Date.ToString("HH:mm");
 
-                if (model.UserType == UserType.Customer)
+                if (bookedByCustomer)
                 {
                     // WorkshopInbox
                     var workshopInbox = new WorkshopInbox
@@ -274,9 +307,6 @@ namespace MiTaller.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                _context.Appointments.Add(appointment);
-                await _context.SaveChangesAsync();
-
                 return Ok("appointment-created");
             }
             catch (Exception)
@@ -290,8 +320,14 @@ namespace MiTaller.Controllers
         {
             try 
             { 
+                var caller = await GetCallerAsync();
                 var appointment = await _context.Appointments.FindAsync(appointmentId);
-                if (appointment == null) return NotFound("not-found");
+                if (appointment == null || !IsOwner(appointment, caller)) return NotFound("not-found");
+
+                // The appointment can't be moved to another customer/workshop than the caller's own side
+                if ((caller.CustomerId != null && model.CustomerId != caller.CustomerId)
+                    || (caller.WorkshopId != null && model.WorkshopId != caller.WorkshopId))
+                    return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
 
                 var customerExists = await _context.Customers.AnyAsync(c => c.Id == model.CustomerId);
                 var workshopExists = await _context.Workshops.AnyAsync(w => w.Id == model.WorkshopId);
@@ -332,8 +368,13 @@ namespace MiTaller.Controllers
             {
                 if (!ValidAppointmentStatuses.Contains(model.Status)) return BadRequest("invalid-status");
 
+                var caller = await GetCallerAsync();
                 var appointment = await _context.Appointments.FindAsync(appointmentId);
-                if (appointment == null) return NotFound("not-found");
+                if (appointment == null || !IsOwner(appointment, caller)) return NotFound("not-found");
+
+                // A customer can only confirm or cancel; the workshop moves it through the rest
+                if (caller.CustomerId != null && model.Status is not ("Confirmada" or "Cancelada"))
+                    return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
 
                 appointment.Status = model.Status;
                 await _context.SaveChangesAsync();
@@ -349,10 +390,11 @@ namespace MiTaller.Controllers
         [HttpDelete("{appointmentId}")]
         public async Task<ActionResult> DeleteAppointment(int appointmentId)
         {
-            try 
-            { 
+            try
+            {
+                var caller = await GetCallerAsync();
                 var appointment = await _context.Appointments.FindAsync(appointmentId);
-                if (appointment == null) return NotFound("not-found");
+                if (appointment == null || !IsOwner(appointment, caller)) return NotFound("not-found");
 
                 _context.Appointments.Remove(appointment);
                 await _context.SaveChangesAsync();
