@@ -247,10 +247,12 @@ namespace MiTaller.Controllers
                     return BadRequest("invalid-template-section");
                 }
 
+                // Only one active inspection per template: a specialty checklist can run while the general one is open
                 var activeInspection = await _context.Inspections
                     .Where(a => a.WorkshopId == model.WorkshopId
                             && a.CustomerId == model.CustomerId
                             && a.VehicleId == model.VehicleId
+                            && a.TemplateId == model.TemplateId
                             && a.IsActive)
                     .FirstOrDefaultAsync();
 

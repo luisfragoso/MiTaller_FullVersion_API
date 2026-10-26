@@ -53,7 +53,7 @@ namespace MiTaller.Controllers
                     .Select(b => new { b.Id, b.Name })
                     .ToListAsync();
 
-                brands.Add(new { Id = -1, Name = "Other" });
+                brands.Add(new { Id = -1, Name = "Otro" });
                 return Ok(brands);
             }
             catch (Exception)
@@ -72,7 +72,7 @@ namespace MiTaller.Controllers
                     .Select(vm => new { vm.Id, vm.Model })
                     .ToListAsync();
 
-                models.Add(new { Id = -1, Model = "Other" });
+                models.Add(new { Id = -1, Model = "Otro" });
                 return Ok(models);
             }
             catch (Exception)
@@ -91,7 +91,7 @@ namespace MiTaller.Controllers
                     .Select(vv => new { vv.Id, vv.Version })
                     .ToListAsync();
 
-                versions.Add(new { Id = -1, Version = "Other" });
+                versions.Add(new { Id = -1, Version = "Otro" });
                 return Ok(versions);
             }
             catch (Exception)
@@ -110,7 +110,7 @@ namespace MiTaller.Controllers
                     .Select(vt => new { vt.Id, vt.Type })
                     .ToListAsync();
 
-                types.Add(new { Id = -1, Type = "Other" });
+                types.Add(new { Id = -1, Type = "Otro" });
                 return Ok(types);
             }
             catch (Exception)
