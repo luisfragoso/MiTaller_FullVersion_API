@@ -87,6 +87,31 @@ namespace MiTaller.Controllers
             return await GetInspectionsByWorkshopAndStatus(workshopId, vehicleFormat, page, pageSize, isActive: false);
         }
 
+        // Active inspections per vehicle format (template format), for tab badges and dashboard totals
+        [HttpGet("workshop/{workshopId}/active-counts")]
+        public async Task<ActionResult<Dictionary<string, int>>> GetActiveCountsByWorkshop(Guid workshopId)
+        {
+            try
+            {
+                // Same keys as the tab filter: specialty key, else the vehicle's own format
+                var counts = await _context.Inspections
+                    .Where(i => i.WorkshopId == workshopId && i.IsActive)
+                    .Select(i => _context.InspectionTemplateSpecialties
+                        .Where(s => s.TemplateId == i.TemplateId)
+                        .Select(s => s.Specialty)
+                        .FirstOrDefault() ?? i.Vehicle.VehicleFormat)
+                    .GroupBy(format => format)
+                    .Select(g => new { Format = g.Key, Count = g.Count() })
+                    .ToDictionaryAsync(x => x.Format, x => x.Count);
+
+                return Ok(counts);
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
         private async Task<ActionResult<PagerResponseDto<InspectionInWorkshopFullInfoResponseDto>>> GetInspectionsByWorkshopAndStatus(Guid workshopId, string vehicleFormat, int page, int pageSize, bool isActive)
         {
             try
@@ -102,17 +127,17 @@ namespace MiTaller.Controllers
 
                 if (workshop == null) return NotFound("not-found");
 
-                // vehicleFormat here can be a real vehicle format (Yate, Avión, ...)
-                // or a "taller especializado" specialty key (Radiadores, ...) - the
-                // enabled-formats list surfaced to the app already mixes both, so
-                // this just resolves whichever one matches.
+                // vehicleFormat can be a real vehicle format (Yate, Avión, ...) or a
+                // "taller especializado" specialty key (Radiadores, ...). Formats match
+                // on the vehicle itself (Yate/Lancha/Bote share one template), and
+                // specialty inspections only show under their specialty tab.
                 var query = _context.Inspections
                     .Where(i => i.WorkshopId == workshopId
                              && i.IsActive == isActive
-                             && (_context.InspectionTemplateFormats
-                                    .Any(f => f.TemplateId == i.TemplateId && f.VehicleFormat.ToLower() == vehicleFormat.ToLower())
-                                 || _context.InspectionTemplateSpecialties
-                                    .Any(s => s.TemplateId == i.TemplateId && s.Specialty.ToLower() == vehicleFormat.ToLower())))
+                             && (_context.InspectionTemplateSpecialties.Any(s => s.TemplateId == i.TemplateId)
+                                    ? _context.InspectionTemplateSpecialties
+                                        .Any(s => s.TemplateId == i.TemplateId && s.Specialty.ToLower() == vehicleFormat.ToLower())
+                                    : i.Vehicle.VehicleFormat.ToLower() == vehicleFormat.ToLower()))
                     .Include(i => i.Customer)
                     .Include(i => i.Template)
                     .Include(i => i.Vehicle)
@@ -133,6 +158,10 @@ namespace MiTaller.Controllers
                     .Take(pageSize)
                     .ToListAsync();
 
+                var specialtyTemplateIds = await _context.InspectionTemplateSpecialties
+                    .Select(s => s.TemplateId)
+                    .ToListAsync();
+
                 var elements = inspections.Select(i => new InspectionInWorkshopFullInfoResponseDto
                 {
                     InspectionId = i.Id,
@@ -142,7 +171,8 @@ namespace MiTaller.Controllers
                     PhoneNumber = i.Customer.NormalizedPhoneNumber,
                     Status = i.Status,
                     IsActive = i.IsActive,
-                    VehicleFormat = i.Template.VehicleFormat,
+                    // The tab the row belongs to: specialty templates keep their key, the rest use the vehicle's format
+                    VehicleFormat = specialtyTemplateIds.Contains(i.TemplateId) ? i.Template.VehicleFormat : i.Vehicle.VehicleFormat,
                     Vehicle = new VehicleResponseDto
                     {
                         Id = i.Vehicle.Id,
