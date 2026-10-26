@@ -22,6 +22,7 @@ using MiTaller.DTO.Pager;
 using MiTaller.Models.Customer;
 using MiTaller.Services;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace MiTaller.Controllers
 {
@@ -38,6 +39,29 @@ namespace MiTaller.Controllers
             _context = context;
             _firebaseNotificationService = firebaseNotificationService;
         }
+
+        // Who is calling, from the token: a customer, or a workshop (employees resolve to their workshop)
+        private async Task<(Guid? CustomerId, Guid? WorkshopId)> GetCallerAsync()
+        {
+            if (!Enum.TryParse<UserType>(User.FindFirst("UserType")?.Value, out var type)
+                || !Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id))
+                return (null, null);
+
+            return type switch
+            {
+                UserType.Customer => (id, null),
+                UserType.Workshop => (null, id),
+                UserType.Employee => (null, await _context.WorkshopEmployees
+                    .Where(we => we.EmployeeId == id && !we.IsDeleted)
+                    .Select(we => (Guid?)we.WorkshopId)
+                    .FirstOrDefaultAsync()),
+                _ => (null, null),
+            };
+        }
+
+        private static bool IsOwner(Quotation quotation, (Guid? CustomerId, Guid? WorkshopId) caller) =>
+            (caller.CustomerId != null && quotation.CustomerId == caller.CustomerId)
+            || (caller.WorkshopId != null && quotation.WorkshopId == caller.WorkshopId);
 
         [HttpGet("{id}")]
         public async Task<ActionResult<QuotationResponseDto>> GetQuotationById(int id)
@@ -549,7 +573,13 @@ namespace MiTaller.Controllers
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> CreateQuotation(PostQuotationDto model)
         {
-            try 
+            // The token decides who is quoting (the body's UserType is ignored) and it must be their own side
+            var caller = await GetCallerAsync();
+            var byCustomer = caller.CustomerId != null;
+            if (byCustomer ? model.CustomerId != caller.CustomerId : model.WorkshopId != caller.WorkshopId || caller.WorkshopId == null)
+                return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
+
+            try
             { 
                 var customerExists = await _context.Customers.
                     Where(c => c.Id == model.CustomerId && !c.IsDeleted).FirstOrDefaultAsync();
@@ -645,7 +675,7 @@ namespace MiTaller.Controllers
                 var vehicleBrand = vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand.Name;
                 var vehicleModel = vehicle.VehicleModelId == -1 ? vehicle.OtherBrand : vehicle.VehicleModel.Model;
                 
-                if(model.UserType == UserType.Customer)
+                if (byCustomer)
                 {
                     // WorkshopInbox
                     var workshopInbox = new WorkshopInbox
@@ -715,6 +745,11 @@ namespace MiTaller.Controllers
 
                 if (quotation == null) return NotFound("not-found");
 
+                // Ownership and the inbox/notification side come from the token and the stored quotation, not the body
+                var caller = await GetCallerAsync();
+                if (!IsOwner(quotation, caller)) return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
+                var byCustomer = caller.CustomerId != null;
+
                 quotation.Description = model.Description;
                 quotation.PriceOfLabor = model.PriceOfLabor;
                 quotation.PriceOfSpareParts = model.PriceOfSpareParts;
@@ -729,16 +764,16 @@ namespace MiTaller.Controllers
                     Price = s.Price
                 }).ToList();
 
-                if (model.UserType == UserType.Customer)
+                if (byCustomer)
                 {
                     if (quotation.Status == "Canceled")
                     {
                         // WorkshopInbox
                         var workshopInbox = new WorkshopInbox
                         {
-                            WorkshopId = model.WorkshopId,
-                            CustomerId = model.CustomerId,
-                            VehicleId = model.VehicleId,
+                            WorkshopId = quotation.WorkshopId,
+                            CustomerId = quotation.CustomerId,
+                            VehicleId = quotation.VehicleId,
                             ParentModelType = "Quotation",
                             ParentModelId = quotation.Id,
                             Title = $"Cambio de estatus en cotización",
@@ -761,9 +796,9 @@ namespace MiTaller.Controllers
                         // WorkshopInbox
                         var workshopInbox = new WorkshopInbox
                         {
-                            WorkshopId = model.WorkshopId,
-                            CustomerId = model.CustomerId,
-                            VehicleId = model.VehicleId,
+                            WorkshopId = quotation.WorkshopId,
+                            CustomerId = quotation.CustomerId,
+                            VehicleId = quotation.VehicleId,
                             ParentModelType = "Quotation",
                             ParentModelId = quotation.Id,
                             Title = $"Cambio de estatus en cotización",
@@ -787,7 +822,7 @@ namespace MiTaller.Controllers
                     // Customer Notifications
                     var notification = new Notifications
                     {
-                        UserId = model.CustomerId,
+                        UserId = quotation.CustomerId,
                         UserType = UserType.Customer,
                         Title = $"Cambio de estatus en cotización",
                         Content = "La cotización ha sido modificada, favor de revisarla.",
@@ -823,6 +858,7 @@ namespace MiTaller.Controllers
             { 
                 var quotation = await _context.Quotations.FindAsync(id);
                 if (quotation == null) return NotFound("not-found");
+                if (!IsOwner(quotation, await GetCallerAsync())) return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
 
                 _context.Quotations.Remove(quotation);
                 await _context.SaveChangesAsync();

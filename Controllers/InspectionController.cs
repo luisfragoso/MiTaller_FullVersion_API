@@ -89,13 +89,20 @@ namespace MiTaller.Controllers
 
         // Active inspections per vehicle format (template format), for tab badges and dashboard totals
         [HttpGet("workshop/{workshopId}/active-counts")]
-        public async Task<ActionResult<Dictionary<string, int>>> GetActiveCountsByWorkshop(Guid workshopId)
+        public Task<ActionResult<Dictionary<string, int>>> GetActiveCountsByWorkshop(Guid workshopId)
+            => GetCountsByWorkshopAndStatus(workshopId, isActive: true);
+
+        [HttpGet("workshop/{workshopId}/closed-counts")]
+        public Task<ActionResult<Dictionary<string, int>>> GetClosedCountsByWorkshop(Guid workshopId)
+            => GetCountsByWorkshopAndStatus(workshopId, isActive: false);
+
+        private async Task<ActionResult<Dictionary<string, int>>> GetCountsByWorkshopAndStatus(Guid workshopId, bool isActive)
         {
             try
             {
                 // Same keys as the tab filter: specialty key, else the vehicle's own format
                 var counts = await _context.Inspections
-                    .Where(i => i.WorkshopId == workshopId && i.IsActive)
+                    .Where(i => i.WorkshopId == workshopId && i.IsActive == isActive)
                     .Select(i => _context.InspectionTemplateSpecialties
                         .Where(s => s.TemplateId == i.TemplateId)
                         .Select(s => s.Specialty)
