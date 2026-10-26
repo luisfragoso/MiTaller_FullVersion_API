@@ -565,6 +565,11 @@ namespace MiTaller.Controllers
                     Title = i.Title ?? string.Empty,
                     Folio = i.Folio ?? string.Empty,
                     CreatedAt = i.InspectionDate,
+                    VehicleId = i.VehicleId,
+                    VehicleFormat = i.Vehicle.VehicleFormat,
+                    Brand = i.Vehicle.BrandId == -1 ? i.Vehicle.OtherBrand : i.Vehicle.Brand.Name,
+                    Model = i.Vehicle.VehicleModelId == -1 ? i.Vehicle.OtherVehicleModel : i.Vehicle.VehicleModel.Model,
+                    Plates = i.Vehicle.Plates,
                 });
         }
 
