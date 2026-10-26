@@ -143,10 +143,11 @@ namespace MiTaller.Controllers
                 if (!customerExists) return NotFound("not-found");
                 if (!workshopExists) return NotFound("not-found");
 
-                bool relationCustomerWorkshopExists = 
-                    await _context.Appointments.AnyAsync(a => a.WorkshopId == model.WorkshopId) ||
-                    await _context.Quotations.AnyAsync(q => q.WorkshopId == model.WorkshopId) ||
-                    await _context.Inspections.AnyAsync(i => i.WorkshopId == model.WorkshopId);
+                // Only a customer who actually dealt with this workshop can review it
+                bool relationCustomerWorkshopExists =
+                    await _context.Appointments.AnyAsync(a => a.WorkshopId == model.WorkshopId && a.CustomerId == model.CustomerId) ||
+                    await _context.Quotations.AnyAsync(q => q.WorkshopId == model.WorkshopId && q.CustomerId == model.CustomerId) ||
+                    await _context.Inspections.AnyAsync(i => i.WorkshopId == model.WorkshopId && i.CustomerId == model.CustomerId);
 
                 if (!relationCustomerWorkshopExists) return NotFound("no-relation-customer-workshop");
 
