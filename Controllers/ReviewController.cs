@@ -4,8 +4,10 @@ using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
 using MiTaller.DTO.Pager;
 using MiTaller.DTO.Review;
+using MiTaller.Models.Auth;
 using MiTaller.Models.Reviews;
 using MiTaller.Models.Workshop;
+using System.Security.Claims;
 
 
 namespace MiTaller.Controllers
@@ -20,6 +22,15 @@ namespace MiTaller.Controllers
         public ReviewController(DataContext context)
         {
             _context = context;
+        }
+
+        // El autor de una reseña sale siempre del token, nunca del body.
+        private Guid? GetTokenCustomerId()
+        {
+            var userType = User.FindFirst("UserType")?.Value;
+            if (!Enum.TryParse<UserType>(userType, out var type) || type != UserType.Customer) return null;
+
+            return Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
         }
 
         [HttpGet("workshop/{workshopId}")]
@@ -135,9 +146,13 @@ namespace MiTaller.Controllers
         [HttpPost]
         public async Task<ActionResult> CreateReview([FromBody] PostReviewDto model)
         {
+            var tokenCustomerId = GetTokenCustomerId();
+            if (tokenCustomerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+            var customerId = tokenCustomerId.Value;
+
             try
             {
-                var customerExists = await _context.Customers.AnyAsync(c => c.Id == model.CustomerId);
+                var customerExists = await _context.Customers.AnyAsync(c => c.Id == customerId);
                 var workshopExists = await _context.Workshops.AnyAsync(w => w.Id == model.WorkshopId);
 
                 if (!customerExists) return NotFound("not-found");
@@ -145,14 +160,14 @@ namespace MiTaller.Controllers
 
                 // Only a customer who actually dealt with this workshop can review it
                 bool relationCustomerWorkshopExists =
-                    await _context.Appointments.AnyAsync(a => a.WorkshopId == model.WorkshopId && a.CustomerId == model.CustomerId) ||
-                    await _context.Quotations.AnyAsync(q => q.WorkshopId == model.WorkshopId && q.CustomerId == model.CustomerId) ||
-                    await _context.Inspections.AnyAsync(i => i.WorkshopId == model.WorkshopId && i.CustomerId == model.CustomerId);
+                    await _context.Appointments.AnyAsync(a => a.WorkshopId == model.WorkshopId && a.CustomerId == customerId) ||
+                    await _context.Quotations.AnyAsync(q => q.WorkshopId == model.WorkshopId && q.CustomerId == customerId) ||
+                    await _context.Inspections.AnyAsync(i => i.WorkshopId == model.WorkshopId && i.CustomerId == customerId);
 
                 if (!relationCustomerWorkshopExists) return NotFound("no-relation-customer-workshop");
 
                 var existingReview = await _context.Reviews
-                    .FirstOrDefaultAsync(r => r.CustomerId == model.CustomerId && r.WorkshopId == model.WorkshopId);
+                    .FirstOrDefaultAsync(r => r.CustomerId == customerId && r.WorkshopId == model.WorkshopId);
 
                 if (existingReview != null)
                 {
@@ -164,7 +179,7 @@ namespace MiTaller.Controllers
                 {
                     var review = new Review
                     {
-                        CustomerId = model.CustomerId,
+                        CustomerId = customerId,
                         WorkshopId = model.WorkshopId,
                         Comment = model.Comment,
                         Rate = model.Rate
@@ -174,7 +189,7 @@ namespace MiTaller.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return Ok("review-deleted");
+                return Ok("review-saved");
             }
             catch (Exception)
             {
@@ -185,10 +200,13 @@ namespace MiTaller.Controllers
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateReview(int id, [FromBody] PostReviewDto model)
         {
+            var customerId = GetTokenCustomerId();
+            if (customerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+
             try
             {
                 var review = await _context.Reviews.FindAsync(id);
-                if (review == null) return NotFound("not-found");
+                if (review == null || review.CustomerId != customerId) return NotFound("not-found");
 
                 review.Comment = model.Comment;
                 review.Rate = model.Rate;
@@ -207,10 +225,13 @@ namespace MiTaller.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteReview(int id)
         {
-            try 
+            var customerId = GetTokenCustomerId();
+            if (customerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+
+            try
             {
                 var review = await _context.Reviews.FindAsync(id);
-                if (review == null) return NotFound("not-found");
+                if (review == null || review.CustomerId != customerId) return NotFound("not-found");
 
                 _context.Reviews.Remove(review);
                 await _context.SaveChangesAsync();
