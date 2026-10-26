@@ -15,6 +15,7 @@ using Microsoft.Identity.Client;
 using MiTaller.Models.Workshop;
 using MiTaller.Models.Auth;
 using MiTaller.Services;
+using System.Security.Claims;
 
 namespace MiTaller.Controllers
 {
@@ -212,13 +213,6 @@ namespace MiTaller.Controllers
                 if (workshop == null) return NotFound("not-found");
                 if (vehicle == null) return NotFound("not-found");
 
-                //var activeInspection = await _context.WorkshopVehicleInspections
-                //    .Where(a => a.WorkshopId == model.WorkshopId
-                //            && a.CustomerId == model.CustomerId
-                //            && a.VehicleId == model.VehicleId
-                //            && a.IsActive)
-                //    .FirstOrDefaultAsync();
-
                 byte[]? imageData = null;
                 if (model.Image != null)
                 {
@@ -374,33 +368,31 @@ namespace MiTaller.Controllers
         [HttpPost("vehicle-has-inspections")]
         public async Task<ActionResult> HasActiveInspection(CustomerWorkshopVehicleBodyDto  model)
         {
+            // El cliente sale del token; el CustomerId del body se ignora.
+            var userType = User.FindFirst("UserType")?.Value;
+            if (!Enum.TryParse<UserType>(userType, out var type) || type != UserType.Customer
+                || !Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var customerId))
+                return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+
             try
             {
-                var customerExists = await _context.Customers.AnyAsync(c => c.Id == model.CustomerId && !c.IsDeleted);
+                var customerExists = await _context.Customers.AnyAsync(c => c.Id == customerId && !c.IsDeleted);
                 var workshopExists = await _context.Workshops.AnyAsync(w => w.Id == model.WorkshopId && !w.IsDeleted);
-                var vehicle = await _context.Vehicles
-                    .Where(v => v.Id == model.VehicleId && v.CustomerId == model.CustomerId && !v.IsDeleted)
-                    .FirstOrDefaultAsync();
-
-                dynamic? activeInspection ;
-
-                string exists = string.Empty;
+                var vehicleExists = await _context.Vehicles
+                    .AnyAsync(v => v.Id == model.VehicleId && v.CustomerId == customerId && !v.IsDeleted);
 
                 if (!customerExists) return NotFound("not-found");
                 if (!workshopExists) return NotFound("not-found");
-                if (vehicle == null) return NotFound("not-found");
+                if (!vehicleExists) return NotFound("not-found");
 
                 // Every format (Auto/Moto included) lives in the generic Inspections table
-                activeInspection = await _context.Inspections
-                .Where(a => a.WorkshopId == model.WorkshopId
-                        && a.CustomerId == model.CustomerId
-                        && a.VehicleId == model.VehicleId
-                        && a.IsActive)
-                .FirstOrDefaultAsync();
+                var hasActiveInspection = await _context.Inspections
+                    .AnyAsync(a => a.WorkshopId == model.WorkshopId
+                            && a.CustomerId == customerId
+                            && a.VehicleId == model.VehicleId
+                            && a.IsActive);
 
-                if (activeInspection == null) exists = "false";
-
-                return Ok("true");
+                return Ok(hasActiveInspection ? "true" : "false");
             }
             catch (Exception)
             {
