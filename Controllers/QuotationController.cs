@@ -105,6 +105,7 @@ namespace MiTaller.Controllers
                 var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                 var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -202,6 +203,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var quotationResponseDto = new QuotationResponseDto
@@ -302,6 +304,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                         .Where(qs => qs.QuotationId == quotation.Id)
                         .Include(ws => ws.Service)
+                            .ThenInclude(ws => ws.Service)
                         .ToListAsync();
 
                     var quotationResponseDto = new QuotationResponseDto
@@ -406,6 +409,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -507,6 +511,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                         .Where(qs => qs.QuotationId == quotation.Id)
                         .Include(ws => ws.Service)
+                            .ThenInclude(ws => ws.Service)
                         .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -906,6 +911,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -995,6 +1001,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -1084,6 +1091,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -1395,6 +1403,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
@@ -2136,6 +2145,7 @@ namespace MiTaller.Controllers
                     var quotationServices = await _context.QuotationServices
                     .Where(qs => qs.QuotationId == quotation.Id)
                     .Include(ws => ws.Service)
+                        .ThenInclude(ws => ws.Service)
                     .ToListAsync();
 
                     var vehicleBrand = quotation.Vehicle.BrandId == -1 ? quotation.Vehicle.OtherBrand : quotation.Vehicle.Brand.Name;
