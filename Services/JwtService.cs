@@ -15,6 +15,8 @@ namespace MiTaller.Services
             _configuration = configuration;
         }
 
+        public const string SecurityStampClaim = "stamp";
+
         public string GenerateToken(BaseIdentityUser user)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -24,7 +26,8 @@ namespace MiTaller.Services
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim("UserType", user.UserType.ToString()) // Agregar el UserType al token
+                new Claim("UserType", user.UserType.ToString()), // Agregar el UserType al token
+                new Claim(SecurityStampClaim, user.SecurityStamp ?? "")
             };
 
             // El claim de admin de plataforma solo se otorga a la cuenta fija configurada

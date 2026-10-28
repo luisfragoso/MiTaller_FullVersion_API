@@ -22,7 +22,7 @@ try
 {
     // Add services to the container.
 
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options => options.Filters.Add<MiTaller.Attributes.UploadValidationFilter>());
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(c =>
@@ -189,6 +189,29 @@ try
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        };
+        // A password change/reset rotates the SecurityStamp and a deleted account is gone, so their old tokens stop working.
+        // Tokens issued before the "stamp" claim existed only get the deleted check (they expire within 8h).
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                if (!Guid.TryParse(context.Principal?.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var userId))
+                {
+                    context.Fail("invalid-token");
+                    return;
+                }
+                var db = context.HttpContext.RequestServices.GetRequiredService<DataContext>();
+                var user = await db.Users.AsNoTracking()
+                    .Where(u => u.Id == userId)
+                    .Select(u => new { u.SecurityStamp, u.IsDeleted })
+                    .FirstOrDefaultAsync();
+                var stamp = context.Principal!.FindFirst(JwtService.SecurityStampClaim)?.Value;
+                if (user == null || user.IsDeleted || (stamp != null && stamp != user.SecurityStamp))
+                {
+                    context.Fail("revoked-token");
+                }
+            }
         };
     });
 

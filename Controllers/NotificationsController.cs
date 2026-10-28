@@ -97,9 +97,9 @@ namespace MiTaller.Controllers
 
                 return Ok(response);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                return BadRequest("Error getting user notifications: " + ex.Message);
+                return BadRequest("unkwnown-error");
             }
         }
 

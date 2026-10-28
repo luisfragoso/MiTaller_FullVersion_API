@@ -535,7 +535,8 @@ namespace MiTaller.Controllers
 
                 if (result.Succeeded)
                 {
-                    return Ok("password-updated");
+                    // The new SecurityStamp revokes every other session; this one keeps working with a fresh token.
+                    return Ok(new { message = "password-updated", token = _jwtService.GenerateToken(user) });
                 }
 
                 return BadRequest("unkwnown-error");
