@@ -98,7 +98,7 @@ namespace MiTaller.Services
         }
 
         // The stored Status only changes on payment events; what the workshop sees depends on today's date.
-        private static string DisplayStatus(WorkshopSubscription subscription, DateTime now) =>
+        public static string DisplayStatus(WorkshopSubscription subscription, DateTime now) =>
             now < subscription.TrialEndsAt ? nameof(SubscriptionStatus.Trial)
             : subscription.CurrentPeriodEnd > now ? subscription.Status.ToString()
             : subscription.GraceEndsAt > now ? nameof(SubscriptionStatus.PastDue)
