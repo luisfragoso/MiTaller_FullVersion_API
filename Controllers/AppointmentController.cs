@@ -319,6 +319,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{appointmentId}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateAppointment(int appointmentId, [FromBody] PostAppointmentDto model)
         {
             try 
@@ -365,6 +366,7 @@ namespace MiTaller.Controllers
             { "Pendiente", "Confirmada", "En taller", "Completada", "Cancelada" };
 
         [HttpPatch("{appointmentId}/status")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateAppointmentStatus(int appointmentId, [FromBody] UpdateAppointmentStatusDto model)
         {
             try
@@ -391,6 +393,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{appointmentId}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteAppointment(int appointmentId)
         {
             try

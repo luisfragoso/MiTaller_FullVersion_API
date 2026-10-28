@@ -1433,6 +1433,7 @@ namespace MiTaller.Controllers
 
         [LegacyWriteRetired]
         [HttpPut("update-detail-history/{vehicleInspectionDetailHistoryId}")]
+        [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> UpdateVehicleInspectionDetailHistory(int vehicleInspectionDetailHistoryId, PutVehicleInspectionDetailHistoryDto model)
         {
             try

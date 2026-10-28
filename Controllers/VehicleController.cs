@@ -254,6 +254,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost]
+        [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> CreateVehicle(PostVehicleDto model)
         {
             try 

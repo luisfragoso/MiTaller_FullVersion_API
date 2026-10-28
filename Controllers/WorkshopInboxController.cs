@@ -239,6 +239,7 @@ namespace MiTaller.Controllers
 
 
         [HttpDelete("delete-one/{workshopInboxId}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteOneWorkshopInbox(int workshopInboxId)
         {
             try
@@ -265,6 +266,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("delete-all/{workshopId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnWorkshop]
         public async Task<ActionResult> DeleteOneWorkshopInbox(Guid workshopId)
         {

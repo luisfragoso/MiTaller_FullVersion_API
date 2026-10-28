@@ -22,6 +22,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("create")]
+        [AuthorizeEmployee("Administrador")]
         [CallerMatches("WorkshopId")]
         public async Task<ActionResult> CreateAdvertisement(PostAdvertisementDto model)
         {
@@ -162,6 +163,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("advertisement/{advertisementId}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateAdvertisement(int advertisementId, PostAdvertisementDto model)
         {
             try
@@ -202,6 +204,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("advertisement/{advertisementId}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteAdvertisement(int advertisementId)
         {
             try

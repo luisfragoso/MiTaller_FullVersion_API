@@ -12,5 +12,6 @@ namespace MiTaller.DTO.Auth
         public string? Permissions { get; set; }
         public Guid? EmployeeId { get; set; }
         public string? ShortEmployeeId { get; set; }
+        public string? EmployeeName { get; set; }
     }
 }

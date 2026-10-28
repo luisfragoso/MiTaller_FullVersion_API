@@ -31,6 +31,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnsResource(ResourceKind.WorkshopBill, "id")]
         public async Task<ActionResult<WorkshopBillResponseDto>> GetWorkshopBillById(int id)
         {
@@ -60,6 +61,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopBillResponseDto>>> GetWorkshopBillsByWorkshop(Guid workshopId)
         {

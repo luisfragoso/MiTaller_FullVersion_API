@@ -109,6 +109,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("files/{workshopId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnWorkshop]
         public async Task<ActionResult<WorkshopFileResponseDto>> GetWorkshopFiles(Guid workshopId)
         {
@@ -140,6 +141,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("download-file/{fileId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
         public async Task<ActionResult> DownloadFile(Guid fileId)
         {
@@ -161,6 +163,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("view-image/{fileId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
         public async Task<IActionResult> ViewImage(Guid fileId)
         {

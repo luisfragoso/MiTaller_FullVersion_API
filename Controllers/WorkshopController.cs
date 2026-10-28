@@ -300,6 +300,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{workshopId}")]
+        [AuthorizeEmployee()]
         [OwnWorkshop]
         [Authorize]
         public async Task<ActionResult> SoftDeleteWorkshop(Guid workshopId)

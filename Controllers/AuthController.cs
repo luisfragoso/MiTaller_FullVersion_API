@@ -117,6 +117,7 @@ namespace MiTaller.Controllers
                         loginResponseDto.EmployeeId = workshopEmployee.EmployeeId;
                         loginResponseDto.ShortEmployeeId = workshopEmployee.EmployeeId?.ToString().Substring(0, 13);
                         loginResponseDto.Permissions = workshopEmployee.Permissions;
+                        loginResponseDto.EmployeeName = workshopEmployee.FullName;
                     }
                 }
 
@@ -687,9 +688,11 @@ namespace MiTaller.Controllers
 
                 user.PasswordResetCode = null;
                 user.PasswordResetCodeExpires = null;
+                // Receiving the code proves the mailbox, e.g. employees whose first access is this flow.
+                user.EmailConfirmed = true;
                 ResetAttempts.TryRemove(user.Id, out _);
 
-                if (!result.Succeeded) 
+                if (!result.Succeeded)
                 { 
                     return BadRequest("unkwnown-error"); 
                 }

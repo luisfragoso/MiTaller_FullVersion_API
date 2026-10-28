@@ -173,6 +173,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-employees-by/{workshopId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopEmployeeResponseDto>>> GetEmployeesByWorkshop(Guid workshopId)
         {
@@ -222,6 +223,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-employee-by/{employeeId}")]
+        [AuthorizeEmployee("Administrador")]
         [OwnsResource(ResourceKind.WorkshopEmployee, "employeeId")]
         public async Task<ActionResult<WorkshopEmployeeResponseDto>> GetEmployeeById(Guid employeeId)
         {

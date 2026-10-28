@@ -862,6 +862,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteQuotation(int id)
         {
             try 

@@ -273,6 +273,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("create-from-workshop")]
+        [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> CreateCustomerFromWorkshop([FromBody] PostCustomerFromWorkshopDto model)
         {
             try
