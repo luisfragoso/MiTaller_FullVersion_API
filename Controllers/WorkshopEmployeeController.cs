@@ -30,6 +30,7 @@ namespace MiTaller.Controllers
             _emailSender = emailSender;
         }
         [HttpPost("register-employee")]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> RegisterEmployee(PostWorkshopEmployeeDto model)
         {
@@ -172,6 +173,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-employees-by/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopEmployeeResponseDto>>> GetEmployeesByWorkshop(Guid workshopId)
         {
             try
@@ -220,6 +222,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-employee-by/{employeeId}")]
+        [OwnsResource(ResourceKind.WorkshopEmployee, "employeeId")]
         public async Task<ActionResult<WorkshopEmployeeResponseDto>> GetEmployeeById(Guid employeeId)
         {
             try
@@ -254,6 +257,8 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("update-employee/{employeeId}")]
+        [CallerMatches("WorkshopId")]
+        [OwnsResource(ResourceKind.WorkshopEmployee, "employeeId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateEmployee(Guid employeeId, PostWorkshopEmployeeDto model)
         {
@@ -349,6 +354,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("employee/{employeeId}")]
+        [OwnsResource(ResourceKind.WorkshopEmployee, "employeeId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteEmployee(Guid employeeId)
         {

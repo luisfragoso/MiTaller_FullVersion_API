@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<RoadsideAssistanceResponseDto>>> GetWorkshopInbox(Guid workshopId)
         {
             try
@@ -102,6 +104,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateQuotation([FromBody] PostRoadsideAssistance model)
         {
             try

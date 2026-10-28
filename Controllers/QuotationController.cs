@@ -64,6 +64,7 @@ namespace MiTaller.Controllers
             || (caller.WorkshopId != null && quotation.WorkshopId == caller.WorkshopId);
 
         [HttpGet("{id}")]
+        [OwnsResource(ResourceKind.Quotation, "id")]
         public async Task<ActionResult<QuotationResponseDto>> GetQuotationById(int id)
         {
             try
@@ -159,6 +160,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("customer/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<ICollection<QuotationResponseDto>>> GetQuotationsByCustomer(Guid customerId)
         {
             try 
@@ -256,6 +258,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer/{customerId}/pager")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -365,6 +368,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<QuotationResponseDto>>> GetQuotationsByWorkshop(Guid workshopId)
         {
             try 
@@ -466,6 +470,7 @@ namespace MiTaller.Controllers
 
 
         [HttpPost("workshop/{workshopId}/pager")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -877,6 +882,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-workshop-customer-vehicle-quotation")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<QuotationResponseDto>>> GetQuotationsByWorkshopCustomerVehicle(CustomerWorkshopVehicleBodyDto model)
         {
             try
@@ -967,6 +973,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-workshop-customer-quotation")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<QuotationResponseDto>>> GetQuotationsByWorkshopCustomer(CustomerWorkshopBodyDto model)
         {
             try
@@ -1057,6 +1064,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop-canceled/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<QuotationResponseListDto>> GetQuotationsCanceledByWorkshop(Guid workshopId)
         {
             try
@@ -1157,6 +1165,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-canceled-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsCanceledByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1262,6 +1271,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-canceled-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsCanceledByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1367,6 +1377,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop-pending/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<QuotationResponseListDto>> GetQuotationsPendingByWorkshop(Guid workshopId)
         {
             try
@@ -1469,6 +1480,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-pending-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsPendingByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1576,6 +1588,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-in-progress-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsInProgressByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1683,6 +1696,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-quoted-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsQuotedByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1790,6 +1804,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-pending-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsPendingByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -1897,6 +1912,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-quoted-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsQuotedByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -2004,6 +2020,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-in-progress-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsInProgressByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -2111,6 +2128,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop-confirmed/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<QuotationResponseListDto>> GetQuotationsConfirmedByWorkshop(Guid workshopId)
         {
             try
@@ -2211,6 +2229,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-confirmed-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsConfirmedByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -2316,6 +2335,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-confirmed-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<QuotationResponseDto>>> GetQuotationsConfirmedByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try

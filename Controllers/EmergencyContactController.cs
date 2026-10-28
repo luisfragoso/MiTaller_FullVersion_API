@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -21,6 +22,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("register")]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateEmergencyContact(PostEmergencyContactDto model)
         {
             try
@@ -63,6 +65,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<IEnumerable<EmergencyContactResponseDto>>> GetCustomerEmergencyContacts(Guid customerId)
         {
             try

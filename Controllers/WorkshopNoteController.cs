@@ -26,6 +26,7 @@ namespace MiTaller.Controllers
             _context = context;
         }
         [HttpPost("register")]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> RegisterNote(PostWorkshopNoteDto model)
         {
@@ -60,6 +61,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-notes-by/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopNoteResponseDto>>> GetNotesByWorkshop(Guid workshopId)
         {
             try
@@ -105,6 +107,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("update-note/{noteId}")]
+        [OwnsResource(ResourceKind.WorkshopNote, "noteId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateNote(int noteId, PutWorkshopNoteDto model)
         {
@@ -134,6 +137,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("note/{noteId}")]
+        [OwnsResource(ResourceKind.WorkshopNote, "noteId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteNote(int noteId)
         {

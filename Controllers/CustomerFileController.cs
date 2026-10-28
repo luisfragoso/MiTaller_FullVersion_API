@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
 using MiTaller.DTO.Customer;
@@ -9,6 +11,7 @@ namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CustomerFileController : ControllerBase
     {
         private readonly DataContext _context;
@@ -23,6 +26,9 @@ namespace MiTaller.Controllers
         {
             try
             {
+                if (!await CallerResolver.IsOwnAccountAsync(User, _context, model.CustomerId))
+                    return Forbid();
+
                 var customer = await _context.Customers.FindAsync(model.CustomerId);
                 if (customer == null)
                 {
@@ -106,6 +112,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("files/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<CustomerFileResponseDto>> GetCustomerFiles(Guid customerId)
         {
             try 
@@ -136,6 +143,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("download-file/{fileId}")]
+        [OwnsResource(ResourceKind.CustomerFile, "fileId")]
         public async Task<ActionResult> DownloadFile(Guid fileId)
         {
             try 

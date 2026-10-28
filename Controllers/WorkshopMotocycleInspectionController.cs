@@ -49,6 +49,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "id")]
         public async Task<IActionResult> GetWorkshopVehicleInspectionById(int id)
         {
             try
@@ -71,6 +72,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult> GetWorkshopMotocycleInspectionsByWorkshop(Guid workshopId)
         {
             try
@@ -91,6 +93,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("active-motocycles-in-workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<VehicleInWorkshopResponseDto>>> GetMotocycleInspectionsByWorkshop(Guid workshopId)
         {
             try
@@ -149,6 +152,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("active-motocycles-in-workshop-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<VehicleInWorkshopResponseDto>>> GetMotocycleInspectionsByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -216,6 +220,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("finished-motocycles-in-workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<VehicleInWorkshopResponseDto>>> GetFinishedMotocycleInspectionsByWorkshop(Guid workshopId)
         {
             try
@@ -274,6 +279,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("finished-motocycles-in-workshop-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<VehicleInWorkshopResponseDto>>> GetFinishedMotocycleInspectionsByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -340,6 +346,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("motocycles-in-workshop-full-info/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<MotocycleInWorkshopFullInfoResponseDto>>> GetMotocyclesInWorkshopFullInfo(Guid workshopId)
         {
             try
@@ -402,6 +409,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-motocycle-in-workshop-history")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<VehicleInspectionHistoryResponseDto>> GetMotocycleHistoryInWorkshop(CustomerWorkshopVehicleBodyDto model)
         {
             try
@@ -470,6 +478,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-motocycle-in-workshop-history-pager")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<PagerResponseDto<VehicleInspectionHistoryResponseDto>>> GetMotocycleHistoryInWorkshopPaged([FromBody] CustomerWorkshopVehicleBodyDto model, [FromQuery] PagerBodyDto pager)
         {
             try
@@ -527,6 +536,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("motocycles-in-workshop-by/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<ICollection<VehicleInWorkshopResponseDto>>> GetMotocyclesInspectionsByCustomer(Guid customerId)
         {
             try
@@ -585,6 +595,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("motocycles-in-workshop-by-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<PagerResponseDto<VehicleInWorkshopResponseDto>>> GetMotocyclesInspectionsByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -651,6 +662,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-get-motocycle-in-workshop-history")]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult<VehicleInspectionHistoryResponseDto>> GetCustomerMotocycleHistory(CustomerVehicleBodyDto model)
         {
             try
@@ -711,6 +723,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-get-motocycle-in-workshop-history-pager")]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult<PagerResponseDto<VehicleInspectionHistoryResponseDto>>> GetCustomerMotocycleHistoryPaged([FromBody] CustomerVehicleBodyDto model, [FromQuery] PagerBodyDto pager)
         {
             try
@@ -761,6 +774,7 @@ namespace MiTaller.Controllers
 
         [LegacyWriteRetired]
         [HttpPost]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> CreateWorkshopMotocycleInspection([FromForm] PostWorkshopMotocycleInspectionDto model)
         {
@@ -1096,6 +1110,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("download-file/{fileId}")]
+        [OwnsResource(ResourceKind.LegacyMotoFile, "fileId")]
         public async Task<ActionResult> DownloadWorkshopMotocycleFile(int fileId)
         {
             try
@@ -1113,6 +1128,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("detail-history/{motocycleInspectionId}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "motocycleInspectionId")]
         public async Task<ActionResult<ICollection<MotocycleInspectionDetailHistoryResponseDto>>> GetMotocycleDetailInspection(int motocycleInspectionId)
         {
             try
@@ -1147,6 +1163,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("history/{motocycleInspectionId}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "motocycleInspectionId")]
         public async Task<ActionResult<ICollection<MotocycleInspectionHistoryResponseDto>>> GetMotocycleInspectionHistory(int motocycleInspectionId)
         {
             try
@@ -1181,6 +1198,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-history/customer-workshop")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<MotocycleInspectionHistoryResponseDto>>> GetMotocycleInspectionHistoryCustomerWorkshop(CustomerWorkshopBodyDto model)
         {
             try
@@ -1220,6 +1238,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-history/customer-workshop-motocycle")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<MotocycleInspectionHistoryResponseDto>>> GetMotocycleInspectionHistoryCustomerWorkshopMotocycleMotocycle(CustomerWorkshopVehicleBodyDto model)
         {
             try
@@ -1349,6 +1368,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-request-status/{motocycleInspectionId}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "motocycleInspectionId")]
         public async Task<ActionResult> CustomerRequestStatus(int motocycleInspectionId)
         {
             try
@@ -1409,6 +1429,7 @@ namespace MiTaller.Controllers
 
         [LegacyWriteRetired]
         [HttpPut("end-inspection/{inspectionId}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "inspectionId", AllowCustomer = false)]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> EndVehicleInspection(int inspectionId)
         {
@@ -1437,6 +1458,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("generate-pdf/{inspectionId}")]
+        [OwnsResource(ResourceKind.LegacyMotoInspection, "inspectionId")]
         public IActionResult GeneratePdf(int inspectionId)
         {
             var document = new SampleDocument();
@@ -1447,6 +1469,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("generate-pdf2/{id}")]
+        [OwnsResource(ResourceKind.LegacyMotoHistory, "id")]
         public async Task<IActionResult> GeneratePdfFromDb(int id)
         {
 

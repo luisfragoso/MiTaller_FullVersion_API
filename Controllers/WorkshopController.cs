@@ -157,6 +157,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{workshopId}")]
+        [OwnWorkshop]
         [Authorize]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateWorkshop(Guid workshopId, [FromBody] PostWorkshopDto model)
@@ -198,6 +199,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{workshopId}/vehicle-formats")]
+        [OwnWorkshop]
         [Authorize]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult<List<VehicleFormatSettingDto>>> UpdateWorkshopVehicleFormats(Guid workshopId, [FromBody] List<VehicleFormatSettingDto> model)
@@ -257,6 +259,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("coordenates/{workshopId}")]
+        [OwnWorkshop]
         [Authorize]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateWorkshopLatLong(Guid workshopId, LatitudeLongitude model)
@@ -297,6 +300,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{workshopId}")]
+        [OwnWorkshop]
         [Authorize]
         public async Task<ActionResult> SoftDeleteWorkshop(Guid workshopId)
         {

@@ -25,6 +25,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}")]
+        [OwnsResource(ResourceKind.WorkshopIncome, "id")]
         public async Task<ActionResult<WorkshopIncomeResponseDto>> GetWorkshopIncomeById(int id)
         {
             try 
@@ -52,6 +53,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}/{monthYear}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopIncomeResponseDto>>> GetWorkshopIncomesByWorkshop(Guid workshopId, string monthYear)
         {
             try
@@ -88,6 +90,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}/ytd/{year}")]
+        [OwnWorkshop]
         public async Task<ActionResult<YtdIncomeResponseDto>> GetYtdIncome(Guid workshopId, int year)
         {
             try
@@ -108,6 +111,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> CreateWorkshopIncome([FromBody] PostWorkshopIncomeDto model)
         {
@@ -162,6 +166,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{id}")]
+        [OwnsResource(ResourceKind.WorkshopIncome, "id")]
         public async Task<ActionResult> UpdateWorkshopIncome(int id, [FromBody] PostWorkshopIncomeDto model)
         {
             try 
@@ -181,6 +186,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [OwnsResource(ResourceKind.WorkshopIncome, "id")]
         public async Task<ActionResult> DeleteWorkshopIncome(int id)
         {
             try 

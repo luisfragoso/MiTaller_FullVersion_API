@@ -101,6 +101,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("register-service")]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> RegisterWorkshopService(PostWorkshopServiceDto model)
         {
@@ -251,6 +252,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("service/{serviceId}")]
+        [OwnsResource(ResourceKind.WorkshopService, "serviceId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult<ICollection<PostWorkshopServiceDto>>> DeleteServiceById(int serviceId)
         {

@@ -62,6 +62,7 @@ namespace MiTaller.Controllers
             || (caller.WorkshopId != null && appointment.WorkshopId == caller.WorkshopId);
 
         [HttpGet("{appointmentId}")]
+        [OwnsResource(ResourceKind.Appointment, "appointmentId")]
         public async Task<ActionResult<AppointmentResponseDto>> GetAppointmentById(int appointmentId)
         {
             try 
@@ -113,6 +114,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("customer/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult<AppointmentResponseDto>> GetAppointmentsByCustomer(Guid customerId)
         {
             try 
@@ -168,6 +170,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<List<AppointmentResponseDto>>> GetAppointmentsByWorkshop(Guid workshopId)
         {
             try 

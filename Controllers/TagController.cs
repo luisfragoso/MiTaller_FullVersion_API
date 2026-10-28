@@ -20,6 +20,7 @@ public class TagController : ControllerBase
     }
 
     [HttpGet("workshop/{workshopId}")]
+    [OwnWorkshop]
     public async Task<ActionResult<IEnumerable<WorkshopTagsResponseDto>>> GetTagsByWorkshop(Guid workshopId)
     {
         try 
@@ -46,6 +47,7 @@ public class TagController : ControllerBase
     }
 
     [HttpGet("workshop/{workshopId}/with-count")]
+    [OwnWorkshop]
     public async Task<ActionResult<IEnumerable<WorkshopTagsResponseDto>>> GetTagsWithCount(Guid workshopId)
     {
         try 
@@ -74,6 +76,7 @@ public class TagController : ControllerBase
 
 
     [HttpPost("workshop/{workshopId}")]
+    [OwnWorkshop]
     [AuthorizeEmployee("Administrador")]
     public async Task<ActionResult> CreateTag(Guid workshopId, [FromBody] PostTagDto model)
     {
@@ -126,6 +129,7 @@ public class TagController : ControllerBase
     }
 
     [HttpPost("get-customer-tags")]
+    [CallerMatches("WorkshopId")]
     public async Task<ActionResult<IEnumerable<WorkshopTagsResponseDto>>> GetTagsByCustomer(CustomerWorkshopBodyDto model)
     {
         try 
@@ -152,6 +156,7 @@ public class TagController : ControllerBase
     }
 
     [HttpPost("assign")]
+    [CallerMatches("WorkshopId")]
     [AuthorizeEmployee("Administrador")]
     public async Task<ActionResult> AssignTagToCustomer([FromBody] AssignTagDto model)
     {
@@ -220,6 +225,7 @@ public class TagController : ControllerBase
     }
 
     [HttpDelete("unassign/{customerTagId}")]
+    [OwnsResource(ResourceKind.CustomerTag, "customerTagId")]
     [AuthorizeEmployee("Administrador")]
     public async Task<ActionResult> UnassignTagFromCustomer(int customerTagId)
     {

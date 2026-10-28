@@ -23,6 +23,7 @@ namespace MiTaller.Controllers
 
 
         [HttpPost("register")]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> RegisterNote(PostWorkshopCustomerNoteDto model)
         {
@@ -74,6 +75,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("get-workshop-customer-note")]
+        [CallerMatches("WorkshopId")]
         public async Task<ActionResult<ICollection<WorkshopCustomerNotes>>> GetNotesByWorkshop(CustomerWorkshopBodyDto model)
         {
             try
@@ -96,6 +98,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("note/{noteId}")]
+        [OwnsResource(ResourceKind.WorkshopCustomerNote, "noteId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteNote(int noteId)
         {

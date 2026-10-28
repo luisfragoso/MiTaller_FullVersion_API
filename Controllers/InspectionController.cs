@@ -47,6 +47,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}")]
+        [OwnsResource(ResourceKind.Inspection, "id")]
         public async Task<ActionResult> GetInspectionById(int id)
         {
             try
@@ -76,12 +77,14 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<InspectionInWorkshopFullInfoResponseDto>>> GetActiveInspectionsByWorkshop(Guid workshopId, [FromQuery] string vehicleFormat, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             return await GetInspectionsByWorkshopAndStatus(workshopId, vehicleFormat, page, pageSize, isActive: true);
         }
 
         [HttpGet("workshop/{workshopId}/closed")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<InspectionInWorkshopFullInfoResponseDto>>> GetClosedInspectionsByWorkshop(Guid workshopId, [FromQuery] string vehicleFormat, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             return await GetInspectionsByWorkshopAndStatus(workshopId, vehicleFormat, page, pageSize, isActive: false);
@@ -89,10 +92,12 @@ namespace MiTaller.Controllers
 
         // Active inspections per vehicle format (template format), for tab badges and dashboard totals
         [HttpGet("workshop/{workshopId}/active-counts")]
+        [OwnWorkshop]
         public Task<ActionResult<Dictionary<string, int>>> GetActiveCountsByWorkshop(Guid workshopId)
             => GetCountsByWorkshopAndStatus(workshopId, isActive: true);
 
         [HttpGet("workshop/{workshopId}/closed-counts")]
+        [OwnWorkshop]
         public Task<ActionResult<Dictionary<string, int>>> GetClosedCountsByWorkshop(Guid workshopId)
             => GetCountsByWorkshopAndStatus(workshopId, isActive: false);
 
@@ -543,6 +548,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("download-file/{fileId}")]
+        [OwnsResource(ResourceKind.InspectionFile, "fileId")]
         public async Task<ActionResult> DownloadInspectionFile(int fileId)
         {
             try
@@ -583,6 +589,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("visits/customer-workshop")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVisits(CustomerWorkshopBodyDto model)
         {
             try
@@ -596,6 +603,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("visits/customer-workshop-vehicle")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<ICollection<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVehicleVisits(CustomerWorkshopVehicleBodyDto model)
         {
             try
@@ -609,6 +617,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("visits/customer-workshop-vehicle-pager")]
+        [CallerMatches("WorkshopId", "CustomerId")]
         public async Task<ActionResult<PagerResponseDto<VehicleInspectionHistoryResponseDto>>> GetCustomerWorkshopVehicleVisitsPaged([FromBody] CustomerWorkshopVehicleBodyDto model, [FromQuery] PagerBodyDto pager)
         {
             try
@@ -633,6 +642,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("history/{inspectionId}")]
+        [OwnsResource(ResourceKind.Inspection, "inspectionId")]
         public async Task<ActionResult> GetInspectionHistory(int inspectionId)
         {
             try
@@ -651,6 +661,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("detail-history/{inspectionId}")]
+        [OwnsResource(ResourceKind.Inspection, "inspectionId")]
         public async Task<ActionResult<ICollection<InspectionDetailHistoryResponseDto>>> GetInspectionDetailHistory(int inspectionId)
         {
             try
@@ -750,6 +761,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("end-inspection/{inspectionId}")]
+        [OwnsResource(ResourceKind.Inspection, "inspectionId", AllowCustomer = false)]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> EndInspection(int inspectionId)
         {
@@ -774,6 +786,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}/pdf")]
+        [OwnsResource(ResourceKind.Inspection, "id")]
         public async Task<ActionResult> GenerateInspectionPdf(int id)
         {
             try

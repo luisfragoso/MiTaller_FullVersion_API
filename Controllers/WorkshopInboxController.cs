@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopInboxResponseDto>>> GetWorkshopInbox(Guid workshopId)
         {
             try
@@ -98,6 +100,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("{workshopId}/inbox-pager")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<WorkshopInboxResponseDto>>> GetWorkshopInboxPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -205,6 +208,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("mark-all-as-read/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult> UpdateAllWorkshopInboxAsViewed(Guid workshopId)
         {
             try
@@ -261,6 +265,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("delete-all/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult> DeleteOneWorkshopInbox(Guid workshopId)
         {
             try

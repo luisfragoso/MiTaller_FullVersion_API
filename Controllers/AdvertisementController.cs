@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -21,6 +22,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("create")]
+        [CallerMatches("WorkshopId")]
         public async Task<ActionResult> CreateAdvertisement(PostAdvertisementDto model)
         {
             try

@@ -22,6 +22,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("upload-files")]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UploadFiles(PostWorkshopFilesDto model)
         {
@@ -108,6 +109,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("files/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<WorkshopFileResponseDto>> GetWorkshopFiles(Guid workshopId)
         {
             try 
@@ -138,6 +140,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("download-file/{fileId}")]
+        [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
         public async Task<ActionResult> DownloadFile(Guid fileId)
         {
             try 
@@ -158,6 +161,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("view-image/{fileId}")]
+        [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
         public async Task<IActionResult> ViewImage(Guid fileId)
         {
             try 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -11,7 +12,7 @@ namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class VehicleController : ControllerBase
     {
         private readonly DataContext _context;
@@ -22,6 +23,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("vehicle-types")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetVehicleTypes()
         {
             try 
@@ -44,6 +46,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("brands/{type}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetBrandsByType(string type)
         {
             try 
@@ -63,6 +66,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("models/{brandId}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetModelsByBrand(int brandId)
         {
             try 
@@ -82,6 +86,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("versions/{modelId}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetVersionsByModel(int modelId)
         {
             try 
@@ -101,6 +106,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("types/{versionId}")]
+        [AllowAnonymous]
         public async Task<ActionResult> GetTypesByVersion(int versionId)
         {
             try 
@@ -121,6 +127,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("{vehicleId}")]
+        [OwnsResource(ResourceKind.Vehicle, "vehicleId", AnyWorkshop = true)]
         public async Task<ActionResult<IEnumerable<VehicleResponseDto>>> GetVehicleById(int vehicleId)
         {
             try 
@@ -156,6 +163,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("customer/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId", AnyWorkshop = true)]
         public async Task<ActionResult<IEnumerable<VehicleByCustomerResponseDto>>> GetVehiclesByCustomer(Guid customerId)
         {
             try 
@@ -191,6 +199,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("customer-pager/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId", AnyWorkshop = true)]
         public async Task<ActionResult<PagerResponseDto<VehicleByCustomerResponseDto>>> GetVehiclesByCustomerPaged(Guid customerId, [FromBody] PagerBodyDto pager)
         {
             try
@@ -249,6 +258,10 @@ namespace MiTaller.Controllers
         {
             try 
             {
+                var caller = await CallerResolver.ResolveAsync(User, _context);
+                if (caller == null || (caller.Value.CustomerId != null && caller.Value.CustomerId != model.CustomerId))
+                    return Forbid();
+
                 var customerExists = await _context.Customers.AnyAsync(c => c.Id == model.CustomerId && !c.IsDeleted);
                 if (!customerExists)
                     return NotFound("not-found");
@@ -307,6 +320,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{vehicleId}")]
+        [OwnsResource(ResourceKind.Vehicle, "vehicleId")]
         public async Task<ActionResult> UpdateVehicle(int vehicleId, [FromBody] Vehicle vehicle)
         {
             try 
@@ -343,6 +357,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{vehicleId}")]
+        [OwnsResource(ResourceKind.Vehicle, "vehicleId")]
         public async Task<ActionResult> DeleteVehicle(int vehicleId)
         {
             try 
@@ -363,6 +378,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("upload-image/{vehicleId}")]
+        [OwnsResource(ResourceKind.Vehicle, "vehicleId")]
         public async Task<ActionResult> UploadVehicleImage(int vehicleId, IFormFile file)
         {
             try 
@@ -387,6 +403,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("view-image/{vehicleId}")]
+        [OwnsResource(ResourceKind.Vehicle, "vehicleId", AnyWorkshop = true)]
         public async Task<ActionResult> ViewVehicleImage(int vehicleId)
         {
             try 

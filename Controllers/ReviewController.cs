@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -144,6 +145,7 @@ namespace MiTaller.Controllers
 
 
         [HttpPost]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateReview([FromBody] PostReviewDto model)
         {
             var tokenCustomerId = GetTokenCustomerId();
@@ -198,6 +200,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{id}")]
+        [OwnsResource(ResourceKind.Review, "id", AllowWorkshop = false)]
         public async Task<ActionResult> UpdateReview(int id, [FromBody] PostReviewDto model)
         {
             var customerId = GetTokenCustomerId();
@@ -223,6 +226,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [OwnsResource(ResourceKind.Review, "id", AllowWorkshop = false)]
         public async Task<ActionResult> DeleteReview(int id)
         {
             var customerId = GetTokenCustomerId();

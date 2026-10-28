@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -148,6 +149,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("register")]
+        [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateAccident(PostAccidentDto model)
         {
             try

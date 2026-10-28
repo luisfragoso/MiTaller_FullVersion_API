@@ -77,6 +77,9 @@ namespace MiTaller.Controllers
         {
             try
             {
+                if (!await CallerResolver.IsOwnAccountAsync(User, HttpContext.RequestServices.GetRequiredService<DataContext>(), model.Id))
+                    return Forbid();
+
                 var account = await _userManager.Users
                 .Where(u => u.Id == model.Id
                         && u.UserType == model.UserType)
@@ -151,6 +154,9 @@ namespace MiTaller.Controllers
         {
             try
             {
+                if (!await CallerResolver.IsOwnAccountAsync(User, HttpContext.RequestServices.GetRequiredService<DataContext>(), model.Id))
+                    return Forbid();
+
                 var account = await _userManager.Users
                 .Where(u => u.Id == model.Id
                         && u.UserType == model.UserType)
@@ -209,10 +215,14 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("get-account-address")]
+        [Authorize]
         public async Task<ActionResult<AccountAddressDto>> GetAccountAddress(UserType userType, Guid accountId)
         {
             try
             {
+                if (!await CallerResolver.IsOwnAccountAsync(User, HttpContext.RequestServices.GetRequiredService<DataContext>(), accountId))
+                    return Forbid();
+
                 var account = await _userManager.Users
                 .Where(u => u.Id == accountId
                         && u.UserType == userType)

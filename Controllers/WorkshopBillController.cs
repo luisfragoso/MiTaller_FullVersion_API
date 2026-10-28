@@ -31,6 +31,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("{id}")]
+        [OwnsResource(ResourceKind.WorkshopBill, "id")]
         public async Task<ActionResult<WorkshopBillResponseDto>> GetWorkshopBillById(int id)
         {
             try 
@@ -59,6 +60,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ICollection<WorkshopBillResponseDto>>> GetWorkshopBillsByWorkshop(Guid workshopId)
         {
             try
@@ -86,6 +88,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> CreateWorkshopBill([FromBody] PostWorkshopBillDto model)
         {
@@ -114,6 +117,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPut("{id}")]
+        [OwnsResource(ResourceKind.WorkshopBill, "id")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UpdateWorkshopBill(int id, [FromBody] PostWorkshopBillDto model)
         {
@@ -136,6 +140,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpDelete("{id}")]
+        [OwnsResource(ResourceKind.WorkshopBill, "id")]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> DeleteWorkshopBill(int id)
         {

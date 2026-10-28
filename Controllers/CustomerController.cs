@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using MiTaller.Attributes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace MiTaller.Controllers
 
 
         [HttpGet("{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId", AnyWorkshop = true)]
         public async Task<ActionResult<CustomerInfoResponseDto>> GetCustomerById(Guid customerId)
         {
             try 
@@ -72,6 +74,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("upload-profile-image/{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult> UploadImage(Guid customerId, IFormFile file)
         {
             try 
@@ -103,6 +106,7 @@ namespace MiTaller.Controllers
 
 
         [HttpPut("{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult> UpdateCustomer(Guid customerId, [FromBody] PutCustomerDto model)
         {
             try 
@@ -149,6 +153,7 @@ namespace MiTaller.Controllers
 
 
         [HttpDelete("{customerId}")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
         public async Task<ActionResult> SoftDeleteCustomer(Guid customerId)
         {
             try 
