@@ -17,6 +17,7 @@ using MiTaller.Models.Advertisement;
 using MiTaller.Models.Services;
 using MiTaller.Models.Inspections;
 using MiTaller.Models.Audit;
+using MiTaller.Models.Subscription;
 using System.Linq;
 using System.Collections.Generic;
 
@@ -128,6 +129,14 @@ namespace MiTaller.Data
         // Audit log (historial global de cambios, solo lectura para el portal admin)
         public DbSet<AuditLog> AuditLogs { get; set; }
 
+        // Subscription (plans, Mercado Pago payments, discount codes)
+        public DbSet<SubscriptionSettings> SubscriptionSettings { get; set; }
+        public DbSet<WorkshopSubscription> WorkshopSubscriptions { get; set; }
+        public DbSet<SubscriptionPayment> SubscriptionPayments { get; set; }
+        public DbSet<DiscountSource> DiscountSources { get; set; }
+        public DbSet<DiscountCode> DiscountCodes { get; set; }
+        public DbSet<DiscountRedemption> DiscountRedemptions { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -141,6 +150,20 @@ namespace MiTaller.Data
                    .HasIndex(a => a.ChangedAt);
             builder.Entity<AuditLog>()
                    .HasIndex(a => new { a.ChangedByUserId, a.ChangedAt });
+
+            builder.Entity<WorkshopSubscription>().HasIndex(s => s.WorkshopId).IsUnique();
+            builder.Entity<WorkshopSubscription>()
+                   .HasOne(s => s.Workshop).WithMany().HasForeignKey(s => s.WorkshopId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<WorkshopSubscription>()
+                   .HasOne(s => s.DiscountCode).WithMany().HasForeignKey(s => s.DiscountCodeId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<SubscriptionPayment>().HasIndex(p => p.WorkshopId);
+            builder.Entity<SubscriptionPayment>().HasIndex(p => p.MpPaymentId).IsUnique().HasFilter("[MpPaymentId] IS NOT NULL");
+            builder.Entity<DiscountCode>().HasIndex(c => c.Code).IsUnique();
+            builder.Entity<DiscountRedemption>().HasIndex(r => new { r.DiscountCodeId, r.WorkshopId }).IsUnique();
+            builder.Entity<DiscountRedemption>()
+                   .HasOne(r => r.DiscountCode).WithMany().HasForeignKey(r => r.DiscountCodeId).OnDelete(DeleteBehavior.Restrict);
+            builder.Entity<DiscountRedemption>()
+                   .HasOne(r => r.DiscountSource).WithMany().HasForeignKey(r => r.DiscountSourceId).OnDelete(DeleteBehavior.Restrict);
 
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Workshop>().ToTable("Workshops");

@@ -230,8 +230,9 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost]
+        [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
-        public async Task<ActionResult> CreateInspection([FromForm] PostInspectionDto model)
+        public async Task<ActionResult> CreateInspection([FromForm] PostInspectionDto model, [FromServices] SubscriptionService subscriptions)
         {
             try
             {
@@ -239,6 +240,11 @@ namespace MiTaller.Controllers
                     .Where(w => w.Id == model.WorkshopId && !w.IsDeleted)
                     .FirstOrDefaultAsync();
                 if (workshop == null) return NotFound("not-found");
+
+                if (await subscriptions.CheckVehicleLimitAsync(workshop.Id) is string limitError)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, limitError);
+                }
 
                 var template = await _context.InspectionTemplates
                     .Where(t => t.Id == model.TemplateId && t.IsActive)
@@ -704,6 +710,7 @@ namespace MiTaller.Controllers
                     .FirstOrDefaultAsync();
 
                 if (inspection == null) return NotFound("not-found");
+                if (!await CallerOwnsWorkshopAsync(inspection.WorkshopId)) return Forbid();
 
                 var detailHistory = new InspectionDetailHistory
                 {
@@ -736,6 +743,9 @@ namespace MiTaller.Controllers
             }
         }
 
+        private async Task<bool> CallerOwnsWorkshopAsync(Guid workshopId) =>
+            (await CallerResolver.ResolveAsync(User, _context))?.WorkshopId == workshopId;
+
         [HttpPut("update-detail-history/{inspectionDetailHistoryId}")]
         [AuthorizeEmployee("Administrador", "Registrar vehículos")]
         public async Task<ActionResult> UpdateInspectionDetailHistory(int inspectionDetailHistoryId, PutInspectionDetailHistoryDto model)
@@ -747,6 +757,11 @@ namespace MiTaller.Controllers
                     .FirstOrDefaultAsync();
 
                 if (detailHistory == null) return NotFound("not-found");
+                var workshopId = await _context.Inspections
+                    .Where(i => i.Id == detailHistory.InspectionId)
+                    .Select(i => i.WorkshopId)
+                    .FirstOrDefaultAsync();
+                if (!await CallerOwnsWorkshopAsync(workshopId)) return Forbid();
 
                 detailHistory.Title = model.Title;
                 detailHistory.IsCompleted = model.IsCompleted;

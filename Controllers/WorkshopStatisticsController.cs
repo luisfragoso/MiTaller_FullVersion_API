@@ -222,6 +222,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("economic-balance-by/{workshopId}/{monthYear}")]
+        [RequiresProPlan]
         [AuthorizeEmployee("Administrador")]
         [OwnWorkshop]
         public async Task<ActionResult<EconomicBalanceResponseDto>> GetEconomicBalanceByWorkshop(Guid workshopId, string monthYear)

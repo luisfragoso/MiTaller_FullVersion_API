@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
+    [RequiresProPlan]
     [ApiController]
     [Authorize]
     public class WorkshopIncomeController : ControllerBase

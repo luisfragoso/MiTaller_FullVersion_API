@@ -33,7 +33,7 @@ namespace MiTaller.Controllers
         [HttpPost("register-employee")]
         [CallerMatches("WorkshopId")]
         [AuthorizeEmployee("Administrador")]
-        public async Task<ActionResult> RegisterEmployee(PostWorkshopEmployeeDto model)
+        public async Task<ActionResult> RegisterEmployee(PostWorkshopEmployeeDto model, [FromServices] SubscriptionService subscriptions)
         {
             try
             {
@@ -51,6 +51,11 @@ namespace MiTaller.Controllers
                 if (workshop == null)
                 {
                     return NotFound("not-found");
+                }
+
+                if (await subscriptions.CheckEmployeeLimitAsync(workshop.Id) is string limitError)
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden, limitError);
                 }
 
                 // Normalize phone number

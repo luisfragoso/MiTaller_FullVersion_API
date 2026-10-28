@@ -146,6 +146,7 @@ try
 
     // JWT
     builder.Services.AddScoped<JwtService>();
+    builder.Services.AddScoped<SubscriptionService>();
 
     // Audit log (historial global de cambios) - necesita saber quién hizo la request.
     builder.Services.AddHttpContextAccessor();
