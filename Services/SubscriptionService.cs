@@ -122,6 +122,80 @@ namespace MiTaller.Services
             CreatedAt = p.CreatedAt,
         };
 
+        /// <summary>
+        /// Prices a payment of the given period for the workshop, validating the code if one is sent.
+        /// Returns the error code instead when the code or channel can't be used.
+        /// </summary>
+        public async Task<(SubscriptionQuoteDto? Quote, string? Error)> QuoteAsync(Guid workshopId, SubscriptionQuoteRequestDto request)
+        {
+            if (!Enum.IsDefined(request.BillingPeriod)) return (null, "invalid-period");
+            var settings = await GetSettingsAsync();
+            var subscription = await GetOrCreateAsync(workshopId);
+            var now = DateTime.Now;
+
+            var subtotal = request.BillingPeriod == BillingPeriod.Annual
+                ? settings.MonthlyPrice * settings.AnnualPaidMonths
+                : settings.MonthlyPrice;
+
+            DiscountCode? code = null;
+            if (!string.IsNullOrWhiteSpace(request.Code))
+            {
+                var text = request.Code.Trim().ToUpperInvariant();
+                code = await _context.DiscountCodes.FirstOrDefaultAsync(c => c.Code == text);
+                var error = code switch
+                {
+                    null => "code-not-found",
+                    { IsActive: false } => "code-not-found",
+                    _ when code.ValidFrom > now => "code-not-started",
+                    _ when code.ValidUntil < now => "code-expired",
+                    _ when code.BillingPeriod != request.BillingPeriod => "code-wrong-period",
+                    _ when code.MaxUses != null && code.UsedCount >= code.MaxUses => "code-max-uses",
+                    _ => null,
+                };
+                if (error != null) return (null, error);
+                if (await _context.DiscountRedemptions.AnyAsync(r => r.DiscountCodeId == code!.Id && r.WorkshopId == workshopId))
+                    return (null, "code-already-used");
+                if (request.DiscountSourceId == null
+                    || !await _context.DiscountSources.AnyAsync(s => s.Id == request.DiscountSourceId && s.IsActive))
+                    return (null, "invalid-source");
+            }
+
+            var discount = code == null ? 0m
+                : code.Type == DiscountType.Percent ? Math.Round(subtotal * code.Value / 100, 2)
+                : Math.Min(code.Value, subtotal);
+            var taxable = subtotal - discount;
+            var iva = Math.Round(taxable * settings.IvaRate, 2);
+
+            // A payment starts when the trial or the already-paid period ends, so no paid day is lost.
+            var start = new[] { now, subscription.TrialEndsAt, subscription.CurrentPeriodEnd ?? now }.Max();
+            var end = request.BillingPeriod == BillingPeriod.Annual ? start.AddYears(1) : start.AddMonths(1);
+
+            return (new SubscriptionQuoteDto
+            {
+                BillingPeriod = request.BillingPeriod.ToString(),
+                Subtotal = subtotal,
+                Discount = discount,
+                Iva = iva,
+                Total = taxable + iva,
+                CoverageStart = start,
+                CoverageEnd = end,
+                Code = code?.Code,
+                CodeDescription = code == null ? null : DescribeCode(code),
+            }, null);
+        }
+
+        private static string DescribeCode(DiscountCode code)
+        {
+            var value = code.Type == DiscountType.Percent ? $"{code.Value:0.##}%" : $"${code.Value:N2}";
+            var charges = code.Charges switch
+            {
+                null => "en todos tus cobros",
+                1 => "en tu primer cobro",
+                var n => $"en tus primeros {n} cobros",
+            };
+            return $"{value} de descuento {charges}";
+        }
+
         public static decimal WithIva(decimal amount, decimal ivaRate) => Math.Round(amount * (1 + ivaRate), 2);
 
         private Task<int> CountEmployeesAsync(Guid workshopId) =>
