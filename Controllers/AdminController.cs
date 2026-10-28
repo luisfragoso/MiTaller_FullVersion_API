@@ -154,7 +154,7 @@ namespace MiTaller.Controllers
                         Id = q.Id,
                         WorkshopName = q.Workshop != null ? q.Workshop.WorkshopName : "",
                         Status = q.Status,
-                        Total = q.PriceOfLabor + q.PriceOfSpareParts,
+                        Total = q.PriceOfLabor + q.PriceOfSpareParts + q.Services.Sum(s => s.Price ?? 0),
                         CreatedAt = q.CreatedAt,
                     })
                     .ToListAsync();
