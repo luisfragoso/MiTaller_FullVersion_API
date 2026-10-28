@@ -12,6 +12,7 @@ using MiTaller.Services;
 using MiTaller.Services.Audit;
 using QuestPDF.Infrastructure;
 using System.Text;
+using System.Threading.RateLimiting;
 using static System.Net.WebRequestMethods;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -109,6 +110,9 @@ try
         options.Password.RequireNonAlphanumeric = true;
         options.Password.RequireUppercase = false;
         options.Password.RequireLowercase = false;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+        options.Lockout.AllowedForNewUsers = true;
     })
     .AddEntityFrameworkStores<DataContext>()
     .AddDefaultTokenProviders()
@@ -127,6 +131,18 @@ try
     // Registrar el validador de contraseña personalizado que retorna un solo error
     builder.Services.AddTransient<IPasswordValidator<BaseIdentityUser>, SingleErrorPasswordValidator<BaseIdentityUser>>();
 
+
+    // Per-IP limits on /api/Auth; behind a proxy set ASPNETCORE_FORWARDEDHEADERS_ENABLED=true or every client shares one IP.
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        options.AddPolicy(RateLimitPolicies.Auth, context => RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 20, Window = TimeSpan.FromMinutes(1) }));
+        options.AddPolicy(RateLimitPolicies.AuthEmail, context => RateLimitPartition.GetFixedWindowLimiter(
+            context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(10) }));
+    });
 
     // JWT
     builder.Services.AddScoped<JwtService>();
@@ -206,6 +222,7 @@ try
 
     app.UseHttpsRedirection();
     app.UseCors("AllowAll");
+    app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
 

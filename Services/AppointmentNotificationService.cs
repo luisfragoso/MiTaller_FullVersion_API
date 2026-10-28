@@ -5,6 +5,7 @@ using MiTaller.Models.Auth;
 using MiTaller.Models.Customer;
 using MiTaller.Models.Notification;
 using MiTaller.Models.Workshop;
+using System.Net;
 
 namespace MiTaller.Services
 {
@@ -152,9 +153,9 @@ namespace MiTaller.Services
                         </h1>
                     </div>
                     <div style=""padding: 30px; text-align: center; color: #333;"">
-                        <h2 style=""margin-top: 0;"">{heading}</h2>
-                        <p style=""font-size: 16px;"">{message}</p>
-                        <p style=""margin-top: 20px; color: #555;"">{subMessage}</p>
+                        <h2 style=""margin-top: 0;"">{WebUtility.HtmlEncode(heading)}</h2>
+                        <p style=""font-size: 16px;"">{WebUtility.HtmlEncode(message)}</p>
+                        <p style=""margin-top: 20px; color: #555;"">{WebUtility.HtmlEncode(subMessage)}</p>
                     </div>
                     </div>
                 </body>

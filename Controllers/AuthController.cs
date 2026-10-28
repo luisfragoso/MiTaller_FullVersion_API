@@ -1,9 +1,9 @@
-﻿using System.Collections.Concurrent;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Attributes;
 using MiTaller.Data;
@@ -21,6 +21,7 @@ namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [EnableRateLimiting(RateLimitPolicies.Auth)]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<BaseIdentityUser> _userManager;
@@ -28,9 +29,8 @@ namespace MiTaller.Controllers
         private readonly IEmailSender _emailSender;
         private readonly DataContext _context;
 
-        // Wrong reset-code guesses per user; the code is burned after MaxResetAttempts.
-        private static readonly ConcurrentDictionary<Guid, int> ResetAttempts = new();
-        private const int MaxResetAttempts = 5;
+        private const int MaxCodeAttempts = 5;
+        private static readonly TimeSpan CodeLockout = TimeSpan.FromMinutes(30);
 
         public AuthController(UserManager<BaseIdentityUser> userManager, JwtService jwtService, IEmailSender emailSender, DataContext dataContext)
         {
@@ -38,6 +38,25 @@ namespace MiTaller.Controllers
             _jwtService = jwtService;
             _emailSender = emailSender;
             _context = dataContext;
+        }
+
+        private static bool CodeLocked(BaseIdentityUser user) => user.VerificationCodeLockedUntil > DateTime.UtcNow;
+
+        // The last allowed wrong guess burns the pending code and refuses new ones for CodeLockout.
+        private async Task<string> WrongCodeAsync(BaseIdentityUser user)
+        {
+            var burned = ++user.VerificationCodeFailedAttempts >= MaxCodeAttempts;
+            if (burned)
+            {
+                user.VerificationCodeFailedAttempts = 0;
+                user.VerificationCodeLockedUntil = DateTime.UtcNow.Add(CodeLockout);
+                user.PasswordResetCode = null;
+                user.PasswordResetCodeExpires = null;
+                user.EmailVerificationCode = null;
+                user.EmailVerificationExpires = null;
+            }
+            await _userManager.UpdateAsync(user);
+            return burned ? "expired-code" : "incorrect-code";
         }
 
         [HttpPost("login")]
@@ -68,10 +87,18 @@ namespace MiTaller.Controllers
                     return Unauthorized("user-deleted");
                 }
 
+                if (await _userManager.IsLockedOutAsync(user))
+                {
+                    return Unauthorized("locked-out");
+                }
+
                 if (!await _userManager.CheckPasswordAsync(user, model.Password))
                 {
-                    return Unauthorized("wrong-password");
+                    await _userManager.AccessFailedAsync(user);
+                    return Unauthorized(await _userManager.IsLockedOutAsync(user) ? "locked-out" : "wrong-password");
                 }
+
+                await _userManager.ResetAccessFailedCountAsync(user);
 
                 // Registrar el token del dispositivo si se proporciona
                 if (!string.IsNullOrEmpty(model.DeviceToken))
@@ -273,6 +300,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("send-email-verification")]
+        [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
         public async Task<ActionResult> SendEmailVerification([FromBody] ConfirmEmailDto model)
         {
             var user = await _userManager.Users
@@ -287,6 +315,11 @@ namespace MiTaller.Controllers
             if (user.EmailConfirmed)
             {
                 return BadRequest("user-already-verified");
+            }
+
+            if (CodeLocked(user))
+            {
+                return BadRequest("too-many-attempts");
             }
 
             var verificationCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
@@ -360,10 +393,11 @@ namespace MiTaller.Controllers
 
             if (user.EmailVerificationCode != model.Code)
             {
-                return BadRequest("incorrect-code");
+                return BadRequest(await WrongCodeAsync(user));
             }
 
             user.EmailConfirmed = true;
+            user.VerificationCodeFailedAttempts = 0;
             user.EmailVerificationCode = null;
             user.EmailVerificationExpires = null;
 
@@ -373,6 +407,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("resend-email-verification")]
+        [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
         public async Task<IActionResult> ResendEmailVerification([FromBody] ConfirmEmailDto model)
         {
             var user = await _userManager.Users
@@ -387,6 +422,11 @@ namespace MiTaller.Controllers
             if (user.EmailConfirmed)
             {
                 return BadRequest("user-already-verified");
+            }
+
+            if (CodeLocked(user))
+            {
+                return BadRequest("too-many-attempts");
             }
 
             if (user.EmailVerificationCode != null && user.EmailVerificationExpires > DateTime.UtcNow)
@@ -507,6 +547,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("forgot-password")]
+        [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
         public async Task<ActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDto model)
         {
             try
@@ -528,10 +569,14 @@ namespace MiTaller.Controllers
                     return NotFound("not-found");
                 }
 
+                if (CodeLocked(user))
+                {
+                    return BadRequest("too-many-attempts");
+                }
+
                 var resetCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
                 //var resetCode = "123456";
                 user.PasswordResetCode = resetCode;
-                ResetAttempts.TryRemove(user.Id, out _);
                 user.PasswordResetCodeExpires = DateTime.UtcNow.AddMinutes(15);
 
                 await _userManager.UpdateAsync(user);
@@ -613,15 +658,7 @@ namespace MiTaller.Controllers
 
                 if (user.PasswordResetCode != model.Code)
                 {
-                    if (ResetAttempts.AddOrUpdate(user.Id, 1, (_, n) => n + 1) >= MaxResetAttempts)
-                    {
-                        ResetAttempts.TryRemove(user.Id, out _);
-                        user.PasswordResetCode = null;
-                        user.PasswordResetCodeExpires = null;
-                        await _userManager.UpdateAsync(user);
-                        return BadRequest("expired-code");
-                    }
-                    return BadRequest("incorrect-code");
+                    return BadRequest(await WrongCodeAsync(user));
                 }
 
                 return Ok("valid-code");
@@ -667,15 +704,7 @@ namespace MiTaller.Controllers
 
                 if (user.PasswordResetCode != model.Code)
                 {
-                    if (ResetAttempts.AddOrUpdate(user.Id, 1, (_, n) => n + 1) >= MaxResetAttempts)
-                    {
-                        ResetAttempts.TryRemove(user.Id, out _);
-                        user.PasswordResetCode = null;
-                        user.PasswordResetCodeExpires = null;
-                        await _userManager.UpdateAsync(user);
-                        return BadRequest("expired-code");
-                    }
-                    return BadRequest("incorrect-code");
+                    return BadRequest(await WrongCodeAsync(user));
                 }
 
                 var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -690,7 +719,10 @@ namespace MiTaller.Controllers
                 user.PasswordResetCodeExpires = null;
                 // Receiving the code proves the mailbox, e.g. employees whose first access is this flow.
                 user.EmailConfirmed = true;
-                ResetAttempts.TryRemove(user.Id, out _);
+                user.VerificationCodeFailedAttempts = 0;
+                // A completed reset also lifts a login lockout.
+                user.AccessFailedCount = 0;
+                user.LockoutEnd = null;
 
                 if (!result.Succeeded)
                 { 
@@ -708,6 +740,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("resend-reset-code")]
+        [EnableRateLimiting(RateLimitPolicies.AuthEmail)]
         public async Task<ActionResult> ResendResetCode([FromBody] ForgotPasswordRequestDto model)
         {
             if (string.IsNullOrEmpty(model.LoginIdentifier))
@@ -724,6 +757,11 @@ namespace MiTaller.Controllers
             if (user == null)
             {
                 return NotFound("not-found");
+            }
+
+            if (CodeLocked(user))
+            {
+                return BadRequest("too-many-attempts");
             }
 
             if (user.PasswordResetCode != null && user.PasswordResetCodeExpires > DateTime.UtcNow)
@@ -769,7 +807,6 @@ namespace MiTaller.Controllers
             var resetCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             //var resetCode = "123456";
             user.PasswordResetCode = resetCode;
-            ResetAttempts.TryRemove(user.Id, out _);
             user.PasswordResetCodeExpires = DateTime.UtcNow.AddMinutes(15);
 
             await _userManager.UpdateAsync(user);

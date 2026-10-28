@@ -439,6 +439,12 @@ namespace MiTaller.Migrations
                     b.Property<int>("UserType")
                         .HasColumnType("int");
 
+                    b.Property<int>("VerificationCodeFailedAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("VerificationCodeLockedUntil")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email");

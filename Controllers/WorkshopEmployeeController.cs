@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -135,7 +136,7 @@ namespace MiTaller.Controllers
                         <div style=""padding: 30px; text-align: center; color: #333;"">
                           <h2 style=""margin-top: 0;"">Hola</h2>
                           <p style=""font-size: 18px;"">
-                            Hola <strong>{newEmployeeUser.FullName}</strong>. Te damos la bienvenida a MiTaller. Tu cuenta ha sido creada por el taller <strong>{workshop.WorkshopName}</strong>.
+                            Hola <strong>{WebUtility.HtmlEncode(newEmployeeUser.FullName)}</strong>. Te damos la bienvenida a MiTaller. Tu cuenta ha sido creada por el taller <strong>{WebUtility.HtmlEncode(workshop.WorkshopName)}</strong>.
                           </p>
                           <p style=""font-size: 18px; margin-top: 20px;"">
                             Para comenzar a usar tu cuenta, descarga la aplicación y<br />

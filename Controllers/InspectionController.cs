@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -315,7 +316,7 @@ namespace MiTaller.Controllers
                             <div style=""padding: 30px; text-align: center; color: #333;"">
                               <h2 style=""margin-top: 0;"">Hola</h2>
                               <p style=""font-size: 18px;"">
-                                Hola <strong>{newCustomer.FullName}</strong>. Te damos la bienvenida a MiTaller. Tu cuenta ha sido creada por el taller <strong>{workshop.WorkshopName}</strong>,
+                                Hola <strong>{WebUtility.HtmlEncode(newCustomer.FullName)}</strong>. Te damos la bienvenida a MiTaller. Tu cuenta ha sido creada por el taller <strong>{WebUtility.HtmlEncode(workshop.WorkshopName)}</strong>,
                                 al que llevaste tu vehículo para revisión o servicio.
                               </p>
                               <p style=""font-size: 18px; margin-top: 20px;"">

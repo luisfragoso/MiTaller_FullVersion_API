@@ -1,4 +1,5 @@
-﻿using MiTaller.Attributes;
+﻿using System.Net;
+using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -230,11 +231,11 @@ namespace MiTaller.Controllers
 
                                   <div style=""padding: 30px 40px; color: #333;"">
                                     <p style=""font-size: 16px;"">
-                                      <strong>Estimado(a) {contact.FullName},</strong>
+                                      <strong>Estimado(a) {WebUtility.HtmlEncode(contact.FullName)},</strong>
                                     </p>
 
                                     <p style=""font-size: 16px;"">
-                                      Eres el contacto de emergencia registrado por <strong>{customer.FullName}</strong>. Se ha reportado un posible accidente con su vehículo <strong>{fullVehicleName}</strong>.
+                                      Eres el contacto de emergencia registrado por <strong>{WebUtility.HtmlEncode(customer.FullName)}</strong>. Se ha reportado un posible accidente con su vehículo <strong>{WebUtility.HtmlEncode(fullVehicleName)}</strong>.
                                     </p>
 
                                     {(reportLink != "" ? $@"
@@ -244,7 +245,7 @@ namespace MiTaller.Controllers
                                     </p>" : "")}
 
                                     <p style=""font-size: 16px;"">
-                                      Este mensaje no necesariamente indica una situación grave, pero te recomendamos contactar a <strong>{customer.FullName}</strong> para confirmar su estado.
+                                      Este mensaje no necesariamente indica una situación grave, pero te recomendamos contactar a <strong>{WebUtility.HtmlEncode(customer.FullName)}</strong> para confirmar su estado.
                                     </p>
 
                                     <p style=""font-size: 16px;"">MiTaller Financiero – Conectando movilidad y seguridad</p>

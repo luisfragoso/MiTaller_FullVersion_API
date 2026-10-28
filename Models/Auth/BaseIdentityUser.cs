@@ -17,6 +17,9 @@ namespace MiTaller.Models.Auth
         public DateTime? PasswordResetCodeExpires { get; set; }
         public string? EmailVerificationCode { get; set; }
         public DateTime? EmailVerificationExpires { get; set; }
+        // Wrong reset/verification code guesses; survives new codes so requesting one does not reset it.
+        public int VerificationCodeFailedAttempts { get; set; }
+        public DateTime? VerificationCodeLockedUntil { get; set; }
         public string DeviceTokens { get; set; } = string.Empty;
     }
 
