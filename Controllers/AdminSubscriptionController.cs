@@ -186,18 +186,49 @@ namespace MiTaller.Controllers
             });
         }
 
-        /// <summary>Latest payments of every workshop, optionally by status (Pending/Approved/Rejected/Refunded).</summary>
+        /// <summary>
+        /// Payments of every workshop, newest first. search matches the workshop name or the Mercado Pago folio;
+        /// from/to filter by payment date (to is inclusive).
+        /// </summary>
         [HttpGet("payments")]
-        public async Task<ActionResult<List<SubscriptionPaymentDto>>> GetPayments([FromQuery] PaymentStatus? status, [FromQuery] int take = 200)
+        public async Task<ActionResult<PaymentsPageDto>> GetPayments(
+            [FromQuery] string? search, [FromQuery] PaymentStatus? status, [FromQuery] PaymentMethod? method,
+            [FromQuery] BillingPeriod? billingPeriod, [FromQuery] DateTime? from, [FromQuery] DateTime? to,
+            [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 20)
         {
-            var query = _context.SubscriptionPayments.AsQueryable();
-            if (status != null) query = query.Where(p => p.Status == status);
+            pageNumber = Math.Max(1, pageNumber);
+            pageSize = Math.Clamp(pageSize, 1, 100);
+
+            var query = _context.SubscriptionPayments
+                .Join(_context.Workshops, p => p.WorkshopId, w => w.Id, (p, w) => new { Payment = p, w.WorkshopName });
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim();
+                query = query.Where(r => r.WorkshopName.Contains(term) || (r.Payment.MpPaymentId != null && r.Payment.MpPaymentId.Contains(term)));
+            }
+            if (status != null) query = query.Where(r => r.Payment.Status == status);
+            if (method != null) query = query.Where(r => r.Payment.Method == method);
+            if (billingPeriod != null) query = query.Where(r => r.Payment.BillingPeriod == billingPeriod);
+            if (from != null) query = query.Where(r => r.Payment.CreatedAt >= from.Value.Date);
+            if (to != null) query = query.Where(r => r.Payment.CreatedAt < to.Value.Date.AddDays(1));
+
+            var total = await query.CountAsync();
+            var approved = query.Where(r => r.Payment.Status == PaymentStatus.Approved);
             var rows = await query
-                .OrderByDescending(p => p.CreatedAt)
-                .Take(Math.Clamp(take, 1, 500))
-                .Join(_context.Workshops, p => p.WorkshopId, w => w.Id, (p, w) => new { Payment = p, w.WorkshopName })
+                .OrderByDescending(r => r.Payment.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
-            return Ok(rows.Select(r => SubscriptionService.ToPaymentDto(r.Payment, r.WorkshopName)).ToList());
+
+            return Ok(new PaymentsPageDto
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(total / (double)pageSize),
+                TotalElements = total,
+                Elements = rows.Select(r => SubscriptionService.ToPaymentDto(r.Payment, r.WorkshopName)).ToList(),
+                ApprovedCount = await approved.CountAsync(),
+                ApprovedTotal = await approved.SumAsync(r => (decimal?)r.Payment.Total) ?? 0,
+            });
         }
 
         /// <summary>Adds days to the trial; an expired trial restarts from today.</summary>

@@ -1,3 +1,4 @@
+using MiTaller.DTO.Pager;
 using MiTaller.Models.Subscription;
 
 namespace MiTaller.DTO.Subscription
@@ -86,6 +87,13 @@ namespace MiTaller.DTO.Subscription
         public DateTime? PeriodStart { get; set; }
         public DateTime? PeriodEnd { get; set; }
         public DateTime CreatedAt { get; set; }
+    }
+
+    /// <summary>A page of payments plus totals over every row that matches the filters (not just this page).</summary>
+    public class PaymentsPageDto : PagerWithCountResponseDto<SubscriptionPaymentDto>
+    {
+        public int ApprovedCount { get; set; }
+        public decimal ApprovedTotal { get; set; }
     }
 
     public class AdminWorkshopSubscriptionDto
