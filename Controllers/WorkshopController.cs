@@ -124,6 +124,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("upload-profile-image/{workshopId}")]
+        [OwnWorkshop]
         [Authorize]
         [AuthorizeEmployee("Administrador")]
         public async Task<ActionResult> UploadImage(Guid workshopId, IFormFile file)
@@ -1258,6 +1259,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("workshop-clients/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<IEnumerable<WorkshopCustomersDto>>> SearchWorkshopClients(Guid workshopId)
         {
             try
@@ -1328,6 +1330,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("workshop-clients-pager/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<PagerResponseDto<WorkshopCustomersDto>>> SearchWorkshopClientsPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
         {
             try

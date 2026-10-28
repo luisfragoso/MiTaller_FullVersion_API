@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MiTaller.Attributes;
 using MiTaller.Data;
 using MiTaller.DTO;
 using MiTaller.DTO.Services;
@@ -29,6 +30,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("customers-by/{workshopId}")]
+        [OwnWorkshop]
         public async Task<ActionResult<CountResponseDto>> GetCustomersByWorkshop(Guid workshopId)
         {
             try
@@ -45,9 +47,14 @@ namespace MiTaller.Controllers
                     .Where(i => i.WorkshopId == workshopId)
                     .Select(i => i.CustomerId)
                     .ToListAsync();
+                var customerDirectlyAddedIds = await _context.WorkshopCustomers
+                    .Where(wc => wc.WorkshopId == workshopId)
+                    .Select(wc => wc.CustomerId)
+                    .ToListAsync();
                 var allCustomerIds = customerAppointmentIds
                     .Concat(customerQuotationIds)
                     .Concat(customerInspectionIds)
+                    .Concat(customerDirectlyAddedIds)
                     .Distinct()
                     .ToList();
 
@@ -70,6 +77,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("new-monthly-customers-by/{workshopId}/{monthYear}")]
+        [OwnWorkshop]
         public async Task<ActionResult<CountResponseDto>> GetNewMonthlyCustomersByWorkshop(Guid workshopId, string monthYear)
         {
             try
@@ -104,6 +112,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("quotations-by/{workshopId}/{monthYear}")]
+        [OwnWorkshop]
         public async Task<ActionResult<QuotationStatusSummaryDto>> GetQuotationsByWorkshop(Guid workshopId, string monthYear)
         {
             try
@@ -165,6 +174,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("services-summary-by/{workshopId}/{monthYear}")]
+        [OwnWorkshop]
         public async Task<ActionResult<ServiceStatisticsSummaryDto>> GetServicesSummaryByWorkshop(Guid workshopId, string monthYear)
         {
             try
@@ -212,6 +222,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("economic-balance-by/{workshopId}/{monthYear}")]
+        [OwnWorkshop]
         public async Task<ActionResult<EconomicBalanceResponseDto>> GetEconomicBalanceByWorkshop(Guid workshopId, string monthYear)
         {
             try
