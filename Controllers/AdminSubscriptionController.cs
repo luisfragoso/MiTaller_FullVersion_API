@@ -182,21 +182,22 @@ namespace MiTaller.Controllers
                 PaymentMethod = subscription.PaymentMethod.ToString(),
                 DiscountCode = redemption?.Code,
                 DiscountSource = redemption?.Source,
-                Payments = payments.Select(p => new SubscriptionPaymentDto
-                {
-                    Id = p.Id,
-                    BillingPeriod = p.BillingPeriod.ToString(),
-                    Method = p.Method.ToString(),
-                    Status = p.Status.ToString(),
-                    Subtotal = p.Subtotal,
-                    Discount = p.Discount,
-                    Iva = p.Iva,
-                    Total = p.Total,
-                    PeriodStart = p.PeriodStart,
-                    PeriodEnd = p.PeriodEnd,
-                    CreatedAt = p.CreatedAt,
-                }).ToList(),
+                Payments = payments.Select(p => SubscriptionService.ToPaymentDto(p)).ToList(),
             });
+        }
+
+        /// <summary>Latest payments of every workshop, optionally by status (Pending/Approved/Rejected/Refunded).</summary>
+        [HttpGet("payments")]
+        public async Task<ActionResult<List<SubscriptionPaymentDto>>> GetPayments([FromQuery] PaymentStatus? status, [FromQuery] int take = 200)
+        {
+            var query = _context.SubscriptionPayments.AsQueryable();
+            if (status != null) query = query.Where(p => p.Status == status);
+            var rows = await query
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(Math.Clamp(take, 1, 500))
+                .Join(_context.Workshops, p => p.WorkshopId, w => w.Id, (p, w) => new { Payment = p, w.WorkshopName })
+                .ToListAsync();
+            return Ok(rows.Select(r => SubscriptionService.ToPaymentDto(r.Payment, r.WorkshopName)).ToList());
         }
 
         /// <summary>Adds days to the trial; an expired trial restarts from today.</summary>

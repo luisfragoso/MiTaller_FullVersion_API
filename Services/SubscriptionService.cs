@@ -104,6 +104,24 @@ namespace MiTaller.Services
             : subscription.GraceEndsAt > now ? nameof(SubscriptionStatus.PastDue)
             : "Free";
 
+        public static SubscriptionPaymentDto ToPaymentDto(SubscriptionPayment p, string? workshopName = null) => new()
+        {
+            Id = p.Id,
+            WorkshopId = p.WorkshopId,
+            WorkshopName = workshopName,
+            MpPaymentId = p.MpPaymentId,
+            BillingPeriod = p.BillingPeriod.ToString(),
+            Method = p.Method.ToString(),
+            Status = p.Status.ToString(),
+            Subtotal = p.Subtotal,
+            Discount = p.Discount,
+            Iva = p.Iva,
+            Total = p.Total,
+            PeriodStart = p.PeriodStart,
+            PeriodEnd = p.PeriodEnd,
+            CreatedAt = p.CreatedAt,
+        };
+
         public static decimal WithIva(decimal amount, decimal ivaRate) => Math.Round(amount * (1 + ivaRate), 2);
 
         private Task<int> CountEmployeesAsync(Guid workshopId) =>

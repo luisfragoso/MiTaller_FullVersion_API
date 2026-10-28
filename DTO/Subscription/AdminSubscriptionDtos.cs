@@ -71,6 +71,11 @@ namespace MiTaller.DTO.Subscription
     public class SubscriptionPaymentDto
     {
         public int Id { get; set; }
+        public Guid WorkshopId { get; set; }
+        // Only filled in the admin-wide payments list.
+        public string? WorkshopName { get; set; }
+        // Mercado Pago payment id: the folio the workshop sees on its MP receipt.
+        public string? MpPaymentId { get; set; }
         public string BillingPeriod { get; set; } = string.Empty;
         public string Method { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
