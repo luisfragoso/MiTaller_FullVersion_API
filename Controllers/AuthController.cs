@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Collections.Concurrent;
+using System.Security.Cryptography;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -25,6 +27,10 @@ namespace MiTaller.Controllers
         private readonly JwtService _jwtService;
         private readonly IEmailSender _emailSender;
         private readonly DataContext _context;
+
+        // Wrong reset-code guesses per user; the code is burned after MaxResetAttempts.
+        private static readonly ConcurrentDictionary<Guid, int> ResetAttempts = new();
+        private const int MaxResetAttempts = 5;
 
         public AuthController(UserManager<BaseIdentityUser> userManager, JwtService jwtService, IEmailSender emailSender, DataContext dataContext)
         {
@@ -282,7 +288,7 @@ namespace MiTaller.Controllers
                 return BadRequest("user-already-verified");
             }
 
-            var verificationCode = new Random().Next(100000, 999999).ToString();
+            var verificationCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             //var verificationCode = "123456";
             user.EmailVerificationCode = verificationCode;
             user.EmailVerificationExpires = DateTime.UtcNow.AddMinutes(15);
@@ -313,7 +319,7 @@ namespace MiTaller.Controllers
 
                     <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                         <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                     </div>
                     </body>
                 </html>
@@ -408,7 +414,7 @@ namespace MiTaller.Controllers
 
                     <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                         <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                     </div>
                     </body>
                 </html>
@@ -419,7 +425,7 @@ namespace MiTaller.Controllers
                 return Ok("email-sent");
             }
 
-            var verificationCode = new Random().Next(100000, 999999).ToString();
+            var verificationCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             //var verificationCode = "123456";
             user.EmailVerificationCode = verificationCode;
             user.EmailVerificationExpires = DateTime.UtcNow.AddMinutes(15);
@@ -450,7 +456,7 @@ namespace MiTaller.Controllers
 
                     <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                         <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                     </div>
                     </body>
                 </html>
@@ -521,9 +527,10 @@ namespace MiTaller.Controllers
                     return NotFound("not-found");
                 }
 
-                var resetCode = new Random().Next(100000, 999999).ToString();
+                var resetCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
                 //var resetCode = "123456";
                 user.PasswordResetCode = resetCode;
+                ResetAttempts.TryRemove(user.Id, out _);
                 user.PasswordResetCodeExpires = DateTime.UtcNow.AddMinutes(15);
 
                 await _userManager.UpdateAsync(user);
@@ -555,7 +562,7 @@ namespace MiTaller.Controllers
 
                         <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                         <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                     </div>
                       </body>
                     </html>
@@ -605,6 +612,14 @@ namespace MiTaller.Controllers
 
                 if (user.PasswordResetCode != model.Code)
                 {
+                    if (ResetAttempts.AddOrUpdate(user.Id, 1, (_, n) => n + 1) >= MaxResetAttempts)
+                    {
+                        ResetAttempts.TryRemove(user.Id, out _);
+                        user.PasswordResetCode = null;
+                        user.PasswordResetCodeExpires = null;
+                        await _userManager.UpdateAsync(user);
+                        return BadRequest("expired-code");
+                    }
                     return BadRequest("incorrect-code");
                 }
 
@@ -651,6 +666,14 @@ namespace MiTaller.Controllers
 
                 if (user.PasswordResetCode != model.Code)
                 {
+                    if (ResetAttempts.AddOrUpdate(user.Id, 1, (_, n) => n + 1) >= MaxResetAttempts)
+                    {
+                        ResetAttempts.TryRemove(user.Id, out _);
+                        user.PasswordResetCode = null;
+                        user.PasswordResetCodeExpires = null;
+                        await _userManager.UpdateAsync(user);
+                        return BadRequest("expired-code");
+                    }
                     return BadRequest("incorrect-code");
                 }
 
@@ -664,6 +687,7 @@ namespace MiTaller.Controllers
 
                 user.PasswordResetCode = null;
                 user.PasswordResetCodeExpires = null;
+                ResetAttempts.TryRemove(user.Id, out _);
 
                 if (!result.Succeeded) 
                 { 
@@ -728,7 +752,7 @@ namespace MiTaller.Controllers
 
                         <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                             <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                         </div>
                       </body>
                     </html>
@@ -739,9 +763,10 @@ namespace MiTaller.Controllers
                 return Ok("email-sent");
             }
 
-            var resetCode = new Random().Next(100000, 999999).ToString();
+            var resetCode = RandomNumberGenerator.GetInt32(100000, 1000000).ToString();
             //var resetCode = "123456";
             user.PasswordResetCode = resetCode;
+            ResetAttempts.TryRemove(user.Id, out _);
             user.PasswordResetCodeExpires = DateTime.UtcNow.AddMinutes(15);
 
             await _userManager.UpdateAsync(user);
@@ -774,7 +799,7 @@ namespace MiTaller.Controllers
 
                         <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                         <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                     </div>
                       </body>
                     </html>

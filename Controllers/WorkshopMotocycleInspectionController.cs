@@ -818,7 +818,7 @@ namespace MiTaller.Controllers
                         UserType = UserType.Customer
                     };
 
-                    var result = await _userManager.CreateAsync(newCustomer, "Password123!");
+                    var result = await _userManager.CreateAsync(newCustomer, $"MiTaller@{Guid.NewGuid():N}1");
                     if (!result.Succeeded) return BadRequest("unknown-error");
 
                     var subject = "¡Bienvenid@ a Mi taller!";
@@ -851,7 +851,7 @@ namespace MiTaller.Controllers
 
                             <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                                 <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                                <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                                <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                             </div>
                           </body>
                         </html>

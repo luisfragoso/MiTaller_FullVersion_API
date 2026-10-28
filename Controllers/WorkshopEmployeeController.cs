@@ -59,7 +59,7 @@ namespace MiTaller.Controllers
                 var existingEmployee = await _context.WorkshopEmployees
                     .Where(we => !we.IsDeleted && 
                         (we.Email.ToLower() == model.Email.ToLower() || 
-                         we.PhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone))
+                         (!string.IsNullOrEmpty(normalizedPhone) && we.PhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone)))
                     .FirstOrDefaultAsync();
 
                 if (existingEmployee != null)
@@ -70,7 +70,7 @@ namespace MiTaller.Controllers
                 var existingWorkshopUser = await _userManager.Users
                     .Where(u => u.UserType == UserType.Workshop && !u.IsDeleted &&
                         (u.Email.ToLower() == model.Email.ToLower() ||
-                         u.NormalizedPhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone))
+                         (!string.IsNullOrEmpty(normalizedPhone) && u.NormalizedPhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone)))
                     .FirstOrDefaultAsync();
 
                 if (existingWorkshopUser != null)
@@ -85,8 +85,8 @@ namespace MiTaller.Controllers
                     UserName = model.Email + "_employee",
                     FullName = model.FullName,
                     Email = model.Email,
-                    PhoneNumber = model.PhoneNumber + "_employee",
-                    NormalizedPhoneNumber = normalizedPhone,
+                    PhoneNumber = string.IsNullOrEmpty(normalizedPhone) ? null : model.PhoneNumber + "_employee",
+                    NormalizedPhoneNumber = normalizedPhone ?? string.Empty,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = null,
                     DeletedAt = null,
@@ -94,7 +94,7 @@ namespace MiTaller.Controllers
                     UserType = UserType.Employee
                 };
 
-                var result = await _userManager.CreateAsync(newEmployeeUser, "Password123!");
+                var result = await _userManager.CreateAsync(newEmployeeUser, $"MiTaller@{Guid.NewGuid():N}1");
                 if (!result.Succeeded)
                 {
                     return BadRequest("unknown-error");
@@ -146,7 +146,7 @@ namespace MiTaller.Controllers
 
                         <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
                             <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Comisiónn Federal de Electricidad informs whomit may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
+                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. Mi Taller Financiero informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
                         </div>
                       </body>
                     </html>
@@ -297,7 +297,7 @@ namespace MiTaller.Controllers
                     .Where(we => !we.IsDeleted && 
                         we.Id != employeeId &&
                         (we.Email.ToLower() == model.Email.ToLower() || 
-                         we.PhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone))
+                         (!string.IsNullOrEmpty(normalizedPhone) && we.PhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone)))
                     .FirstOrDefaultAsync();
 
                 if (existingEmployee != null)
@@ -308,7 +308,7 @@ namespace MiTaller.Controllers
                 var existingWorkshopUser = await _userManager.Users
                     .Where(u => u.UserType == UserType.Workshop && !u.IsDeleted &&
                         (u.Email.ToLower() == model.Email.ToLower() ||
-                         u.NormalizedPhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone))
+                         (!string.IsNullOrEmpty(normalizedPhone) && u.NormalizedPhoneNumber.Replace(" ", "").Replace("-", "") == normalizedPhone)))
                     .FirstOrDefaultAsync();
 
                 if (existingWorkshopUser != null)
@@ -336,8 +336,8 @@ namespace MiTaller.Controllers
                     {
                         employeeUser.FullName = model.FullName;
                         employeeUser.Email = model.Email;
-                        employeeUser.NormalizedPhoneNumber = normalizedPhone;
-                        employeeUser.PhoneNumber = model.PhoneNumber + "_employee";
+                        employeeUser.NormalizedPhoneNumber = normalizedPhone ?? string.Empty;
+                        employeeUser.PhoneNumber = string.IsNullOrEmpty(normalizedPhone) ? null : model.PhoneNumber + "_employee";
                         employeeUser.UpdatedAt = DateTime.UtcNow;
                         await _userManager.UpdateAsync(employeeUser);
                     }
