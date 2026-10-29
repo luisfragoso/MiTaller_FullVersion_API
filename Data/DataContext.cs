@@ -17,6 +17,7 @@ using MiTaller.Models.Advertisement;
 using MiTaller.Models.Services;
 using MiTaller.Models.Inspections;
 using MiTaller.Models.Audit;
+using MiTaller.Models.Community;
 using MiTaller.Models.Subscription;
 using System.Linq;
 using System.Collections.Generic;
@@ -137,6 +138,12 @@ namespace MiTaller.Data
         public DbSet<DiscountCode> DiscountCodes { get; set; }
         public DbSet<DiscountRedemption> DiscountRedemptions { get; set; }
 
+        // Support tickets and Comunidad ideas/votes
+        public DbSet<SupportTicket> SupportTickets { get; set; }
+        public DbSet<SupportTicketMessage> SupportTicketMessages { get; set; }
+        public DbSet<CommunityIdea> CommunityIdeas { get; set; }
+        public DbSet<CommunityVote> CommunityVotes { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -164,6 +171,13 @@ namespace MiTaller.Data
                    .HasOne(r => r.DiscountCode).WithMany().HasForeignKey(r => r.DiscountCodeId).OnDelete(DeleteBehavior.Restrict);
             builder.Entity<DiscountRedemption>()
                    .HasOne(r => r.DiscountSource).WithMany().HasForeignKey(r => r.DiscountSourceId).OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<SupportTicket>().HasIndex(t => new { t.AccountId, t.Status });
+            builder.Entity<SupportTicket>().HasIndex(t => t.LastMessageAt);
+            builder.Entity<CommunityIdea>().HasIndex(i => new { i.Audience, i.Status });
+            builder.Entity<CommunityIdea>().HasIndex(i => i.AccountId);
+            builder.Entity<CommunityVote>().HasIndex(v => new { v.IdeaId, v.AccountId, v.Month }).IsUnique();
+            builder.Entity<CommunityVote>().HasIndex(v => new { v.AccountId, v.Month });
 
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Workshop>().ToTable("Workshops");
