@@ -87,7 +87,7 @@ namespace MiTaller.Services
                 FromAdmin = m.FromAdmin,
                 AuthorName = m.FromAdmin && accountName == null ? "Equipo MiTaller" : m.AuthorName,
                 Body = m.Body,
-                CreatedAt = m.CreatedAt,
+                CreatedAt = Plain(m.CreatedAt),
             }).ToList();
             return dto;
         }
@@ -103,10 +103,13 @@ namespace MiTaller.Services
             dto.AccountName = accountName;
             dto.Unread = unread;
             dto.LastMessage = lastMessage;
-            dto.CreatedAt = t.CreatedAt;
-            dto.LastMessageAt = t.LastMessageAt;
+            dto.CreatedAt = Plain(t.CreatedAt);
+            dto.LastMessageAt = Plain(t.LastMessageAt);
             return dto;
         }
+
+        // Rows just created carry Kind=Local and would serialize with an offset; read ones don't. Same wire format for both.
+        public static DateTime Plain(DateTime d) => DateTime.SpecifyKind(d, DateTimeKind.Unspecified);
 
         public static string? Clean(string? text, int min, int max)
         {

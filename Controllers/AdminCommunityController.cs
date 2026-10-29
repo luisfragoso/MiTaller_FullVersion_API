@@ -173,7 +173,7 @@ namespace MiTaller.Controllers
                     Status = r.Idea.Status,
                     Votes = r.Votes,
                     AdminNote = r.Idea.AdminNote,
-                    CreatedAt = r.Idea.CreatedAt,
+                    CreatedAt = CommunityService.Plain(r.Idea.CreatedAt),
                     ImplementedAt = r.Idea.ImplementedAt,
                     Audience = r.Idea.Audience,
                     AccountName = names.GetValueOrDefault(r.Idea.AccountId, "(cuenta eliminada)"),

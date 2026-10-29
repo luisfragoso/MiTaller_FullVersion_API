@@ -132,7 +132,7 @@ namespace MiTaller.Controllers
                 IsMine = i.AccountId == caller.AccountId,
                 // The note explains a rejection or merge to its author only
                 AdminNote = i.AccountId == caller.AccountId ? i.AdminNote : null,
-                CreatedAt = i.CreatedAt,
+                CreatedAt = CommunityService.Plain(i.CreatedAt),
                 ImplementedAt = i.ImplementedAt,
             };
 
