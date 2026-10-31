@@ -67,6 +67,14 @@ namespace MiTaller.Models.Community
         public List<CommunityVote> Votes { get; set; } = new();
     }
 
+    /// <summary>Single row (Id 1), edited from Portal Admin.</summary>
+    public class CommunitySettings
+    {
+        public int Id { get; set; }
+        public int VotesPerMonth { get; set; } = 3;
+        public DateTime? UpdatedAt { get; set; }
+    }
+
     /// <summary>One row per idea, account and month (yyyyMM); the account has VotesPerMonth rows per month.</summary>
     public class CommunityVote : INotAudited
     {

@@ -72,7 +72,8 @@ namespace MiTaller.Controllers
             var month = CommunityService.CurrentMonth;
             if (await _context.CommunityVotes.AnyAsync(v => v.IdeaId == id && v.AccountId == caller.AccountId && v.Month == month))
                 return BadRequest("already-voted");
-            if (await UsedVotesAsync(caller.AccountId, month) >= CommunityService.VotesPerMonth) return BadRequest("no-votes-left");
+            var votesPerMonth = (await _community.GetSettingsAsync()).VotesPerMonth;
+            if (await UsedVotesAsync(caller.AccountId, month) >= votesPerMonth) return BadRequest("no-votes-left");
 
             _context.CommunityVotes.Add(new CommunityVote { IdeaId = id, AccountId = caller.AccountId, UserId = caller.UserId, Month = month });
             try
@@ -137,10 +138,11 @@ namespace MiTaller.Controllers
             };
 
             var usedVotes = await UsedVotesAsync(caller.AccountId, month);
+            var votesPerMonth = (await _community.GetSettingsAsync()).VotesPerMonth;
             return new CommunityBoardDto
             {
-                VotesPerMonth = CommunityService.VotesPerMonth,
-                VotesLeft = Math.Max(0, CommunityService.VotesPerMonth - usedVotes),
+                VotesPerMonth = votesPerMonth,
+                VotesLeft = Math.Max(0, votesPerMonth - usedVotes),
                 Ideas = ideas.Where(r => r.Idea.Status == IdeaStatus.Approved)
                     .OrderByDescending(r => r.Votes).ThenBy(r => r.Idea.CreatedAt)
                     .Select(r => ToDto(r.Idea, r.Votes, r.Voted)).ToList(),

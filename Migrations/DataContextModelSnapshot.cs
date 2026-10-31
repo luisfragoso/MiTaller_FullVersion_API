@@ -523,6 +523,32 @@ namespace MiTaller.Migrations
                     b.ToTable("CommunityIdeas");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Community.CommunitySettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("VotesPerMonth")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("CommunitySettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            VotesPerMonth = 3
+                        });
+                });
+
             modelBuilder.Entity("MiTaller.Models.Community.CommunityVote", b =>
                 {
                     b.Property<int>("Id")

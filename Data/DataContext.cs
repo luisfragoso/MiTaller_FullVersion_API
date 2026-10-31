@@ -143,6 +143,7 @@ namespace MiTaller.Data
         public DbSet<SupportTicketMessage> SupportTicketMessages { get; set; }
         public DbSet<CommunityIdea> CommunityIdeas { get; set; }
         public DbSet<CommunityVote> CommunityVotes { get; set; }
+        public DbSet<CommunitySettings> CommunitySettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -178,6 +179,7 @@ namespace MiTaller.Data
             builder.Entity<CommunityIdea>().HasIndex(i => i.AccountId);
             builder.Entity<CommunityVote>().HasIndex(v => new { v.IdeaId, v.AccountId, v.Month }).IsUnique();
             builder.Entity<CommunityVote>().HasIndex(v => new { v.AccountId, v.Month });
+            builder.Entity<CommunitySettings>().HasData(new CommunitySettings { Id = 1, VotesPerMonth = 3 });
 
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Workshop>().ToTable("Workshops");

@@ -41,6 +41,25 @@ namespace MiTaller.Controllers
             });
         }
 
+        [HttpGet("settings")]
+        public async Task<ActionResult<CommunitySettingsDto>> GetSettings() => Ok(ToDto(await _community.GetSettingsAsync()));
+
+        /// <summary>A lower limit applies right away: accounts that already used more just have no votes left this month.</summary>
+        [HttpPut("settings")]
+        public async Task<ActionResult<CommunitySettingsDto>> UpdateSettings([FromBody] CommunitySettingsDto model)
+        {
+            if (model.VotesPerMonth is < 1 or > 20) return BadRequest("invalid-settings");
+
+            var settings = await _community.GetSettingsAsync();
+            settings.VotesPerMonth = model.VotesPerMonth;
+            settings.UpdatedAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Ok(ToDto(settings));
+        }
+
+        private static CommunitySettingsDto ToDto(CommunitySettings s) =>
+            new() { VotesPerMonth = s.VotesPerMonth, UpdatedAt = s.UpdatedAt == null ? null : CommunityService.Plain(s.UpdatedAt.Value) };
+
         /// <summary>Newest activity first. [search] matches subject, author or workshop/customer name.</summary>
         [HttpGet("tickets")]
         public async Task<ActionResult<SupportTicketsPageDto>> GetTickets(

@@ -110,6 +110,12 @@ namespace MiTaller.DTO.Community
         public int TargetId { get; set; }
     }
 
+    public class CommunitySettingsDto
+    {
+        public int VotesPerMonth { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+    }
+
     public class CommunitySummaryDto
     {
         public int OpenTickets { get; set; }

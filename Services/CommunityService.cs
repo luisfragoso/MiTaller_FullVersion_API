@@ -11,7 +11,6 @@ namespace MiTaller.Services
     /// <summary>Who is calling (workshop account, its employee or a customer) and shared helpers for support tickets and ideas.</summary>
     public class CommunityService
     {
-        public const int VotesPerMonth = 3;
         public const int MaxOpenTickets = 5;
         public const int MaxPendingIdeas = 5;
 
@@ -23,6 +22,8 @@ namespace MiTaller.Services
         }
 
         public record Requester(CommunityAudience Audience, Guid AccountId, Guid UserId, string Name);
+
+        public Task<CommunitySettings> GetSettingsAsync() => _context.CommunitySettings.SingleAsync(s => s.Id == 1);
 
         public static int CurrentMonth => DateTime.Now.Year * 100 + DateTime.Now.Month;
 
