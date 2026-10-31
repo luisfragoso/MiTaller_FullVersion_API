@@ -201,7 +201,6 @@ namespace MiTaller.Controllers
                             RimRubber = a.Vehicle.RimRubber,
                             Kms = a.Vehicle.Kms,
                             VehicleFormat = a.Vehicle.VehicleFormat,
-                            Image = a.Vehicle.Image,
                         },
                         Date = a.Date,
                         Title = a.Title,
