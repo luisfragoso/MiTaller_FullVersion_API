@@ -4959,6 +4959,39 @@ namespace MiTaller.Migrations
                     b.ToTable("WorkshopEmployees");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopExpenseCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsHidden")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("WorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WorkshopId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("WorkshopExpenseCategories");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopFile", b =>
                 {
                     b.Property<Guid>("Id")
@@ -6080,6 +6113,17 @@ namespace MiTaller.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopExpenseCategory", b =>
+                {
+                    b.HasOne("MiTaller.Models.Workshop.Workshop", "Workshop")
+                        .WithMany()
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Workshop");
                 });

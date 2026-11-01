@@ -49,6 +49,7 @@ namespace MiTaller.Data
         public DbSet<WorkshopVehicleFormat> WorkshopVehicleFormats { get; set; }
         public DbSet<WorkshopNote> WorkshopNotes { get; set; }
         public DbSet<WorkshopBill> WorkshopBills { get; set; }
+        public DbSet<WorkshopExpenseCategory> WorkshopExpenseCategories { get; set; }
         public DbSet<WorkshopVehicleInspection> WorkshopVehicleInspections { get; set; }
         public DbSet<WorkshopVehicleFile> WorkshopVehicleFiles { get; set; }
         public DbSet<WorkshopIncomes> WorkshopIncomes { get; set; }
@@ -473,6 +474,10 @@ namespace MiTaller.Data
                 .HasOne(wb => wb.Workshop)
                 .WithMany()
                 .HasForeignKey(wb => wb.WorkshopId);
+
+            builder.Entity<WorkshopExpenseCategory>()
+                .HasIndex(c => new { c.WorkshopId, c.Name })
+                .IsUnique();
 
             // WorkshopVehicleInspections
             builder.Entity<WorkshopVehicleInspection>()

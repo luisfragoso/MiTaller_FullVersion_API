@@ -6,6 +6,7 @@ using MiTaller.Data;
 using MiTaller.DTO;
 using MiTaller.DTO.Workshop.Bill;
 using MiTaller.Models.Workshop;
+using MiTaller.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,12 +20,6 @@ namespace MiTaller.Controllers
     public class WorkshopBillController : ControllerBase
     {
         private readonly DataContext _context;
-
-        private static readonly string[] ValidCategories =
-            { "Renta", "Servicios", "Refacciones", "Salarios", "Equipo", "Otro" };
-
-        private static string NormalizeCategory(string? category) =>
-            category != null && ValidCategories.Contains(category) ? category : "Otro";
 
         public WorkshopBillController(DataContext context)
         {
@@ -104,7 +99,7 @@ namespace MiTaller.Controllers
                 {
                     WorkshopId = model.WorkshopId,
                     Description = model.Description,
-                    Category = NormalizeCategory(model.Category),
+                    Category = await ExpenseCategoryService.NormalizeAsync(_context, model.WorkshopId, model.Category),
                     Amount = model.Amount
                 };
 
@@ -130,7 +125,7 @@ namespace MiTaller.Controllers
                 if (bill == null) return NotFound("not-found");
 
                 bill.Description = model.Description;
-                bill.Category = NormalizeCategory(model.Category);
+                bill.Category = await ExpenseCategoryService.NormalizeAsync(_context, bill.WorkshopId, model.Category);
                 bill.Amount = model.Amount;
 
                 await _context.SaveChangesAsync();

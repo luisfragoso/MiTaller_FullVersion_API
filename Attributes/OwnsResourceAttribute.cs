@@ -10,7 +10,7 @@ namespace MiTaller.Attributes
     public enum ResourceKind
     {
         Customer, Vehicle, CustomerFile, Appointment, Quotation, Review, Notification, CustomerTag,
-        Inspection, InspectionFile, WorkshopBill, WorkshopIncome, WorkshopNote, WorkshopCustomerNote,
+        Inspection, InspectionFile, WorkshopBill, WorkshopExpenseCategory, WorkshopIncome, WorkshopNote, WorkshopCustomerNote,
         WorkshopEmployee, WorkshopFile, WorkshopService,
         LegacyCarInspection, LegacyCarFile, LegacyCarHistory, LegacyMotoInspection, LegacyMotoFile, LegacyMotoHistory,
     }
@@ -110,6 +110,8 @@ namespace MiTaller.Attributes
                     return await First(db.InspectionFiles.Where(x => x.Id == i).Select(x => new { x.Inspection.CustomerId, x.Inspection.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
                 case ResourceKind.WorkshopBill when isInt:
                     return await First(db.WorkshopBills.Where(x => x.Id == i).Select(x => new { x.WorkshopId }), x => (null, x.WorkshopId));
+                case ResourceKind.WorkshopExpenseCategory when isInt:
+                    return await First(db.WorkshopExpenseCategories.Where(x => x.Id == i).Select(x => new { x.WorkshopId }), x => (null, x.WorkshopId));
                 case ResourceKind.WorkshopIncome when isInt:
                     return await First(db.WorkshopIncomes.Where(x => x.Id == i).Select(x => new { x.WorkshopId }), x => (null, x.WorkshopId));
                 case ResourceKind.WorkshopNote when isInt:
