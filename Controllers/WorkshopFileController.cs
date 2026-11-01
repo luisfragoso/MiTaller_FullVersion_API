@@ -162,6 +162,30 @@ namespace MiTaller.Controllers
         }
 
 
+        [HttpDelete("files/{fileId}")]
+        [AuthorizeEmployee("Administrador")]
+        [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
+        public async Task<ActionResult> DeleteFile(Guid fileId)
+        {
+            try
+            {
+                var workshopFile = await _context.WorkshopFiles.FindAsync(fileId);
+                if (workshopFile == null)
+                {
+                    return NotFound("not-found");
+                }
+
+                _context.WorkshopFiles.Remove(workshopFile);
+                await _context.SaveChangesAsync();
+
+                return Ok("file-deleted");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
         [HttpGet("view-image/{fileId}")]
         [AuthorizeEmployee("Administrador")]
         [OwnsResource(ResourceKind.WorkshopFile, "fileId")]
