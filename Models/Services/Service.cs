@@ -11,5 +11,7 @@ namespace MiTaller.Models.Services
         [ForeignKey("ServiceCategoryId")]
         public ServiceCategory ServiceCategory { get; set; }
         public string Name { get; set; } = string.Empty;
+        // Null = global catalog; set = custom service visible only to that workshop
+        public Guid? WorkshopId { get; set; }
     }
 }

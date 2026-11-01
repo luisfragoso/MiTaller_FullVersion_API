@@ -3219,6 +3219,9 @@ namespace MiTaller.Migrations
                     b.Property<int>("ServiceCategoryId")
                         .HasColumnType("int");
 
+                    b.Property<Guid?>("WorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ServiceCategoryId");

@@ -7,6 +7,7 @@ using MiTaller.Data;
 using MiTaller.DTO.Services;
 using MiTaller.DTO.Workshop.Services;
 using MiTaller.Models.Auth;
+using MiTaller.Models.Services;
 using MiTaller.Models.Workshop;
 
 namespace MiTaller.Controllers
@@ -73,7 +74,7 @@ namespace MiTaller.Controllers
                 }
 
                 var services = await _context.Services
-                    .Where(c => c.ServiceCategoryId == categoryId)
+                    .Where(c => c.ServiceCategoryId == categoryId && c.WorkshopId == null)
                     .ToListAsync();
 
                 if (services == null)
@@ -117,7 +118,8 @@ namespace MiTaller.Controllers
                 }
 
                 var service = await _context.Services
-                    .Where(s => s.Id == model.ServiceId)
+                    .Where(s => s.Id == model.ServiceId
+                        && (s.WorkshopId == null || s.WorkshopId == model.WorkshopId))
                     .FirstOrDefaultAsync();
 
                 if (service == null)
@@ -134,6 +136,70 @@ namespace MiTaller.Controllers
                 };
 
                 await _context.WorkshopServices.AddAsync(newService);
+
+                await _context.SaveChangesAsync();
+
+                return Ok("service-created");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpPost("register-custom-service")]
+        [CallerMatches("WorkshopId")]
+        [AuthorizeEmployee("Administrador")]
+        public async Task<ActionResult> RegisterCustomWorkshopService(PostCustomWorkshopServiceDto model)
+        {
+            try
+            {
+                var name = (model.Name ?? string.Empty).Trim();
+                if (name.Length == 0 || name.Length > 100)
+                {
+                    return BadRequest("invalid-name");
+                }
+
+                var workshopExists = await _context.Workshops
+                    .AnyAsync(w => w.Id == model.WorkshopId && !w.IsDeleted);
+                var categoryExists = await _context.ServiceCategories
+                    .AnyAsync(c => c.Id == model.ServiceCategoryId);
+                if (!workshopExists || !categoryExists)
+                {
+                    return NotFound("not-found");
+                }
+
+                // Reuse a catalog or own custom service with the same name instead of duplicating it
+                var service = await _context.Services
+                    .Where(s => s.ServiceCategoryId == model.ServiceCategoryId
+                        && s.Name == name
+                        && (s.WorkshopId == null || s.WorkshopId == model.WorkshopId))
+                    .FirstOrDefaultAsync();
+
+                if (service != null && await _context.WorkshopServices.AnyAsync(ws =>
+                        ws.WorkshopId == model.WorkshopId && ws.ServiceId == service.Id && !ws.IsDeleted))
+                {
+                    return Conflict("service-exists");
+                }
+
+                if (service == null)
+                {
+                    service = new Service
+                    {
+                        ServiceCategoryId = model.ServiceCategoryId,
+                        Name = name,
+                        WorkshopId = model.WorkshopId,
+                    };
+                    await _context.Services.AddAsync(service);
+                }
+
+                await _context.WorkshopServices.AddAsync(new WorkshopServices
+                {
+                    WorkshopId = model.WorkshopId,
+                    Service = service,
+                    Price = model.Price,
+                    IsDeleted = false
+                });
 
                 await _context.SaveChangesAsync();
 
@@ -163,6 +229,7 @@ namespace MiTaller.Controllers
                 var workshopServices = await _context.WorkshopServices
                     .Where(ws => ws.WorkshopId == workshopId && !ws.IsDeleted)
                     .Include(w => w.Service)
+                    .ThenInclude(s => s.ServiceCategory)
                     .ToListAsync();
 
                 if (workshopServices == null)
@@ -180,7 +247,8 @@ namespace MiTaller.Controllers
                         ServiceId = model.Id,
                         ServiceName = model.Service.Name,
                         Price = model.Price,
-
+                        ServiceType = model.Service.ServiceCategory?.Type ?? string.Empty,
+                        IsCustom = model.Service.WorkshopId != null,
                     };
                     workshopServicesDto.Add(newService);
                 }
@@ -237,6 +305,12 @@ namespace MiTaller.Controllers
                 if (workshopService == null)
                 {
                     return NotFound("not-found");
+                }
+
+                var caller = await CallerResolver.ResolveAsync(User, _context);
+                if (caller?.WorkshopId != workshopService.WorkshopId)
+                {
+                    return Forbid();
                 }
 
                 workshopService.Price = model.Price;
