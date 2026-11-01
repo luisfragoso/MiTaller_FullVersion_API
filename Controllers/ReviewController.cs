@@ -34,24 +34,30 @@ namespace MiTaller.Controllers
             return Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
         }
 
+        private static IQueryable<WorkshopReviewDto> ToDto(IQueryable<Review> query, Guid? customerId) =>
+            query.Select(r => new WorkshopReviewDto
+            {
+                Id = r.Id,
+                CustomerId = r.CustomerId,
+                CustomerName = r.Customer.FullName,
+                Comment = r.Comment,
+                Rate = r.Rate,
+                Date = r.Date.ToString("yyyy-MM-dd"),
+                WorkshopReply = r.WorkshopReply,
+                WorkshopReplyDate = r.WorkshopReplyDate.HasValue ? r.WorkshopReplyDate.Value.ToString("yyyy-MM-dd") : null,
+                HelpfulCount = r.HelpfulVotes.Count,
+                VotedHelpful = customerId != null && r.HelpfulVotes.Any(v => v.CustomerId == customerId),
+            });
+
         [HttpGet("workshop/{workshopId}")]
         [AllowAnonymous]
         public async Task<ActionResult<ReviewResponseDto>> GetReviewsByWorkshop(Guid workshopId)
         {
             try 
             {
-                var reviews = await _context.Reviews
+                var reviews = await ToDto(_context.Reviews
                     .Where(r => r.WorkshopId == workshopId)
-                    .Include(r => r.Customer)
-                    .Select(r => new WorkshopReviewDto
-                    {
-                        Id = r.Id,
-                        CustomerId = r.CustomerId,
-                        CustomerName = r.Customer.FullName,
-                        Comment = r.Comment,
-                        Rate = r.Rate,
-                        Date = r.Date.ToString("yyyy-MM-dd")
-                    })
+                    .OrderByDescending(r => r.Date), GetTokenCustomerId())
                     .ToListAsync();
 
                 if (!reviews.Any()) return NotFound("not-found");
@@ -83,7 +89,7 @@ namespace MiTaller.Controllers
 
         [HttpPost("workshop-paged/{workshopId}")]
         [AllowAnonymous]
-        public async Task<ActionResult<ReviewPagedResponseDto>> GetReviewsByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager)
+        public async Task<ActionResult<ReviewPagedResponseDto>> GetReviewsByWorkshopPaged(Guid workshopId, [FromBody] PagerBodyDto pager, [FromQuery] string? sort = null)
         {
             try
             {
@@ -107,19 +113,13 @@ namespace MiTaller.Controllers
                 var thisMonthReviews = await baseQuery.CountAsync(
                     r => r.Date.Year == now.Year && r.Date.Month == now.Month);
 
-                var pagedReviews = await baseQuery
-                    .OrderByDescending(r => r.Date)
+                var ordered = sort == "helpful"
+                    ? baseQuery.OrderByDescending(r => r.HelpfulVotes.Count).ThenByDescending(r => r.Date)
+                    : baseQuery.OrderByDescending(r => r.Date);
+
+                var pagedReviews = await ToDto(ordered
                     .Skip((pager.PageNumber - 1) * pager.PageSize)
-                    .Take(pager.PageSize)
-                    .Select(r => new WorkshopReviewDto
-                    {
-                        Id = r.Id,
-                        CustomerId = r.CustomerId,
-                        CustomerName = r.Customer.FullName,
-                        Comment = r.Comment,
-                        Rate = r.Rate,
-                        Date = r.Date.ToString("yyyy-MM-dd")
-                    })
+                    .Take(pager.PageSize), GetTokenCustomerId())
                     .ToListAsync();
 
                 var totalPages = (int)Math.Ceiling((double)totalCount / pager.PageSize);
@@ -241,6 +241,106 @@ namespace MiTaller.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok("review-deleted");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+    
+        [HttpPut("{id}/reply")]
+        [OwnsResource(ResourceKind.Review, "id", AllowCustomer = false)]
+        [AuthorizeEmployee("Administrador")]
+        public async Task<ActionResult> ReplyToReview(int id, [FromBody] PutReviewReplyDto model)
+        {
+            var reply = (model.Reply ?? string.Empty).Trim();
+            if (reply.Length == 0 || reply.Length > 500) return BadRequest("invalid-reply");
+
+            try
+            {
+                var review = await _context.Reviews.FindAsync(id);
+                if (review == null) return NotFound("not-found");
+
+                review.WorkshopReply = reply;
+                review.WorkshopReplyDate = DateTime.Now;
+                await _context.SaveChangesAsync();
+
+                return Ok("reply-saved");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpDelete("{id}/reply")]
+        [OwnsResource(ResourceKind.Review, "id", AllowCustomer = false)]
+        [AuthorizeEmployee("Administrador")]
+        public async Task<ActionResult> DeleteReviewReply(int id)
+        {
+            try
+            {
+                var review = await _context.Reviews.FindAsync(id);
+                if (review == null) return NotFound("not-found");
+
+                review.WorkshopReply = null;
+                review.WorkshopReplyDate = null;
+                await _context.SaveChangesAsync();
+
+                return Ok("reply-deleted");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        // Any customer can mark another customer's review as helpful (one vote each)
+        [HttpPost("{id}/helpful")]
+        public async Task<ActionResult> MarkHelpful(int id)
+        {
+            var customerId = GetTokenCustomerId();
+            if (customerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+
+            try
+            {
+                var review = await _context.Reviews.FindAsync(id);
+                if (review == null) return NotFound("not-found");
+                if (review.CustomerId == customerId) return BadRequest("own-review");
+
+                var exists = await _context.ReviewHelpfulVotes
+                    .AnyAsync(v => v.ReviewId == id && v.CustomerId == customerId);
+                if (!exists)
+                {
+                    _context.ReviewHelpfulVotes.Add(new ReviewHelpfulVote { ReviewId = id, CustomerId = customerId.Value });
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok("helpful-saved");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        [HttpDelete("{id}/helpful")]
+        public async Task<ActionResult> UnmarkHelpful(int id)
+        {
+            var customerId = GetTokenCustomerId();
+            if (customerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+
+            try
+            {
+                var vote = await _context.ReviewHelpfulVotes
+                    .FirstOrDefaultAsync(v => v.ReviewId == id && v.CustomerId == customerId);
+                if (vote != null)
+                {
+                    _context.ReviewHelpfulVotes.Remove(vote);
+                    await _context.SaveChangesAsync();
+                }
+
+                return Ok("helpful-removed");
             }
             catch (Exception)
             {

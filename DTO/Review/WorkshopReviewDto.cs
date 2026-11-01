@@ -8,5 +8,10 @@
         public string Comment { get; set; } = string.Empty;
         public float Rate { get; set; }
         public string Date { get; set; } = string.Empty;
+        public string? WorkshopReply { get; set; }
+        public string? WorkshopReplyDate { get; set; }
+        public int HelpfulCount { get; set; }
+        // Only meaningful for an authenticated customer caller
+        public bool VotedHelpful { get; set; }
     }
 }

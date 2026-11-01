@@ -84,6 +84,7 @@ namespace MiTaller.Data
 
         //Reviews
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<ReviewHelpfulVote> ReviewHelpfulVotes { get; set; }
 
         // Accidents
         public DbSet<Accident> Accidents { get; set; }
@@ -342,6 +343,16 @@ namespace MiTaller.Data
                 .WithMany()
                 .HasForeignKey(r => r.WorkshopId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<ReviewHelpfulVote>()
+                .HasOne(v => v.Review)
+                .WithMany(r => r.HelpfulVotes)
+                .HasForeignKey(v => v.ReviewId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<ReviewHelpfulVote>()
+                .HasIndex(v => new { v.ReviewId, v.CustomerId })
+                .IsUnique();
 
             // WorkshopClients
             builder.Entity<WorkshopCustomers>()

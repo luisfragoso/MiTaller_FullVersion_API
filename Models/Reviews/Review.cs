@@ -27,5 +27,11 @@ namespace MiTaller.Models.Reviews
         public float Rate { get; set; }
 
         public DateTime Date { get; set; } = DateTime.Now;
+
+        [StringLength(500)]
+        public string? WorkshopReply { get; set; }
+        public DateTime? WorkshopReplyDate { get; set; }
+
+        public ICollection<ReviewHelpfulVote> HelpfulVotes { get; set; } = new List<ReviewHelpfulVote>();
     }
 }

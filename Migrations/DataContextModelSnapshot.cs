@@ -3156,6 +3156,13 @@ namespace MiTaller.Migrations
                     b.Property<Guid>("WorkshopId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("WorkshopReply")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime?>("WorkshopReplyDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -3163,6 +3170,31 @@ namespace MiTaller.Migrations
                     b.HasIndex("WorkshopId");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Reviews.ReviewHelpfulVote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ReviewId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReviewId", "CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("ReviewHelpfulVotes");
                 });
 
             modelBuilder.Entity("MiTaller.Models.RoadsideAssistance", b =>
@@ -5877,6 +5909,17 @@ namespace MiTaller.Migrations
                     b.Navigation("Workshop");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Reviews.ReviewHelpfulVote", b =>
+                {
+                    b.HasOne("MiTaller.Models.Reviews.Review", "Review")
+                        .WithMany("HelpfulVotes")
+                        .HasForeignKey("ReviewId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Review");
+                });
+
             modelBuilder.Entity("MiTaller.Models.RoadsideAssistance", b =>
                 {
                     b.HasOne("MiTaller.Models.Customer.Customer", "Customer")
@@ -6368,6 +6411,11 @@ namespace MiTaller.Migrations
             modelBuilder.Entity("MiTaller.Models.Quotation", b =>
                 {
                     b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Reviews.Review", b =>
+                {
+                    b.Navigation("HelpfulVotes");
                 });
 
             modelBuilder.Entity("MiTaller.Models.Tags.Tag", b =>
