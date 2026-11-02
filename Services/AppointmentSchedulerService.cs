@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
 
 namespace MiTaller.Services
@@ -77,7 +77,10 @@ namespace MiTaller.Services
 
             foreach (var appointment in dueForReminder)
             {
-                await notificationService.NotifyReminderAsync(appointment, appointment.Customer, appointment.Workshop);
+                if (appointment.BookedBy == Models.Domain.RecordOrigin.Self)
+                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, "hoy");
+                else
+                    await notificationService.NotifyReminderAsync(appointment, appointment.Customer, appointment.Workshop);
                 appointment.ReminderSentAt = now;
             }
 
@@ -102,7 +105,10 @@ namespace MiTaller.Services
 
             foreach (var appointment in dueForExpiringNotice)
             {
-                await notificationService.NotifyExpiringAsync(appointment, appointment.Customer, appointment.Workshop);
+                if (appointment.BookedBy == Models.Domain.RecordOrigin.Self)
+                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, "ya");
+                else
+                    await notificationService.NotifyExpiringAsync(appointment, appointment.Customer, appointment.Workshop);
                 appointment.ExpiringNoticeSentAt = now;
             }
 
@@ -134,6 +140,7 @@ namespace MiTaller.Services
                 if (!isStaleBacklog)
                 {
                     await notificationService.NotifyCancellationAsync(appointment, appointment.Customer, appointment.Workshop);
+                    notificationService.NotifyWorkshopCanceled(appointment, appointment.Customer);
                 }
             }
 

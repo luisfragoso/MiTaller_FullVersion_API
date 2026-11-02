@@ -1,4 +1,5 @@
-﻿using MiTaller.Models.Notification;
+﻿using MiTaller.Models.Domain;
+using MiTaller.Models.Notification;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MiTaller.Models
@@ -25,5 +26,7 @@ namespace MiTaller.Models
         public DateTime? ReminderSentAt { get; set; }
         public DateTime? ExpiringNoticeSentAt { get; set; }
         public DateTime? CancelNoticeSentAt { get; set; }
+        // Who booked it; the other side is the one that has to confirm (Self = the customer)
+        public RecordOrigin BookedBy { get; set; } = RecordOrigin.Unknown;
     }
 }

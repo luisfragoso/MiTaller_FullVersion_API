@@ -246,6 +246,9 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("BookedBy")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("CancelNoticeSentAt")
                         .HasColumnType("datetime2");
 

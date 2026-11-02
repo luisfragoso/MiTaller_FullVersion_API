@@ -12,6 +12,8 @@ namespace MiTaller.DTO.Workshop
         public string WorkshopName {  get; set; } = string.Empty;
         public string Type {  get; set; } = string.Empty;
         public byte[]? ProfileImage { get; set; }
+        // Lists send this instead of the photo; it comes from GET Workshop/profile-image/{id}
+        public bool HasProfileImage { get; set; }
         public string? Latitude { get; set; } = string.Empty;
         public string? Longitude { get; set; } = string.Empty;
         public AccountAddressDto? Address { get; set; }

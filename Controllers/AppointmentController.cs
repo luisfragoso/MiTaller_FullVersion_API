@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using MiTaller.Models.Domain;
 using MiTaller.Data;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.DTO;
@@ -100,6 +101,7 @@ namespace MiTaller.Controllers
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
                         Status = a.Status,
+                        BookedBy = a.BookedBy == RecordOrigin.Self ? "customer" : a.BookedBy == RecordOrigin.Workshop ? "workshop" : "",
                     })
                     .FirstOrDefaultAsync();
 
@@ -152,7 +154,9 @@ namespace MiTaller.Controllers
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
                         Status = a.Status,
-                        Image = a.Image,
+                        BookedBy = a.BookedBy == RecordOrigin.Self ? "customer" : a.BookedBy == RecordOrigin.Workshop ? "workshop" : "",
+                        // Not in the list: base64 photos made it heavy
+                        Image = null,
                     })
                     .ToListAsync();
 
@@ -208,6 +212,7 @@ namespace MiTaller.Controllers
                         AppointmentType = a.AppointmentType,
                         NotificationType = a.NotificationType,
                         Status = a.Status,
+                        BookedBy = a.BookedBy == RecordOrigin.Self ? "customer" : a.BookedBy == RecordOrigin.Workshop ? "workshop" : "",
                     })
                     .ToListAsync();
 
@@ -265,8 +270,9 @@ namespace MiTaller.Controllers
                     AppointmentType = model.AppointmentType,
                     NotificationType = model.NotificationType,
                     Image = imageData,
-                    Status = "Pendiente",
-                    //Status = model.Status
+                    // A workshop booking less than 3h ahead is a counter booking: the customer is there, no confirmation needed
+                    Status = !bookedByCustomer && model.Date - DateTime.Now < CounterBookingWindow ? "Confirmada" : "Pendiente",
+                    BookedBy = bookedByCustomer ? RecordOrigin.Self : RecordOrigin.Workshop,
                 };
 
                 // Saved first so the inbox entry and the notification carry the real appointment Id
@@ -302,7 +308,7 @@ namespace MiTaller.Controllers
                     //    new Dictionary<string, string> { { "appointmentId", appointment.Id.ToString() } }
                     //);
                 }
-                else
+                else if (appointment.Status == "Pendiente")
                 {
                     // El taller agendó la cita a nombre del cliente - debe aceptarla.
                     await _appointmentNotificationService.NotifyAcceptRequestAsync(appointment, customer, workshop);
@@ -361,6 +367,8 @@ namespace MiTaller.Controllers
             }
         }
 
+        private static readonly TimeSpan CounterBookingWindow = TimeSpan.FromHours(3);
+
         private static readonly string[] ValidAppointmentStatuses =
             { "Pendiente", "Confirmada", "En taller", "Completada", "Cancelada" };
 
@@ -380,7 +388,12 @@ namespace MiTaller.Controllers
                 if (caller.CustomerId != null && model.Status is not ("Confirmada" or "Cancelada"))
                     return StatusCode(StatusCodes.Status403Forbidden, "not-allowed");
 
+                var changed = appointment.Status != model.Status;
                 appointment.Status = model.Status;
+                if (changed && model.Status is "Confirmada" or "Cancelada")
+                {
+                    await _appointmentNotificationService.NotifyStatusChangeAsync(appointment, byCustomer: caller.CustomerId != null);
+                }
                 await _context.SaveChangesAsync();
 
                 return Ok("appointment-status-updated");

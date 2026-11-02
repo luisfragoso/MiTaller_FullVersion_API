@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Identity.UI.Services;
+﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using MiTaller.Data;
 using MiTaller.Models;
 using MiTaller.Models.Auth;
@@ -111,7 +111,9 @@ namespace MiTaller.Services
         {
             var (formattedDate, formattedTime) = FormatDateTime(appointment.Date);
             var title = $"Tu cita con {workshop.WorkshopName} del {formattedDate} a las {formattedTime} fue cancelada";
-            const string content = "Se canceló automáticamente porque no fue confirmada a tiempo. Agenda una nueva cuando quieras.";
+            var content = appointment.BookedBy == Models.Domain.RecordOrigin.Self
+                ? "Se canceló automáticamente porque el taller no la confirmó a tiempo. Puedes pedir otra o elegir otro taller."
+                : "Se canceló automáticamente porque no fue confirmada a tiempo. Agenda una nueva cuando quieras.";
 
             _context.Notifications.Add(new Notifications
             {
@@ -130,6 +132,63 @@ namespace MiTaller.Services
             // await _firebaseNotificationService.SendNotificationToCustomerAsync(
             //     customer.Id, title, content, "AppointmentCanceled",
             //     new Dictionary<string, string> { { "appointmentId", appointment.Id.ToString() } });
+        }
+
+        // A customer's request waits on the workshop: its reminders go to the workshop's inbox instead
+        public void NotifyWorkshopPending(Appointment appointment, Customer customer, string when)
+        {
+            var (formattedDate, formattedTime) = FormatDateTime(appointment.Date);
+            AddWorkshopInbox(appointment,
+                $"{customer.FullName} espera que confirmes su cita del {formattedDate} a las {formattedTime}",
+                $"Confírmala {when}; si no, se cancelará automáticamente 2 horas antes.");
+        }
+
+        public void NotifyWorkshopCanceled(Appointment appointment, Customer customer)
+        {
+            var (formattedDate, formattedTime) = FormatDateTime(appointment.Date);
+            var who = appointment.BookedBy == Models.Domain.RecordOrigin.Self ? "no la confirmaste" : "el cliente no la confirmó";
+            AddWorkshopInbox(appointment,
+                $"La cita de {customer.FullName} del {formattedDate} a las {formattedTime} se canceló",
+                $"Se canceló automáticamente porque {who} a tiempo.");
+        }
+
+        public async Task NotifyStatusChangeAsync(Appointment appointment, bool byCustomer)
+        {
+            var customer = await _context.Customers.FindAsync(appointment.CustomerId);
+            var workshop = await _context.Workshops.FindAsync(appointment.WorkshopId);
+            if (customer == null || workshop == null) return;
+
+            var (formattedDate, formattedTime) = FormatDateTime(appointment.Date);
+            var verb = appointment.Status == "Confirmada" ? "confirmó" : "canceló";
+            if (byCustomer)
+            {
+                AddWorkshopInbox(appointment, $"{customer.FullName} {verb} su cita del {formattedDate} a las {formattedTime}",
+                    appointment.Title);
+                return;
+            }
+
+            _context.Notifications.Add(new Notifications
+            {
+                UserId = customer.Id,
+                UserType = UserType.Customer,
+                Title = $"{workshop.WorkshopName} {verb} tu cita del {formattedDate} a las {formattedTime}",
+                Content = appointment.Title,
+                Event = appointment.Status == "Confirmada" ? "AppointmentConfirmed" : "AppointmentCanceled",
+            });
+        }
+
+        private void AddWorkshopInbox(Appointment appointment, string title, string details)
+        {
+            _context.WorkshopInbox.Add(new WorkshopInbox
+            {
+                WorkshopId = appointment.WorkshopId,
+                CustomerId = appointment.CustomerId,
+                VehicleId = appointment.VehicleId,
+                ParentModelType = "Appointment",
+                ParentModelId = appointment.Id,
+                Title = title,
+                Details = details,
+            });
         }
 
         private async Task SendEmailIfPossible(string? email, string subject, string htmlBody)

@@ -272,7 +272,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     };
 
@@ -392,7 +392,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     });
                 }
@@ -532,7 +532,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     });
                 }
@@ -675,7 +675,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     };
 

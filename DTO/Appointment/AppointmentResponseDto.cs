@@ -17,6 +17,8 @@ namespace MiTaller.DTO.Appointment
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
+        // "customer" | "workshop" | "" (older appointments)
+        public string BookedBy { get; set; } = string.Empty;
         public string AppointmentType { get; set; } = string.Empty;
         public NotificationType NotificationType { get; set; }
         public byte[]? Image { get; set; }

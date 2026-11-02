@@ -335,6 +335,20 @@ namespace MiTaller.Controllers
             }
         }
 
+        [HttpGet("profile-image/{workshopId}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetWorkshopProfileImage(Guid workshopId)
+        {
+            var image = await _context.Workshops
+                .Where(w => w.Id == workshopId && !w.IsDeleted)
+                .Select(w => w.ProfileImage)
+                .FirstOrDefaultAsync();
+            if (image == null || image.Length == 0) return NotFound("not-found");
+
+            Response.Headers.CacheControl = "public, max-age=3600";
+            return File(image, "image/jpeg");
+        }
+
         [HttpGet("recommended-workshops")]
         public async Task<ActionResult<List<WorkshopInfoResponseDto>>> GetRecommendedWorkshops()
         {
@@ -430,7 +444,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     };
 
@@ -532,7 +546,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     };
 
@@ -633,7 +647,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     };
 
@@ -732,7 +746,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     });
                 }
@@ -887,7 +901,7 @@ namespace MiTaller.Controllers
                         Longitude = workshop.Longitude?.ToString() ?? string.Empty,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage,
+                        HasProfileImage = workshop.ProfileImage != null,
                         ReviewAverageRate = avgRate
                     });
                 }
