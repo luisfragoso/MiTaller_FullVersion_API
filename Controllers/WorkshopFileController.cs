@@ -123,7 +123,7 @@ namespace MiTaller.Controllers
                         FileName = f.File.FileName,
                         Type = f.File.FileType,
                         Description = f.File.FileDescription,
-                        FileData = f.File.FileData,
+                        Size = f.File.FileData.Length,
                         UploadedAt = f.UploadedAt.ToString("yyyy-MM-dd HH:mm:ss")
                     }).ToListAsync();
 
