@@ -20,9 +20,38 @@ namespace MiTaller.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
-        // Name searches span every customer, so they return name + photo only, in small pages
         private const int MinSearchLength = 3;
         private const int MaxSearchResults = 20;
+
+        // Name matches only this workshop's customers (appointment, quote, inspection or added by hand); anyone else
+        // only by exact email or 10-digit phone, i.e. the customer gave it at the counter. Null = query too short.
+        private async Task<IQueryable<Customer>?> CustomerSearchScopeAsync(string? query)
+        {
+            var q = (query ?? string.Empty).Trim();
+            var workshopId = (await CallerResolver.ResolveAsync(User, _context))?.WorkshopId;
+            if (workshopId == null) return null;
+
+            var customers = _context.Customers.Where(c => !c.IsDeleted);
+            if (q.Contains('@'))
+            {
+                return customers.Where(c => c.Email == q);
+            }
+
+            var digits = new string(q.Where(char.IsDigit).ToArray());
+            if (digits.Length == 12 && digits.StartsWith("52")) digits = digits[2..];
+            if (digits.Length == 10 && !q.Any(char.IsLetter))
+            {
+                return digits.All(d => d == '0') ? null : customers.Where(c => c.NormalizedPhoneNumber == digits);
+            }
+
+            if (q.Length < MinSearchLength) return null;
+            var w = workshopId.Value;
+            return customers.Where(c => c.FullName.Contains(q) && (
+                _context.Appointments.Any(a => a.WorkshopId == w && a.CustomerId == c.Id)
+                || _context.Quotations.Any(x => x.WorkshopId == w && x.CustomerId == c.Id)
+                || _context.Inspections.Any(i => i.WorkshopId == w && i.CustomerId == c.Id)
+                || _context.WorkshopCustomers.Any(wc => wc.WorkshopId == w && wc.CustomerId == c.Id)));
+        }
 
         private readonly UserManager<BaseIdentityUser> _userManager;
         private readonly DataContext _context;
@@ -223,14 +252,14 @@ namespace MiTaller.Controllers
         {
             try
             {
-                name = (name ?? string.Empty).Trim();
-                if (name.Length < MinSearchLength)
+                var scope = await CustomerSearchScopeAsync(name);
+                if (scope == null)
                 {
                     return NotFound("not-found");
                 }
 
-                var customersWithVehicles = await _context.Customers
-                    .Where(c => _context.Vehicles.Any(v => v.CustomerId == c.Id && !v.IsDeleted && c.FullName.Contains(name)))
+                var customersWithVehicles = await scope
+                    .Where(c => _context.Vehicles.Any(v => v.CustomerId == c.Id && !v.IsDeleted))
                     .OrderBy(c => c.FullName)
                     .Take(MaxSearchResults)
                     .Select(c => new CustomerWithVehicleDto
@@ -328,14 +357,13 @@ namespace MiTaller.Controllers
         {
             try
             {
-                name = (name ?? string.Empty).Trim();
-                if (name.Length < MinSearchLength)
+                var scope = await CustomerSearchScopeAsync(name);
+                if (scope == null)
                 {
                     return NotFound("not-found");
                 }
 
-                var customersWithVehicles = await _context.Customers
-                    .Where(c => c.FullName.Contains(name) && !c.IsDeleted)
+                var customersWithVehicles = await scope
                     .OrderBy(c => c.FullName)
                     .Take(MaxSearchResults)
                     .Select(c => new CustomerWithVehicleDto
