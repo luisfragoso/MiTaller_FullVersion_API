@@ -663,17 +663,15 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("search-by-name-pager")]
-        public async Task<ActionResult<PagerResponseDto<WorkshopInfoResponseDto>>> SearchWorkshopsByNamePaged([FromQuery] string workshopName, [FromBody] PagerBodyDto pager)
+        public async Task<ActionResult<PagerResponseDto<WorkshopInfoResponseDto>>> SearchWorkshopsByNamePaged([FromQuery] string? workshopName, [FromBody] PagerBodyDto pager)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(workshopName))
-                {
-                    return BadRequest("invalid-workshop-name");
-                }
+                // Empty name = browse every workshop (the app's Talleres screen opens with the full list)
+                var name = workshopName?.Trim() ?? "";
 
                 var workshops = await _context.Workshops
-                    .Where(w => !w.IsDeleted && w.WorkshopName.Contains(workshopName))
+                    .Where(w => !w.IsDeleted && (name == "" || w.WorkshopName.Contains(name)))
                     .ToListAsync();
 
                 if (workshops == null || !workshops.Any())
@@ -780,18 +778,15 @@ namespace MiTaller.Controllers
         }
 
         [HttpPost("search-by-name-location-pager")]
-        public async Task<ActionResult<PagerResponseDto<WorkshopInfoResponseDto>>> SearchWorkshopsByNameAndLocationPaged([FromQuery] string workshopName, [FromQuery] LatitudeLongitude latlong, [FromBody] PagerBodyDto pager)
+        public async Task<ActionResult<PagerResponseDto<WorkshopInfoResponseDto>>> SearchWorkshopsByNameAndLocationPaged([FromQuery] string? workshopName, [FromQuery] LatitudeLongitude latlong, [FromBody] PagerBodyDto pager)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(workshopName))
-                {
-                    return BadRequest("invalid-workshop-name");
-                }
+                var name = workshopName?.Trim() ?? "";
 
                 // Filtrar talleres por nombre (CON y SIN coordenadas)
                 var allWorkshops = await _context.Workshops
-                    .Where(w => !w.IsDeleted && w.WorkshopName.Contains(workshopName))
+                    .Where(w => !w.IsDeleted && (name == "" || w.WorkshopName.Contains(name)))
                     .ToListAsync();
 
                 if (!allWorkshops.Any())
