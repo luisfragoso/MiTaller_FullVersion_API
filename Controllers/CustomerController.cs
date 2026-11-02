@@ -20,6 +20,10 @@ namespace MiTaller.Controllers
     [Authorize]
     public class CustomerController : ControllerBase
     {
+        // Name searches span every customer, so they return name + photo only, in small pages
+        private const int MinSearchLength = 3;
+        private const int MaxSearchResults = 20;
+
         private readonly UserManager<BaseIdentityUser> _userManager;
         private readonly DataContext _context;
 
@@ -187,6 +191,7 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("public-info")]
+        [WorkshopCaller]
         public async Task<ActionResult<CustomerPublicInfoDto>> GetCustomersPublicInfo(Guid customerId)
         {
             try
@@ -212,49 +217,26 @@ namespace MiTaller.Controllers
             }
         }
 
-        [HttpGet("all-customers-with-vehicles")]
-        public async Task<ActionResult<CustomerWithVehicleDto>> GetCustomersWithVehicle([FromQuery] bool includePhoto)
-        {
-            try
-            {
-                var customersWithVehicles = await _context.Customers
-                    .Where(c => _context.Vehicles.Any(v => v.CustomerId == c.Id && !v.IsDeleted))
-                    .Select(c => new CustomerWithVehicleDto
-                    {
-                        CustomerId = c.Id,
-                        FullName = c.FullName,
-                        Email = c.Email,
-                        PhoneNumber = c.NormalizedPhoneNumber,
-                        ProfileImage = includePhoto ? c.ProfileImage : null
-                    })
-                    .ToListAsync();
-
-                if (!customersWithVehicles.Any())
-                {
-                    return NotFound("not-found");
-                }
-
-                return Ok(customersWithVehicles);
-            }
-            catch (Exception)
-            {
-                return BadRequest("unkwnown-error");
-            }
-        }
-
         [HttpGet("customers-with-vehicles-by-name")]
+        [WorkshopCaller]
         public async Task<ActionResult<CustomerWithVehicleDto>> GetCustomersWithVehicleByName([FromQuery] bool includePhoto, string name)
         {
             try
             {
+                name = (name ?? string.Empty).Trim();
+                if (name.Length < MinSearchLength)
+                {
+                    return NotFound("not-found");
+                }
+
                 var customersWithVehicles = await _context.Customers
                     .Where(c => _context.Vehicles.Any(v => v.CustomerId == c.Id && !v.IsDeleted && c.FullName.Contains(name)))
+                    .OrderBy(c => c.FullName)
+                    .Take(MaxSearchResults)
                     .Select(c => new CustomerWithVehicleDto
                     {
                         CustomerId = c.Id,
                         FullName = c.FullName,
-                        Email = c.Email,
-                        PhoneNumber = c.NormalizedPhoneNumber,
                         ProfileImage = includePhoto ? c.ProfileImage : null
                     })
                     .ToListAsync();
@@ -341,18 +323,25 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("customers-by-name")]
+        [WorkshopCaller]
         public async Task<ActionResult<CustomerWithVehicleDto>> GetCustomersByName([FromQuery] bool includePhoto, string name)
         {
             try
             {
+                name = (name ?? string.Empty).Trim();
+                if (name.Length < MinSearchLength)
+                {
+                    return NotFound("not-found");
+                }
+
                 var customersWithVehicles = await _context.Customers
                     .Where(c => c.FullName.Contains(name) && !c.IsDeleted)
+                    .OrderBy(c => c.FullName)
+                    .Take(MaxSearchResults)
                     .Select(c => new CustomerWithVehicleDto
                     {
                         CustomerId = c.Id,
                         FullName = c.FullName,
-                        Email = c.Email,
-                        PhoneNumber = c.NormalizedPhoneNumber,
                         ProfileImage = includePhoto ? c.ProfileImage : null
                     })
                     .ToListAsync();

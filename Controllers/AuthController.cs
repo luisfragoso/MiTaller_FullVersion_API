@@ -42,6 +42,10 @@ namespace MiTaller.Controllers
 
         private static bool CodeLocked(BaseIdentityUser user) => user.VerificationCodeLockedUntil > DateTime.UtcNow;
 
+        // Unknown accounts answer like a wrong password, after a real hash check so the timing matches too
+        private static readonly string DummyPasswordHash =
+            new PasswordHasher<BaseIdentityUser>().HashPassword(null!, Guid.NewGuid().ToString());
+
         // The last allowed wrong guess burns the pending code and refuses new ones for CodeLockout.
         private async Task<string> WrongCodeAsync(BaseIdentityUser user)
         {
@@ -79,12 +83,8 @@ namespace MiTaller.Controllers
 
                 if (user == null)
                 {
-                    return Unauthorized("not-found");
-                }
-
-                if (user.IsDeleted)
-                {
-                    return Unauthorized("user-deleted");
+                    _userManager.PasswordHasher.VerifyHashedPassword(null!, DummyPasswordHash, model.Password ?? string.Empty);
+                    return Unauthorized("wrong-password");
                 }
 
                 if (await _userManager.IsLockedOutAsync(user))
@@ -96,6 +96,12 @@ namespace MiTaller.Controllers
                 {
                     await _userManager.AccessFailedAsync(user);
                     return Unauthorized(await _userManager.IsLockedOutAsync(user) ? "locked-out" : "wrong-password");
+                }
+
+                // Only revealed to whoever knows the password
+                if (user.IsDeleted)
+                {
+                    return Unauthorized("user-deleted");
                 }
 
                 await _userManager.ResetAccessFailedCountAsync(user);
@@ -567,7 +573,8 @@ namespace MiTaller.Controllers
 
                 if (user == null)
                 {
-                    return NotFound("not-found");
+                    // Same answer as for a real account, so the form can't tell which emails exist
+                    return Ok("email-sent");
                 }
 
                 if (CodeLocked(user))
@@ -644,7 +651,8 @@ namespace MiTaller.Controllers
 
                 if (user == null)
                 {
-                    return NotFound("not-found");
+                    // No account looks like a wrong code, not "not-found"
+                    return BadRequest("incorrect-code");
                 }
 
                 if (user.PasswordResetCode == null || user.PasswordResetCodeExpires == null)
@@ -690,7 +698,8 @@ namespace MiTaller.Controllers
 
                 if (user == null)
                 {
-                    return NotFound("not-found");
+                    // No account looks like a wrong code, not "not-found"
+                    return BadRequest("incorrect-code");
                 }
                  
                 if (user.PasswordResetCode == null || user.PasswordResetCodeExpires == null)
@@ -757,7 +766,8 @@ namespace MiTaller.Controllers
                 .SingleOrDefaultAsync();
             if (user == null)
             {
-                return NotFound("not-found");
+                // Same answer as for a real account, so the form can't tell which emails exist
+                return Ok("email-sent");
             }
 
             if (CodeLocked(user))
