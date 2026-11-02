@@ -1,4 +1,5 @@
-﻿using MiTaller.Attributes;
+﻿using MiTaller.Models.Domain;
+using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -300,6 +301,7 @@ namespace MiTaller.Controllers
                 }
 
                 var tempPassword = "MiTaller@" + Guid.NewGuid().ToString("N").Substring(0, 8);
+                var origin = await CallerResolver.OriginAsync(User, _context);
 
                 var customer = new Customer
                 {
@@ -313,7 +315,10 @@ namespace MiTaller.Controllers
                     UpdatedAt = null,
                     DeletedAt = null,
                     IsDeleted = false,
-                    UserType = UserType.Customer
+                    UserType = UserType.Customer,
+                    CreatedBy = origin.Origin,
+                    CreatedByWorkshopId = origin.WorkshopId,
+                    CreatedByAccountId = origin.AccountId,
                 };
 
                 var result = await _userManager.CreateAsync(customer, tempPassword);
@@ -331,8 +336,8 @@ namespace MiTaller.Controllers
 
                 await _context.NotificationSettings.AddAsync(notificationSettings);
 
-                var workshopIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                if (Guid.TryParse(workshopIdClaim, out var workshopId))
+                // The workshop, not the employee's own account id
+                if (origin.WorkshopId is Guid workshopId)
                 {
                     await _context.WorkshopCustomers.AddAsync(new WorkshopCustomers
                     {

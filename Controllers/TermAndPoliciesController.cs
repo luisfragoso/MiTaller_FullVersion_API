@@ -247,7 +247,8 @@ namespace MiTaller.Controllers
                                         "Pérdidas económicas derivadas del uso del servicio.",
                                         "Incumplimientos por parte de Fintechs, aseguradoras u otros terceros.",
                                         "Decisiones tomadas por los Usuarios con base en la información de la plataforma.",
-                                        "Resultados obtenidos por la contratación de anuncios dentro de la plataforma."
+                                        "Resultados obtenidos por la contratación de anuncios dentro de la plataforma.",
+                                        "El uso que cada taller haga de los datos personales de sus clientes que él mismo captura en la plataforma, del cual el taller es responsable conforme al Contrato de Encargo de Tratamiento de Datos."
                                     }
                                 }
                             }
@@ -637,6 +638,7 @@ namespace MiTaller.Controllers
             try
             {
                 // BORRADOR pendiente de revision por un abogado antes de publicarse como vinculante.
+                // Sin numeros de articulo: la LFPDPPP se reemplazo en marzo de 2025 y las referencias deben validarse contra la ley vigente.
                 var contratoJson = new
                 {
                     titulo = "CONTRATO DE ENCARGO DE TRATAMIENTO DE DATOS PERSONALES",
@@ -645,7 +647,7 @@ namespace MiTaller.Controllers
                         new
                         {
                             tipo = "texto",
-                            valor = "Última actualización: 24 Agosto 2026 — Documento en revisión legal."
+                            valor = "Última actualización: 1 de noviembre de 2026 — Documento en revisión legal."
                         },
                         new
                         {
@@ -666,8 +668,8 @@ namespace MiTaller.Controllers
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "Al aceptar este Contrato durante el registro, el Responsable formaliza la relación de encargo conforme al artículo 49 del Reglamento de la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)."
-                                }
+                                    valor = "Al aceptar este Contrato durante el registro, el Responsable formaliza la relación de encargo conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP) vigente y demás normativa aplicable."
+                                },
                             }
                         },
                         new
@@ -677,8 +679,8 @@ namespace MiTaller.Controllers
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "El Encargado tratará, por cuenta del Responsable, los datos personales de los clientes y vehículos que el Responsable capture, cargue o gestione dentro de la plataforma Mi Taller, exclusivamente para la prestación de los servicios de administración del taller (agenda, cotizaciones, expedientes de clientes y vehículos, facturación e inbox de mensajes), conforme a los Términos y Condiciones de la plataforma."
-                                }
+                                    valor = "El Encargado tratará, por cuenta del Responsable, los datos personales de los clientes y vehículos que el Responsable capture, cargue o gestione dentro de la plataforma Mi Taller, exclusivamente para la prestación de los servicios de administración del taller (agenda, cotizaciones, inspecciones, expedientes de clientes y vehículos, finanzas y mensajes), conforme a los Términos y Condiciones de la plataforma."
+                                },
                             }
                         },
                         new
@@ -695,19 +697,43 @@ namespace MiTaller.Controllers
                                     elementos = new List<string>
                                     {
                                         "Datos de identificación y contacto: nombre, teléfono, correo electrónico, domicilio.",
-                                        "Datos del vehículo: marca, modelo, placas, historial de servicios e inspecciones.",
+                                        "Datos del vehículo: marca, modelo, placas, fotografías, historial de servicios e inspecciones.",
                                         "Datos de la relación comercial: citas, cotizaciones, notas de servicio, historial de pagos.",
                                     }
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "El Responsable declara que cuenta con el consentimiento o base legal necesaria, y con su propio Aviso de Privacidad frente a sus clientes, para permitir que estos datos sean tratados por el Encargado conforme a este Contrato."
-                                }
+                                    valor = "Quedan fuera de este Contrato los datos que un cliente captura por sí mismo al crear y usar su propia cuenta en la aplicación de clientes de Mi Taller. Respecto de esos datos, Mi Taller actúa como responsable conforme a su Aviso de Privacidad."
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "4. INSTRUCCIONES DEL RESPONSABLE",
+                            titulo = "4. REGISTRO DEL ORIGEN DE LOS DATOS",
+                            contenido = new List<object>
+                            {
+                                new {
+                                    tipo = "texto",
+                                    valor = "La plataforma registra, para cada cliente y cada vehículo, quién capturó la información:"
+                                },
+                                new {
+                                    tipo = "lista",
+                                    elementos = new List<string>
+                                    {
+                                        "Si la capturó el propio cliente desde su cuenta en la aplicación de clientes.",
+                                        "Si la capturó el Responsable, identificando el taller y la cuenta concreta (dueño o empleado) que realizó la captura.",
+                                        "La fecha en que se realizó la captura.",
+                                    }
+                                },
+                                new {
+                                    tipo = "texto",
+                                    valor = "Este registro permite a las partes acreditar quién es responsable de cada dato y atender solicitudes de los titulares o de la autoridad. El Responsable reconoce que la información capturada desde su cuenta o la de sus empleados se considera capturada por él."
+                                },
+                            }
+                        },
+                        new
+                        {
+                            titulo = "5. INSTRUCCIONES DEL RESPONSABLE",
                             contenido = new List<object>
                             {
                                 new {
@@ -716,18 +742,41 @@ namespace MiTaller.Controllers
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "Si el Encargado considera que alguna instrucción infringe la LFPDPPP, su Reglamento u otra normativa aplicable, lo notificará al Responsable, sin que ello implique obligación de ejecutarla."
-                                }
+                                    valor = "Si el Encargado considera que alguna instrucción infringe la LFPDPPP u otra normativa aplicable, lo notificará al Responsable, sin que ello implique obligación de ejecutarla."
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "5. OBLIGACIONES DEL ENCARGADO",
+                            titulo = "6. OBLIGACIONES DEL RESPONSABLE",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "Conforme al artículo 49 del Reglamento de la LFPDPPP, el Encargado se obliga a:"
+                                    valor = "El Responsable se obliga a:"
+                                },
+                                new {
+                                    tipo = "lista",
+                                    elementos = new List<string>
+                                    {
+                                        "Contar con su propio Aviso de Privacidad frente a sus clientes y ponerlo a su disposición antes de capturar sus datos en la plataforma.",
+                                        "Obtener el consentimiento de sus clientes cuando la ley lo exija, y capturar únicamente datos lícitos, exactos y necesarios para la relación con ellos.",
+                                        "Abstenerse de capturar datos personales sensibles, salvo que sea indispensable y cuente con el consentimiento expreso y por escrito de su titular.",
+                                        "Atender las solicitudes de acceso, rectificación, cancelación, oposición y revocación del consentimiento que le presenten sus clientes respecto de los datos que él capturó.",
+                                        "Usar los datos de contacto de sus clientes, incluyendo el envío de mensajes o promociones, únicamente para las finalidades informadas en su Aviso de Privacidad.",
+                                        "Responder por los actos de sus empleados y de cualquier persona a la que otorgue acceso a su cuenta, y mantener la confidencialidad de sus credenciales.",
+                                    }
+                                },
+                            }
+                        },
+                        new
+                        {
+                            titulo = "7. OBLIGACIONES DEL ENCARGADO",
+                            contenido = new List<object>
+                            {
+                                new {
+                                    tipo = "texto",
+                                    valor = "El Encargado se obliga a:"
                                 },
                                 new {
                                     tipo = "lista",
@@ -735,98 +784,124 @@ namespace MiTaller.Controllers
                                     {
                                         "Tratar los datos personales únicamente conforme a las instrucciones del Responsable.",
                                         "Abstenerse de tratar los datos para finalidades distintas a las instruidas por el Responsable.",
-                                        "Implementar las medidas de seguridad conforme a la LFPDPPP, su Reglamento y demás normativa aplicable.",
+                                        "Implementar y mantener las medidas de seguridad que exige la normativa aplicable.",
                                         "Guardar confidencialidad respecto de los datos personales tratados.",
+                                        "Informar al Responsable, sin dilación indebida, de cualquier vulneración de seguridad que afecte los datos tratados por su cuenta.",
+                                        "Apoyar al Responsable, en la medida de las funciones de la plataforma, para atender las solicitudes de sus clientes.",
                                         "Suprimir los datos personales objeto de tratamiento una vez cumplida la relación jurídica con el Responsable, o conservarlos únicamente por el plazo legalmente exigido, salvo instrucción distinta del Responsable.",
-                                        "Abstenerse de transferir los datos personales, salvo que el Responsable así lo determine, la comunicación derive de una subcontratación, o lo requiera una autoridad competente.",
+                                        "Abstenerse de transferir los datos personales, salvo que el Responsable así lo determine, la comunicación derive de una subcontratación permitida por este Contrato, o lo requiera una autoridad competente.",
                                     }
-                                }
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "6. SUBENCARGADOS Y TRANSFERENCIAS",
+                            titulo = "8. SOLICITUDES DE LOS TITULARES",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "Para operar la plataforma, el Encargado podrá apoyarse en proveedores de infraestructura tecnológica (hospedaje, almacenamiento y mensajería) que actúan como subencargados, sujetos a obligaciones de confidencialidad y seguridad equivalentes a las de este Contrato."
+                                    valor = "Si un cliente del Responsable dirige al Encargado una solicitud sobre datos que el Responsable capturó, el Encargado la remitirá al Responsable para que este la atienda, y solo responderá directamente cuando la ley se lo exija."
+                                },
+                            }
+                        },
+                        new
+                        {
+                            titulo = "9. SUBENCARGADOS Y TRANSFERENCIAS",
+                            contenido = new List<object>
+                            {
+                                new {
+                                    tipo = "texto",
+                                    valor = "Para operar la plataforma, el Encargado podrá apoyarse en proveedores de infraestructura tecnológica (hospedaje, almacenamiento, mensajería y procesamiento de pagos) que actúan como subencargados, sujetos a obligaciones de confidencialidad y seguridad equivalentes a las de este Contrato."
                                 },
                                 new {
                                     tipo = "texto",
                                     valor = "Cuando el Responsable solicite expresamente compartir datos de un cliente con terceros ajenos a la operación de la plataforma (por ejemplo, aseguradoras o refaccionarias), dicha comunicación se realizará conforme a las instrucciones del Responsable y bajo su responsabilidad como titular de esa decisión."
-                                }
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "7. MEDIDAS DE SEGURIDAD",
+                            titulo = "10. MEDIDAS DE SEGURIDAD",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "El Encargado mantiene medidas de seguridad administrativas, técnicas y físicas para proteger los datos personales tratados por cuenta del Responsable, incluyendo control de acceso, cifrado de información sensible y respaldo de la información."
-                                }
+                                    valor = "El Encargado mantiene medidas de seguridad administrativas, técnicas y físicas para proteger los datos personales tratados por cuenta del Responsable, incluyendo control de acceso por taller y por permisos de empleado, cifrado de las comunicaciones, registro del origen de la información y respaldo de la información."
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "8. CONFIDENCIALIDAD",
+                            titulo = "11. CONFIDENCIALIDAD",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
                                     valor = "El Encargado y su personal autorizado se obligan a mantener confidencialidad respecto de los datos personales tratados, aun después de finalizada la relación con el Responsable."
-                                }
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "9. DURACIÓN Y TERMINACIÓN",
+                            titulo = "12. DURACIÓN Y TERMINACIÓN",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
                                     valor = "Este Contrato estará vigente mientras el Responsable mantenga una cuenta activa en la plataforma Mi Taller. Al cancelar la cuenta, el Encargado suprimirá o devolverá los datos personales tratados por cuenta del Responsable, conforme a lo señalado en la sección de eliminación de datos de los Términos y Condiciones, salvo obligación legal de conservación."
-                                }
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "10. RESPONSABILIDAD",
+                            titulo = "13. RESPONSABILIDAD E INDEMNIZACIÓN",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "El Responsable es responsable de contar con la base legal o consentimiento necesarios frente a sus propios clientes para el tratamiento de sus datos personales dentro de la plataforma. El Encargado será responsable del tratamiento de dichos datos conforme a las obligaciones establecidas en este Contrato."
-                                }
+                                    valor = "Cada parte responde por el cumplimiento de sus propias obligaciones:"
+                                },
+                                new {
+                                    tipo = "lista",
+                                    elementos = new List<string>
+                                    {
+                                        "El Responsable es el único responsable, frente a sus clientes, terceros y autoridades, de la licitud de la captura de los datos que ingresa a la plataforma, de contar con el Aviso de Privacidad y los consentimientos necesarios, y del uso que él o sus empleados den a dichos datos.",
+                                        "El Encargado no será responsable por datos capturados por el Responsable sin base legal, inexactos o usados para finalidades no informadas a sus titulares, ni por el uso que el Responsable haga de la información fuera de la plataforma.",
+                                        "El Encargado será responsable únicamente por el incumplimiento de las obligaciones que este Contrato y la ley le imponen como encargado, en particular las de seguridad y confidencialidad.",
+                                    }
+                                },
+                                new {
+                                    tipo = "texto",
+                                    valor = "El Responsable se obliga a sacar en paz y a salvo al Encargado, y a resarcirle los daños, gastos y sanciones que sufra, cuando una reclamación de un titular, de un tercero o de una autoridad derive del incumplimiento del Responsable a este Contrato o a la normativa de protección de datos personales."
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "11. MODIFICACIONES",
+                            titulo = "14. MODIFICACIONES",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
                                     valor = "El Encargado podrá actualizar este Contrato para reflejar cambios en la plataforma o en la normativa aplicable. Los cambios serán notificados a través de la plataforma o por correo electrónico."
-                                }
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "12. LEGISLACIÓN APLICABLE Y JURISDICCIÓN",
+                            titulo = "15. LEGISLACIÓN APLICABLE Y JURISDICCIÓN",
                             contenido = new List<object>
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "Este Contrato se rige por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares, su Reglamento, y demás disposiciones aplicables en México. Para cualquier controversia, las partes se someten a los tribunales del Estado de México."
-                                }
+                                    valor = "Este Contrato se rige por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares vigente y demás disposiciones aplicables en México. Para cualquier controversia, las partes se someten a los tribunales del Estado de México."
+                                },
                             }
                         },
                         new
                         {
-                            titulo = "13. CONTACTO",
+                            titulo = "16. CONTACTO",
                             contenido = new List<object>
                             {
                                 new {
@@ -838,9 +913,9 @@ namespace MiTaller.Controllers
                                     elementos = new List<string>
                                     {
                                         "Correo electrónico: info@mitaller.io",
-                                        "Domicilio: Calle Yuca, Casa 54, Colonia Las vegas, Texcoco Estado de México.",
+                                        "Domicilio: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, Estado de México.",
                                     }
-                                }
+                                },
                             }
                         }
                     }

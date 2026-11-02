@@ -1,4 +1,5 @@
-﻿using MiTaller.Attributes;
+﻿using MiTaller.Models.Domain;
+using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -280,9 +281,13 @@ namespace MiTaller.Controllers
                 if (model.VehicleTypeId == -1 && string.IsNullOrEmpty(model.OtherVehicleType))
                     return BadRequest("You must provide a type if you selected 'Other'.");
 
+                var origin = await CallerResolver.OriginAsync(User, _context);
                 var vehicle = new Vehicle
                 {
                     CustomerId = model.CustomerId,
+                    CreatedBy = origin.Origin,
+                    CreatedByWorkshopId = origin.WorkshopId,
+                    CreatedByAccountId = origin.AccountId,
                     Year = model.Year,
                     BrandId = model.BrandId,
                     OtherBrand = model.OtherBrand,

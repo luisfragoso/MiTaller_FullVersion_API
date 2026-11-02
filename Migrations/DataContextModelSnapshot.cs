@@ -3616,6 +3616,15 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CreatedByAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatedByWorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
@@ -5354,6 +5363,15 @@ namespace MiTaller.Migrations
             modelBuilder.Entity("MiTaller.Models.Customer.Customer", b =>
                 {
                     b.HasBaseType("MiTaller.Models.Auth.BaseIdentityUser");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<Guid?>("CreatedByAccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CreatedByWorkshopId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("FullName")
                         .IsRequired()

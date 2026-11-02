@@ -1,6 +1,7 @@
-using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MiTaller.Models.Domain;
 using MiTaller.Data;
 using MiTaller.DTO;
 using MiTaller.DTO.Customer;
@@ -282,6 +283,7 @@ namespace MiTaller.Controllers
 
                 Customer customer;
                 Vehicle vehicle;
+                var origin = await CallerResolver.OriginAsync(User, _context);
 
                 if (model.IsNewCustomer)
                 {
@@ -298,7 +300,10 @@ namespace MiTaller.Controllers
                         UpdatedAt = null,
                         DeletedAt = null,
                         IsDeleted = false,
-                        UserType = UserType.Customer
+                        UserType = UserType.Customer,
+                        CreatedBy = origin.Origin,
+                        CreatedByWorkshopId = origin.WorkshopId,
+                        CreatedByAccountId = origin.AccountId,
                     };
 
                     var result = await _userManager.CreateAsync(newCustomer, $"MiTaller@{Guid.NewGuid():N}1");
@@ -369,6 +374,9 @@ namespace MiTaller.Controllers
                     vehicle = new Vehicle
                     {
                         CustomerId = customer.Id,
+                        CreatedBy = origin.Origin,
+                        CreatedByWorkshopId = origin.WorkshopId,
+                        CreatedByAccountId = origin.AccountId,
                         Year = model.Vehicle.Year,
                         BrandId = model.Vehicle.BrandId,
                         OtherBrand = model.Vehicle.OtherBrand,
@@ -409,6 +417,9 @@ namespace MiTaller.Controllers
                     vehicle = new Vehicle
                     {
                         CustomerId = customer.Id,
+                        CreatedBy = origin.Origin,
+                        CreatedByWorkshopId = origin.WorkshopId,
+                        CreatedByAccountId = origin.AccountId,
                         Year = model.Vehicle.Year,
                         BrandId = model.Vehicle.BrandId,
                         OtherBrand = model.Vehicle.OtherBrand,

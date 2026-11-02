@@ -1,8 +1,9 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
 using MiTaller.Models.Auth;
+using MiTaller.Models.Domain;
 using System.Security.Claims;
 
 namespace MiTaller.Attributes
@@ -165,6 +166,16 @@ namespace MiTaller.Attributes
                     .FirstOrDefaultAsync() is Guid w ? (null, w) : null,
                 _ => null,
             };
+        }
+
+        /// <summary>Origin stamp for a customer/vehicle created by this caller (customer = Self, workshop/employee = Workshop).</summary>
+        public static async Task<(RecordOrigin Origin, Guid? WorkshopId, Guid? AccountId)> OriginAsync(ClaimsPrincipal user, DataContext db)
+        {
+            var caller = await ResolveAsync(user, db);
+            Guid? accountId = Guid.TryParse(user.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
+            return caller?.WorkshopId != null
+                ? (RecordOrigin.Workshop, caller.Value.WorkshopId, accountId)
+                : (caller?.CustomerId != null ? RecordOrigin.Self : RecordOrigin.Unknown, null, accountId);
         }
 
         public static async Task<bool> IsOwnAccountAsync(ClaimsPrincipal user, DataContext db, Guid accountId)

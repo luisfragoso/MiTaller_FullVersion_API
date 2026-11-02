@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using MiTaller.Models.Domain;
 using MiTaller.Attributes;
 using MiTaller.Data;
 using MiTaller.DTO.Auth;
@@ -187,9 +188,11 @@ namespace MiTaller.Controllers
                     UpdatedAt = null,
                     DeletedAt = null,
                     IsDeleted = false,
-                    UserType = UserType.Customer
+                    UserType = UserType.Customer,
+                    CreatedBy = RecordOrigin.Self,
                 };
 
+                customer.CreatedByAccountId = customer.Id;
                 var result = await _userManager.CreateAsync(customer, model.Password);
 
                 if (!result.Succeeded)

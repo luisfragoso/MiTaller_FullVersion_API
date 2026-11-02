@@ -43,6 +43,12 @@ namespace MiTaller.Models.Vehicle
         public string VehicleFormat { get; set; } = string.Empty;
         public byte[]? Image { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+        // Who captured this record; see RecordOrigin
+        public RecordOrigin CreatedBy { get; set; } = RecordOrigin.Unknown;
+        public Guid? CreatedByWorkshopId { get; set; }
+        // Account that did it: the customer, the workshop owner or one of its employees
+        public Guid? CreatedByAccountId { get; set; }
     }
 
 }
