@@ -245,7 +245,9 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
 
-    app.UseHttpsRedirection();
+    // Locally the web (http 5191) and the emulator (https 7032) share one process; a redirect breaks CORS preflights
+    if (!app.Environment.IsDevelopment())
+        app.UseHttpsRedirection();
     app.UseCors("AllowAll");
     app.UseRateLimiter();
     app.UseAuthentication();
