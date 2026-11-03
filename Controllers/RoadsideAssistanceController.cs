@@ -109,6 +109,11 @@ namespace MiTaller.Controllers
         {
             try
             {
+                // Only workshops that declared they offer roadside assistance can receive requests
+                var offers = await _context.WorkshopRoadsideSettings
+                    .AnyAsync(r => r.WorkshopId == model.WorkshopId && r.OffersRoadsideAssistance);
+                if (!offers) return BadRequest("workshop-no-roadside");
+
                 var customerExists = await _context.Customers.AnyAsync(c => c.Id == model.CustomerId);
                 var workshopExists = await _context.Workshops.AnyAsync(w => w.Id == model.WorkshopId);
                 var vehicleExists = await _context.Vehicles.AnyAsync(v => v.Id == model.VehicleId && v.CustomerId == model.CustomerId);
@@ -187,13 +192,9 @@ namespace MiTaller.Controllers
                 var workshopIds = workshops.Select(w => w.Id).ToList();
 
                 // Obtener solo los talleres que tienen el servicio de asistencia
-                var roadsideAssistanceWorkshopIds = await _context.WorkshopServices
-                    .Include(ws => ws.Service)
-                    .Where(ws => workshopIds.Contains(ws.WorkshopId) &&
-                                 !ws.IsDeleted &&
-                                 ws.Service.Name == "Asistencia en carretera y grúa")
-                    .Select(ws => ws.WorkshopId)
-                    .Distinct()
+                var roadsideAssistanceWorkshopIds = await _context.WorkshopRoadsideSettings
+                    .Where(r => workshopIds.Contains(r.WorkshopId) && r.OffersRoadsideAssistance)
+                    .Select(r => r.WorkshopId)
                     .ToListAsync();
 
                 // Filtrar los talleres originales para quedarnos solo con los que tienen el servicio
@@ -310,13 +311,9 @@ namespace MiTaller.Controllers
 
                 var workshopIds = workshops.Select(w => w.Id).ToList();
 
-                var roadsideAssistanceWorkshopIds = await _context.WorkshopServices
-                    .Include(ws => ws.Service)
-                    .Where(ws => workshopIds.Contains(ws.WorkshopId) &&
-                                 !ws.IsDeleted &&
-                                 ws.Service.Name == "Asistencia en carretera y grúa")
-                    .Select(ws => ws.WorkshopId)
-                    .Distinct()
+                var roadsideAssistanceWorkshopIds = await _context.WorkshopRoadsideSettings
+                    .Where(r => workshopIds.Contains(r.WorkshopId) && r.OffersRoadsideAssistance)
+                    .Select(r => r.WorkshopId)
                     .ToListAsync();
 
                 var filteredWorkshops = workshops
@@ -444,13 +441,9 @@ namespace MiTaller.Controllers
                 var workshopIds = workshops.Select(w => w.Id).ToList();
 
                 // Talleres con el servicio requerido
-                var roadsideAssistanceWorkshopIds = await _context.WorkshopServices
-                    .Include(ws => ws.Service)
-                    .Where(ws => workshopIds.Contains(ws.WorkshopId) &&
-                                 !ws.IsDeleted &&
-                                 ws.Service.Name == "Asistencia en carretera y grúa")
-                    .Select(ws => ws.WorkshopId)
-                    .Distinct()
+                var roadsideAssistanceWorkshopIds = await _context.WorkshopRoadsideSettings
+                    .Where(r => workshopIds.Contains(r.WorkshopId) && r.OffersRoadsideAssistance)
+                    .Select(r => r.WorkshopId)
                     .ToListAsync();
 
                 var filteredWorkshops = workshops
@@ -583,13 +576,9 @@ namespace MiTaller.Controllers
 
                 var workshopIds = workshops.Select(w => w.Id).ToList();
 
-                var roadsideAssistanceWorkshopIds = await _context.WorkshopServices
-                    .Include(ws => ws.Service)
-                    .Where(ws => workshopIds.Contains(ws.WorkshopId) &&
-                                 !ws.IsDeleted &&
-                                 ws.Service.Name == "Asistencia en carretera y grúa")
-                    .Select(ws => ws.WorkshopId)
-                    .Distinct()
+                var roadsideAssistanceWorkshopIds = await _context.WorkshopRoadsideSettings
+                    .Where(r => workshopIds.Contains(r.WorkshopId) && r.OffersRoadsideAssistance)
+                    .Select(r => r.WorkshopId)
                     .ToListAsync();
 
                 var filteredWorkshops = workshops

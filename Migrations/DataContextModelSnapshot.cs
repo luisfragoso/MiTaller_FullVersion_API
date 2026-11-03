@@ -5167,6 +5167,33 @@ namespace MiTaller.Migrations
                     b.ToTable("WorkshopNotes");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopRoadsideSettings", b =>
+                {
+                    b.Property<Guid>("WorkshopId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Available24h")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CoverageRadiusKm")
+                        .HasColumnType("int");
+
+                    b.Property<string>("EmergencyPhone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<bool>("OffersRoadsideAssistance")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("WorkshopId");
+
+                    b.ToTable("WorkshopRoadsideSettings");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopServices", b =>
                 {
                     b.Property<int>("Id")
@@ -6268,6 +6295,17 @@ namespace MiTaller.Migrations
                 });
 
             modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopNote", b =>
+                {
+                    b.HasOne("MiTaller.Models.Workshop.Workshop", "Workshop")
+                        .WithMany()
+                        .HasForeignKey("WorkshopId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Workshop");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Workshop.WorkshopRoadsideSettings", b =>
                 {
                     b.HasOne("MiTaller.Models.Workshop.Workshop", "Workshop")
                         .WithMany()

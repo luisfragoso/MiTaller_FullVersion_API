@@ -50,6 +50,7 @@ namespace MiTaller.Data
         public DbSet<WorkshopNote> WorkshopNotes { get; set; }
         public DbSet<WorkshopBill> WorkshopBills { get; set; }
         public DbSet<WorkshopExpenseCategory> WorkshopExpenseCategories { get; set; }
+        public DbSet<WorkshopRoadsideSettings> WorkshopRoadsideSettings { get; set; }
         public DbSet<WorkshopVehicleInspection> WorkshopVehicleInspections { get; set; }
         public DbSet<WorkshopVehicleFile> WorkshopVehicleFiles { get; set; }
         public DbSet<WorkshopIncomes> WorkshopIncomes { get; set; }
