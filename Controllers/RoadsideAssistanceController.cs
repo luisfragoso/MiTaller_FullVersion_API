@@ -136,7 +136,24 @@ namespace MiTaller.Controllers
                 _context.RoadsideAssistances.Add(roadsideAssistance);
                 await _context.SaveChangesAsync();
 
-                // WorkshopInbox
+                // The workshop needs to know what broke down and where; the app reads the maps link from Details
+                var vehicle = await _context.Vehicles
+                    .Where(v => v.Id == model.VehicleId)
+                    .Select(v => new
+                    {
+                        Brand = v.BrandId == -1 ? v.OtherBrand : v.Brand.Name,
+                        Model = v.VehicleModelId == -1 ? v.OtherVehicleModel : v.VehicleModel.Model,
+                        v.Plates,
+                    })
+                    .FirstOrDefaultAsync();
+                var vehicleName = vehicle == null ? "Vehículo" : $"{vehicle.Brand} {vehicle.Model} {vehicle.Plates}".Trim();
+                var hasLocation = double.TryParse(model.Latitude, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var lat)
+                    && double.TryParse(model.Longitude, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var lng)
+                    && Math.Abs(lat) <= 90 && Math.Abs(lng) <= 180;
+                var details = roadsideAssistance.Description;
+                if (hasLocation)
+                    details += $"\nUbicación: https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
+
                 var workshopInbox = new WorkshopInbox
                 {
                     WorkshopId = model.WorkshopId,
@@ -144,8 +161,8 @@ namespace MiTaller.Controllers
                     VehicleId = model.VehicleId,
                     ParentModelType = "RoadsideAssistance",
                     ParentModelId = roadsideAssistance.Id,
-                    Title = $"Consulta de asistencia {DateTime.Now}",
-                    Details = roadsideAssistance.Description,
+                    Title = $"Asistencia vial: {vehicleName}",
+                    Details = details,
                 };
 
                 _context.WorkshopInbox.Add(workshopInbox);
