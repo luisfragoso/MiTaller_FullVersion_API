@@ -56,6 +56,48 @@ namespace MiTaller.Migrations
                     b.ToTable("Accidents");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Accident.AccidentOwnerAlert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccidentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("FalseAlarmAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("OwnerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("VehicleName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccidentId");
+
+                    b.HasIndex("OwnerId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("AccidentOwnerAlerts");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Address.CustomerAddress", b =>
                 {
                     b.Property<int>("Id")
@@ -5489,6 +5531,25 @@ namespace MiTaller.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("MiTaller.Models.Accident.AccidentOwnerAlert", b =>
+                {
+                    b.HasOne("MiTaller.Models.Accident.Accident", "Accident")
+                        .WithMany()
+                        .HasForeignKey("AccidentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MiTaller.Models.Customer.Customer", "Owner")
+                        .WithMany()
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Accident");
+
+                    b.Navigation("Owner");
                 });
 
             modelBuilder.Entity("MiTaller.Models.Address.CustomerAddress", b =>

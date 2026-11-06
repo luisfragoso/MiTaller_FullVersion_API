@@ -115,6 +115,7 @@ namespace MiTaller.Data
 
         // Accidents
         public DbSet<Accident> Accidents { get; set; }
+        public DbSet<AccidentOwnerAlert> AccidentOwnerAlerts { get; set; }
 
         // Notifications
         public DbSet<NotificationSettings> NotificationSettings { get; set; }
@@ -553,6 +554,17 @@ namespace MiTaller.Data
                 .HasOne(a => a.Customer)
                 .WithMany()
                 .HasForeignKey(a => a.CustomerId);
+
+            // Owner is a second path to Customers, so no cascade (SQL Server rejects multiple cascade paths)
+            builder.Entity<AccidentOwnerAlert>()
+                .HasOne(a => a.Owner)
+                .WithMany()
+                .HasForeignKey(a => a.OwnerId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<AccidentOwnerAlert>()
+                .HasIndex(a => a.Token)
+                .IsUnique();
 
             // WorkshopInbox
             builder.Entity<WorkshopInbox>()

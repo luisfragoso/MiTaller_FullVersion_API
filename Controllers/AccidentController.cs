@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Cryptography;
 using System.Security.Claims;
 using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
@@ -26,14 +27,17 @@ namespace MiTaller.Controllers
         private const int MaxReportsPerHour = 10;
         private static readonly TimeSpan RenotifyAfter = TimeSpan.FromMinutes(30);
         private static readonly TimeSpan PreviousWindow = TimeSpan.FromHours(24);
+        private static readonly TimeSpan AlertsWindow = TimeSpan.FromDays(7);
 
         private readonly DataContext _context;
         private readonly IEmailSender _emailSender;
+        private readonly IConfiguration _configuration;
 
-        public AccidentController(DataContext dataContext, IEmailSender emailSender)
+        public AccidentController(DataContext dataContext, IEmailSender emailSender, IConfiguration configuration)
         {
             _context = dataContext;
             _emailSender = emailSender;
+            _configuration = configuration;
         }
 
         private Guid? CallerCustomerId() =>
@@ -178,43 +182,199 @@ namespace MiTaller.Controllers
                         // One bad address must not stop the others
                     }
 
-                    var registeredUser = await _context.Customers
-                        .FirstOrDefaultAsync(u => u.Email == contact.Email && u.UserType == UserType.Customer && !u.IsDeleted);
-                    if (registeredUser != null)
-                    {
-                        await _context.Notifications.AddAsync(new Notifications
-                        {
-                            UserId = registeredUser.Id,
-                            UserType = UserType.Customer,
-                            Title = "Accidente reportado",
-                            Content = $"Reportaron un posible accidente del vehículo {vehicleName} de {owner.FullName}.",
-                            Event = "AccidentReported",
-                        });
-                    }
+                    await NotifyIfRegistered(contact.Email, "Accidente reportado",
+                        $"Reportaron un posible accidente del vehículo {vehicleName} de {owner.FullName}.", "AccidentReported");
+                }
+
+                // Contacts are alerted right away (the owner may be unconscious); the owner can then call it off
+                var alert = new AccidentOwnerAlert
+                {
+                    AccidentId = accident.Id,
+                    OwnerId = owner.Id,
+                    VehicleName = vehicleName.Length > 200 ? vehicleName[..200] : vehicleName,
+                    Token = RandomNumberGenerator.GetHexString(48, lowercase: true),
+                    CreatedAt = accident.CreatedAt,
+                };
+                await _context.AccidentOwnerAlerts.AddAsync(alert);
+                await _context.Notifications.AddAsync(new Notifications
+                {
+                    UserId = owner.Id,
+                    UserType = UserType.Customer,
+                    Title = "Reportaron un accidente de tu vehículo",
+                    Content = $"Alguien reportó un posible accidente de tu {vehicleName}. Si estás bien, avísalo en la app para tranquilizar a tus contactos.",
+                    Event = "AccidentOwnerAlert",
+                });
+                try
+                {
+                    await _emailSender.SendEmailAsync(owner.Email, "🚨 Reportaron un accidente de tu vehículo, ¿estás bien?",
+                        OwnerEmail(owner.FullName, vehicleName, contacts.Count, accident, FalseAlarmUrl(alert.Token)));
+                }
+                catch (Exception)
+                {
+                    // The in-app notice still reaches the owner
                 }
             }
             return sent;
         }
 
-        private static string AlertEmail(string contactName, string ownerName, string vehicleName, Accident a)
+        private async Task NotifyIfRegistered(string email, string title, string content, string eventName)
         {
-            static string E(string? s) => WebUtility.HtmlEncode(s ?? string.Empty);
+            var registeredUser = await _context.Customers
+                .FirstOrDefaultAsync(u => u.Email == email && u.UserType == UserType.Customer && !u.IsDeleted);
+            if (registeredUser == null) return;
+            await _context.Notifications.AddAsync(new Notifications
+            {
+                UserId = registeredUser.Id,
+                UserType = UserType.Customer,
+                Title = title,
+                Content = content,
+                Event = eventName,
+            });
+        }
+
+        private string FalseAlarmUrl(string token)
+        {
+            var baseUrl = _configuration["PublicApiUrl"] ?? $"{Request.Scheme}://{Request.Host}";
+            return $"{baseUrl.TrimEnd('/')}/api/Accident/false-alarm/{token}";
+        }
+
+        private static AccidentOwnerAlertDto ToDto(AccidentOwnerAlert a) => new()
+        {
+            Id = a.Id,
+            VehicleName = a.VehicleName,
+            CreatedAt = a.CreatedAt,
+            Latitude = a.Accident?.Latitude,
+            Longitude = a.Accident?.Longitude,
+            FalseAlarmAt = a.FalseAlarmAt,
+        };
+
+        /// <summary>Reports of the caller's own vehicles in the last 7 days.</summary>
+        [HttpGet("alerts")]
+        public async Task<ActionResult<IEnumerable<AccidentOwnerAlertDto>>> GetOwnerAlerts()
+        {
+            if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+            var since = DateTime.Now - AlertsWindow;
+            var alerts = await _context.AccidentOwnerAlerts.Include(a => a.Accident)
+                .Where(a => a.OwnerId == customerId && a.CreatedAt > since)
+                .OrderByDescending(a => a.CreatedAt)
+                .ToListAsync();
+            return Ok(alerts.Select(ToDto));
+        }
+
+        [HttpPost("alerts/{id:int}/false-alarm")]
+        public async Task<ActionResult<AccidentOwnerAlertDto>> MarkFalseAlarm(int id)
+        {
+            if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+            var alert = await _context.AccidentOwnerAlerts.Include(a => a.Accident)
+                .FirstOrDefaultAsync(a => a.Id == id && a.OwnerId == customerId);
+            if (alert == null) return NotFound("alert-not-found");
+            await SendFalseAlarm(alert);
+            return Ok(ToDto(alert));
+        }
+
+        // The email link only shows a confirmation page: mail scanners open links on their own,
+        // and a GET that called off the alert could silence a real accident.
+        [HttpGet("false-alarm/{token}")]
+        [AllowAnonymous]
+        public async Task<ContentResult> FalseAlarmPage(string token)
+        {
+            var alert = await _context.AccidentOwnerAlerts.FirstOrDefaultAsync(a => a.Token == token);
+            if (alert == null) return Page("Enlace no válido", "<p>Este enlace no es válido o ya expiró.</p>");
+            if (alert.FalseAlarmAt != null) return Page("Ya avisamos a tus contactos", "<p>Tus contactos de emergencia ya recibieron el aviso de que fue una falsa alarma.</p>");
+            return Page("¿Estás bien?", $@"<p>Reportaron un posible accidente de tu <strong>{WebUtility.HtmlEncode(alert.VehicleName)}</strong> el {alert.CreatedAt:dd/MM/yyyy} a las {alert.CreatedAt:HH:mm}.</p>
+<p>Si estás bien, confirma y avisaremos a tus contactos de emergencia que fue una falsa alarma.</p>
+<form method=""post""><button type=""submit"" style=""background:#2e7d32;color:#fff;border:0;border-radius:10px;padding:14px 22px;font-size:16px;font-weight:bold;cursor:pointer;"">Estoy bien, fue un error</button></form>");
+        }
+
+        [HttpPost("false-alarm/{token}")]
+        [AllowAnonymous]
+        public async Task<ContentResult> FalseAlarmConfirm(string token)
+        {
+            var alert = await _context.AccidentOwnerAlerts.Include(a => a.Accident).FirstOrDefaultAsync(a => a.Token == token);
+            if (alert == null) return Page("Enlace no válido", "<p>Este enlace no es válido o ya expiró.</p>");
+            await SendFalseAlarm(alert);
+            return Page("Listo, qué bueno que estás bien", "<p>Avisamos a tus contactos de emergencia que fue una falsa alarma.</p>");
+        }
+
+        private async Task SendFalseAlarm(AccidentOwnerAlert alert)
+        {
+            if (alert.FalseAlarmAt != null) return;
+            alert.FalseAlarmAt = DateTime.Now;
+
+            var owner = await _context.Customers.FirstAsync(c => c.Id == alert.OwnerId);
+            var contacts = await _context.EmergencyContacts
+                .Where(e => e.CustomerId == owner.Id && !e.IsDeleted && e.MustBeNotified)
+                .ToListAsync();
+            foreach (var contact in contacts)
+            {
+                try
+                {
+                    await _emailSender.SendEmailAsync(contact.Email, $"✅ Falsa alarma - {owner.FullName} está bien",
+                        FalseAlarmEmail(contact.FullName, owner.FullName, alert));
+                }
+                catch (Exception)
+                {
+                    // One bad address must not stop the others
+                }
+                await NotifyIfRegistered(contact.Email, "Falsa alarma",
+                    $"{owner.FullName} confirmó que está bien: el accidente reportado de su {alert.VehicleName} fue un error.", "AccidentFalseAlarm");
+            }
+            await _context.SaveChangesAsync();
+        }
+
+        private static ContentResult Page(string title, string body) => new()
+        {
+            ContentType = "text/html; charset=utf-8",
+            Content = $@"<!DOCTYPE html>
+<html lang=""es""><head><meta charset=""UTF-8"" /><meta name=""viewport"" content=""width=device-width, initial-scale=1"" /><title>Mi Taller</title></head>
+<body style=""margin:0;font-family:Arial,sans-serif;background:#f5f5f5;"">
+  <div style=""background:#f52222;padding:18px 0;text-align:center;color:#fff;font-size:22px;font-weight:bold;"">Mi Taller</div>
+  <div style=""max-width:480px;margin:24px auto;background:#fff;border-radius:14px;padding:24px;color:#333;font-size:16px;line-height:1.5;"">
+    <h2 style=""margin-top:0;"">{WebUtility.HtmlEncode(title)}</h2>
+    {body}
+  </div>
+</body></html>",
+        };
+
+        private static string E(string? s) => WebUtility.HtmlEncode(s ?? string.Empty);
+
+        private static string ReportDetails(Accident a)
+        {
             var location = a.Latitude != null && a.Longitude != null
                 ? $@"📍 <strong>Ubicación del reporte:</strong> <a href=""https://www.google.com/maps?q={E(a.Latitude)},{E(a.Longitude)}"" target=""_blank"" style=""color:#1a73e8;font-weight:bold;"">Ver en Google Maps</a><br />"
                 : "";
+            return $@"<p style=""line-height:1.8;"">{location}🕓 <strong>Fecha y hora del reporte:</strong> {a.CreatedAt:dd/MM/yyyy - HH:mm}</p>";
+        }
 
-            return $@"<!DOCTYPE html>
+        private static string AlertEmail(string contactName, string ownerName, string vehicleName, Accident a) => EmailShell($@"
+    <p><strong>Estimado(a) {E(contactName)},</strong></p>
+    <p>Eres el contacto de emergencia registrado por <strong>{E(ownerName)}</strong>. Una persona reportó desde la app Mi Taller un posible accidente de su vehículo <strong>{E(vehicleName)}</strong>.</p>
+    {ReportDetails(a)}
+    <p>Este mensaje no necesariamente indica una situación grave, pero te recomendamos contactar a <strong>{E(ownerName)}</strong> para confirmar su estado.</p>");
+
+        private static string OwnerEmail(string ownerName, string vehicleName, int contacts, Accident a, string falseAlarmUrl) => EmailShell($@"
+    <p><strong>Hola {E(ownerName)},</strong></p>
+    <p>Una persona reportó desde la app Mi Taller un posible accidente de tu vehículo <strong>{E(vehicleName)}</strong>.</p>
+    {ReportDetails(a)}
+    <p>{(contacts == 0
+        ? "No tienes contactos de emergencia que reciban avisos. Puedes agregarlos en la app, en tu perfil."
+        : contacts == 1 ? "Ya avisamos a tu contacto de emergencia." : $"Ya avisamos a tus {contacts} contactos de emergencia.")}</p>
+    {(contacts == 0 ? "" : $@"<p>Si estás bien y fue un error, avísales:</p>
+    <p><a href=""{E(falseAlarmUrl)}"" target=""_blank"" style=""display:inline-block;background:#2e7d32;color:#fff;text-decoration:none;border-radius:10px;padding:14px 22px;font-weight:bold;"">Estoy bien, fue un error</a></p>")}");
+
+        private static string FalseAlarmEmail(string contactName, string ownerName, AccidentOwnerAlert alert) => EmailShell($@"
+    <p><strong>Estimado(a) {E(contactName)},</strong></p>
+    <p><strong>{E(ownerName)}</strong> confirmó que está bien: el posible accidente de su vehículo <strong>{E(alert.VehicleName)}</strong> que te avisamos el {alert.CreatedAt:dd/MM/yyyy} a las {alert.CreatedAt:HH:mm} fue una falsa alarma.</p>
+    <p>Gracias por estar al pendiente.</p>");
+
+        private static string EmailShell(string body) => $@"<!DOCTYPE html>
 <html lang=""es"">
-<head><meta charset=""UTF-8"" /><title>Alerta de Emergencia</title></head>
+<head><meta charset=""UTF-8"" /><title>Mi Taller</title></head>
 <body style=""margin:0;font-family:Arial,sans-serif;background-color:#ffffff;"">
   <div style=""background-color:#f52222;padding:20px 0;text-align:center;"">
     <h1 style=""margin:0;color:white;""><span style=""font-weight:bold;"">MiTaller</span> <span style=""color:black;"">Financiero</span></h1>
   </div>
-  <div style=""padding:30px 40px;color:#333;font-size:16px;"">
-    <p><strong>Estimado(a) {E(contactName)},</strong></p>
-    <p>Eres el contacto de emergencia registrado por <strong>{E(ownerName)}</strong>. Una persona reportó desde la app Mi Taller un posible accidente de su vehículo <strong>{E(vehicleName)}</strong>.</p>
-    <p style=""line-height:1.8;"">{location}🕓 <strong>Fecha y hora del reporte:</strong> {a.CreatedAt:dd/MM/yyyy - HH:mm}</p>
-    <p>Este mensaje no necesariamente indica una situación grave, pero te recomendamos contactar a <strong>{E(ownerName)}</strong> para confirmar su estado.</p>
+  <div style=""padding:30px 40px;color:#333;font-size:16px;"">{body}
     <p>MiTaller Financiero – Conectando movilidad y seguridad</p>
   </div>
   <div style=""padding:20px 30px;font-size:12px;color:#555;"">
@@ -223,6 +383,5 @@ namespace MiTaller.Controllers
   </div>
 </body>
 </html>";
-        }
     }
 }
