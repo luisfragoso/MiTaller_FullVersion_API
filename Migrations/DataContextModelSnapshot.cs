@@ -36,34 +36,16 @@ namespace MiTaller.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("HasInjured")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Kind")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Latitude")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Longitude")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Notes")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
                     b.Property<int>("NotifiedContacts")
                         .HasColumnType("int");
 
                     b.Property<string>("Plates")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("VehicleName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

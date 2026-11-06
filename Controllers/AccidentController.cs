@@ -14,19 +14,18 @@ using MiTaller.Models.Notification;
 
 namespace MiTaller.Controllers
 {
+    /// <summary>
+    /// A witness types the plates of a crashed vehicle; the owners' emergency contacts get an email with the
+    /// reporter's location. The reporter never learns whether the plates are registered or whose they are.
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
     public class AccidentController : ControllerBase
     {
-        private static readonly Dictionary<string, string> KindLabels = new()
-        {
-            ["collision"] = "Choque con otro vehículo",
-            ["hit-object"] = "Golpe contra un objeto",
-            ["rollover"] = "Volcadura o salida del camino",
-            ["pedestrian"] = "Atropello o ciclista involucrado",
-            ["other"] = "Otro",
-        };
+        private const int MaxReportsPerHour = 10;
+        private static readonly TimeSpan RenotifyAfter = TimeSpan.FromMinutes(30);
+        private static readonly TimeSpan PreviousWindow = TimeSpan.FromHours(24);
 
         private readonly DataContext _context;
         private readonly IEmailSender _emailSender;
@@ -41,169 +40,166 @@ namespace MiTaller.Controllers
             Enum.TryParse<UserType>(User.FindFirst("UserType")?.Value, out var type) && type == UserType.Customer
             && Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 
-        private static AccidentResponseDto ToDto(Accident a) => new()
+        private static string Normalize(string? plates) =>
+            (plates ?? string.Empty).Replace("-", "").Replace(" ", "").Trim().ToUpperInvariant();
+
+        private static AccidentResponseDto ToDto(Accident a, DateTime? previous = null) => new()
         {
             Id = a.Id,
-            CustomerId = a.CustomerId,
             Plates = a.Plates,
             CreatedAt = a.CreatedAt,
-            VehicleId = a.VehicleId,
-            VehicleName = a.VehicleName,
-            Kind = a.Kind,
-            HasInjured = a.HasInjured,
-            Notes = a.Notes,
             Latitude = a.Latitude,
             Longitude = a.Longitude,
-            NotifiedContacts = a.NotifiedContacts,
+            PreviousReportAt = previous,
         };
+
+        private async Task<PagerResponseDto<AccidentResponseDto>> Page(IQueryable<Accident> query, PagerBodyDto pager)
+        {
+            var pageSize = Math.Clamp(pager.PageSize, 1, 50);
+            var pageNumber = Math.Max(pager.PageNumber, 1);
+            var total = await query.CountAsync();
+            var items = await query.OrderByDescending(a => a.CreatedAt)
+                .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+            return new PagerResponseDto<AccidentResponseDto>
+            {
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling((double)total / pageSize),
+                Elements = items.Select(a => ToDto(a)).ToList(),
+            };
+        }
+
+        /// <summary>Everyone's reports, newest first (main tab in the app).</summary>
+        [HttpPost("feed")]
+        public async Task<ActionResult<PagerResponseDto<AccidentResponseDto>>> GetFeed([FromBody] PagerBodyDto pager) =>
+            Ok(await Page(_context.Accidents, pager));
+
+        /// <summary>The caller's own reports.</summary>
+        [HttpPost("pager")]
+        public async Task<ActionResult<PagerResponseDto<AccidentResponseDto>>> GetAccidentsPaged([FromBody] PagerBodyDto pager)
+        {
+            if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+            return Ok(await Page(_context.Accidents.Where(a => a.CustomerId == customerId), pager));
+        }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AccidentResponseDto>>> GetAccidents()
         {
             if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
-
             var accidents = await _context.Accidents
                 .Where(a => a.CustomerId == customerId)
-                .OrderByDescending(e => e.CreatedAt)
+                .OrderByDescending(a => a.CreatedAt)
                 .ToListAsync();
-            return Ok(accidents.Select(ToDto));
+            return Ok(accidents.Select(a => ToDto(a)));
         }
 
-        [HttpPost("pager")]
-        public async Task<ActionResult<PagerResponseDto<AccidentResponseDto>>> GetAccidentsPaged([FromBody] PagerBodyDto pager)
+        /// <summary>Last report of these plates in the previous 24 h, so the app can warn before sending.</summary>
+        [HttpGet("check/{plates}")]
+        public async Task<ActionResult> CheckPlates(string plates)
         {
-            if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
-
-            var pageSize = Math.Clamp(pager.PageSize, 1, 50);
-            var pageNumber = Math.Max(pager.PageNumber, 1);
-            var query = _context.Accidents
-                .Where(a => a.CustomerId == customerId)
-                .OrderByDescending(e => e.CreatedAt);
-
-            var totalCount = await query.CountAsync();
-            var paged = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
-
-            return Ok(new PagerResponseDto<AccidentResponseDto>
-            {
-                CurrentPage = pageNumber,
-                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize),
-                Elements = paged.Select(ToDto).ToList(),
-            });
-        }
-
-        [HttpGet("{accidentId}")]
-        public async Task<ActionResult<AccidentResponseDto>> GetAccidentsById(int accidentId)
-        {
-            if (CallerCustomerId() is not Guid customerId) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
-
-            var accident = await _context.Accidents
-                .FirstOrDefaultAsync(a => a.Id == accidentId && a.CustomerId == customerId);
-            return accident == null ? NotFound("not-found") : Ok(ToDto(accident));
+            var normalized = Normalize(plates);
+            var since = DateTime.Now - PreviousWindow;
+            var last = await _context.Accidents
+                .Where(a => a.Plates == normalized && a.CreatedAt > since)
+                .OrderByDescending(a => a.CreatedAt)
+                .Select(a => (DateTime?)a.CreatedAt)
+                .FirstOrDefaultAsync();
+            return Ok(new { plates = normalized, previousReportAt = last });
         }
 
         [HttpPost("register")]
         [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateAccident(PostAccidentDto model)
         {
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Id == model.CustomerId && !c.IsDeleted);
-            if (customer == null) return NotFound("not-found");
+            var plates = Normalize(model.Plates);
+            if (plates.Length < 3 || plates.Length > 12) return BadRequest("invalid-plates");
 
-            // Only the caller's own vehicles; typed plates of a car outside the account are kept as text
-            var vehicles = _context.Vehicles
-                .Where(v => v.CustomerId == model.CustomerId && !v.IsDeleted)
-                .Include(v => v.Brand).Include(v => v.VehicleModel);
-            var plates = model.Plates?.Trim().ToUpper() ?? string.Empty;
-            var vehicle = model.VehicleId is int vehicleId
-                ? await vehicles.FirstOrDefaultAsync(v => v.Id == vehicleId)
-                : string.IsNullOrEmpty(plates) ? null : await vehicles.FirstOrDefaultAsync(v => v.Plates == plates);
-
-            if (model.VehicleId != null && vehicle == null) return NotFound("not-found");
-            if (vehicle != null) plates = vehicle.Plates.Trim().ToUpper();
-            if (string.IsNullOrEmpty(plates)) return BadRequest("plates-required");
-
-            // Double taps / retries on a bad connection must not email the contacts twice
-            var recent = DateTime.Now.AddMinutes(-10);
-            if (await _context.Accidents.AnyAsync(a => a.CustomerId == model.CustomerId && a.Plates == plates && a.CreatedAt > recent))
+            var now = DateTime.Now;
+            var reporterRecent = _context.Accidents.Where(a => a.CustomerId == model.CustomerId && a.CreatedAt > now.AddHours(-1));
+            if (await reporterRecent.CountAsync() >= MaxReportsPerHour)
+                return StatusCode(StatusCodes.Status429TooManyRequests, "too-many-reports");
+            if (await reporterRecent.AnyAsync(a => a.Plates == plates && a.CreatedAt > now - RenotifyAfter))
                 return BadRequest("accident-already-reported");
 
-            var vehicleName = vehicle == null
-                ? $"con placas {plates}"
-                : $"{(vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand.Name)} {(vehicle.VehicleModelId == -1 ? vehicle.OtherVehicleModel : vehicle.VehicleModel.Model)} {vehicle.Year} ({plates})".Trim();
-            var kind = model.Kind != null && KindLabels.ContainsKey(model.Kind) ? model.Kind : "other";
+            var previous = await _context.Accidents
+                .Where(a => a.Plates == plates && a.CreatedAt > now - PreviousWindow)
+                .OrderByDescending(a => a.CreatedAt)
+                .Select(a => (DateTime?)a.CreatedAt)
+                .FirstOrDefaultAsync();
 
             var accident = new Accident
             {
                 CustomerId = model.CustomerId,
                 Plates = plates,
-                CreatedAt = DateTime.Now,
-                VehicleId = vehicle?.Id,
-                VehicleName = vehicleName,
-                Kind = kind,
-                HasInjured = model.HasInjured,
-                Notes = string.IsNullOrWhiteSpace(model.Notes) ? null : model.Notes.Trim(),
+                CreatedAt = now,
                 Latitude = model.Latitude,
                 Longitude = model.Longitude,
             };
             await _context.Accidents.AddAsync(accident);
             await _context.SaveChangesAsync();
 
-            var contacts = await _context.EmergencyContacts
-                .Where(e => e.CustomerId == model.CustomerId && !e.IsDeleted && e.MustBeNotified)
-                .ToListAsync();
-
-            foreach (var contact in contacts)
+            // Several witnesses reporting the same crash: the contacts get one email, not one per witness
+            if (previous == null || previous < now - RenotifyAfter)
             {
-                try
-                {
-                    await _emailSender.SendEmailAsync(contact.Email, $"🚨 Alerta de Emergencia - {customer.FullName}",
-                        AlertEmail(contact.FullName, customer.FullName, customer.PhoneNumber, accident));
-                    accident.NotifiedContacts++;
-                }
-                catch (Exception)
-                {
-                    // One bad address must not stop the others
-                }
-
-                var registeredUser = await _context.Customers
-                    .FirstOrDefaultAsync(u => u.Email == contact.Email && u.UserType == UserType.Customer && !u.IsDeleted);
-                if (registeredUser != null)
-                {
-                    await _context.Notifications.AddAsync(new Notifications
-                    {
-                        UserId = registeredUser.Id,
-                        UserType = UserType.Customer,
-                        Title = "Accidente reportado",
-                        Content = $"{customer.FullName} reportó un accidente con su vehículo {vehicleName}."
-                            + (accident.HasInjured ? " Indicó que hay heridos." : ""),
-                        Event = "AccidentReported",
-                    });
-                }
+                accident.NotifiedContacts = await NotifyOwnersContacts(accident);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
-            return Ok(ToDto(accident));
+            return Ok(ToDto(accident, previous));
         }
 
-        private static string AlertEmail(string contactName, string customerName, string? customerPhone, Accident a)
+        private async Task<int> NotifyOwnersContacts(Accident accident)
+        {
+            var vehicles = await _context.Vehicles
+                .Where(v => !v.IsDeleted && v.Plates.Replace("-", "").Replace(" ", "").ToUpper() == accident.Plates)
+                .Include(v => v.Brand).Include(v => v.VehicleModel).Include(v => v.Customer)
+                .ToListAsync();
+
+            var sent = 0;
+            foreach (var vehicle in vehicles.Where(v => v.Customer != null && !v.Customer.IsDeleted).DistinctBy(v => v.CustomerId))
+            {
+                var owner = vehicle.Customer;
+                var vehicleName = $"{(vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand?.Name)} {(vehicle.VehicleModelId == -1 ? vehicle.OtherVehicleModel : vehicle.VehicleModel?.Model)} ({vehicle.Plates})";
+                var contacts = await _context.EmergencyContacts
+                    .Where(e => e.CustomerId == owner.Id && !e.IsDeleted && e.MustBeNotified)
+                    .ToListAsync();
+
+                foreach (var contact in contacts)
+                {
+                    try
+                    {
+                        await _emailSender.SendEmailAsync(contact.Email, $"🚨 Alerta de Emergencia - {owner.FullName}",
+                            AlertEmail(contact.FullName, owner.FullName, vehicleName, accident));
+                        sent++;
+                    }
+                    catch (Exception)
+                    {
+                        // One bad address must not stop the others
+                    }
+
+                    var registeredUser = await _context.Customers
+                        .FirstOrDefaultAsync(u => u.Email == contact.Email && u.UserType == UserType.Customer && !u.IsDeleted);
+                    if (registeredUser != null)
+                    {
+                        await _context.Notifications.AddAsync(new Notifications
+                        {
+                            UserId = registeredUser.Id,
+                            UserType = UserType.Customer,
+                            Title = "Accidente reportado",
+                            Content = $"Reportaron un posible accidente del vehículo {vehicleName} de {owner.FullName}.",
+                            Event = "AccidentReported",
+                        });
+                    }
+                }
+            }
+            return sent;
+        }
+
+        private static string AlertEmail(string contactName, string ownerName, string vehicleName, Accident a)
         {
             static string E(string? s) => WebUtility.HtmlEncode(s ?? string.Empty);
-            var mapLink = a.Latitude != null && a.Longitude != null
-                ? $"https://www.google.com/maps?q={E(a.Latitude)},{E(a.Longitude)}"
-                : null;
-
-            var rows = new List<string>
-            {
-                $"🚗 <strong>Vehículo:</strong> {E(a.VehicleName)}",
-                $"⚠️ <strong>Qué pasó:</strong> {E(KindLabels[a.Kind])}",
-                a.HasInjured
-                    ? "🩹 <strong style=\"color:#d32f2f;\">Indicó que hay heridos.</strong>"
-                    : "🩹 <strong>Heridos:</strong> indicó que no hay heridos",
-                $"🕓 <strong>Fecha y hora:</strong> {a.CreatedAt:dd/MM/yyyy - HH:mm}",
-            };
-            if (mapLink != null) rows.Add($"📍 <strong>Ubicación:</strong> <a href=\"{mapLink}\" target=\"_blank\" style=\"color:#1a73e8;font-weight:bold;\">Ver en Google Maps</a>");
-            if (a.Notes != null) rows.Add($"📝 <strong>Comentario:</strong> {E(a.Notes)}");
-            if (!string.IsNullOrWhiteSpace(customerPhone)) rows.Add($"📞 <strong>Su teléfono:</strong> <a href=\"tel:{E(customerPhone)}\">{E(customerPhone)}</a>");
+            var location = a.Latitude != null && a.Longitude != null
+                ? $@"📍 <strong>Ubicación del reporte:</strong> <a href=""https://www.google.com/maps?q={E(a.Latitude)},{E(a.Longitude)}"" target=""_blank"" style=""color:#1a73e8;font-weight:bold;"">Ver en Google Maps</a><br />"
+                : "";
 
             return $@"<!DOCTYPE html>
 <html lang=""es"">
@@ -214,9 +210,9 @@ namespace MiTaller.Controllers
   </div>
   <div style=""padding:30px 40px;color:#333;font-size:16px;"">
     <p><strong>Estimado(a) {E(contactName)},</strong></p>
-    <p>Eres el contacto de emergencia registrado por <strong>{E(customerName)}</strong>, quien acaba de reportar un accidente desde la app Mi Taller.</p>
-    <p style=""line-height:1.8;"">{string.Join("<br />", rows)}</p>
-    <p>Te recomendamos contactar a <strong>{E(customerName)}</strong> para confirmar cómo está.</p>
+    <p>Eres el contacto de emergencia registrado por <strong>{E(ownerName)}</strong>. Una persona reportó desde la app Mi Taller un posible accidente de su vehículo <strong>{E(vehicleName)}</strong>.</p>
+    <p style=""line-height:1.8;"">{location}🕓 <strong>Fecha y hora del reporte:</strong> {a.CreatedAt:dd/MM/yyyy - HH:mm}</p>
+    <p>Este mensaje no necesariamente indica una situación grave, pero te recomendamos contactar a <strong>{E(ownerName)}</strong> para confirmar su estado.</p>
     <p>MiTaller Financiero – Conectando movilidad y seguridad</p>
   </div>
   <div style=""padding:20px 30px;font-size:12px;color:#555;"">

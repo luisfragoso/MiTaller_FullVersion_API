@@ -7,22 +7,15 @@ namespace MiTaller.Models.Accident
     {
         [Key]
         public int Id { get; set; }
+        // Who reported it (usually a witness, not the vehicle owner)
         public Guid CustomerId { get; set; }
         [ForeignKey("CustomerId")]
         public Customer.Customer Customer { get; set; }
         public string Plates { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
-
-        // Null when the customer typed plates of a vehicle not in their account
-        public int? VehicleId { get; set; }
-        public string VehicleName { get; set; } = string.Empty;
-        // collision | hit-object | rollover | pedestrian | other
-        public string Kind { get; set; } = "other";
-        public bool HasInjured { get; set; }
-        [MaxLength(300)]
-        public string? Notes { get; set; }
         public string? Latitude { get; set; }
         public string? Longitude { get; set; }
+        // Emails sent to the owners' emergency contacts; internal, never returned to the reporter
         public int NotifiedContacts { get; set; }
     }
 }
