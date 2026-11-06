@@ -1,4 +1,4 @@
-﻿using MiTaller.Models.Domain;
+using MiTaller.Models.Domain;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -43,6 +43,10 @@ namespace MiTaller.Models.Vehicle
         public string VehicleFormat { get; set; } = string.Empty;
         public byte[]? Image { get; set; }
         public bool IsDeleted { get; set; } = false;
+
+        // Printed as a QR sticker on vehicles without visible plates (bikes); witnesses report with it. Assigned in DataContext
+        [MaxLength(10)]
+        public string? EmergencyCode { get; set; }
 
         // Who captured this record; see RecordOrigin
         public RecordOrigin CreatedBy { get; set; } = RecordOrigin.Unknown;

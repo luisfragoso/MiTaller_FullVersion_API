@@ -1,4 +1,4 @@
-﻿namespace MiTaller.DTO.Vehicle
+namespace MiTaller.DTO.Vehicle
 {
     public class VehicleResponseDto
     {
@@ -15,5 +15,6 @@
         public string Kms { get; set; } = string.Empty;
         public string VehicleFormat { get; set; } = string.Empty;
         public byte[]? Image { get; set; }
+        public string? EmergencyCode { get; set; }
     }
 }

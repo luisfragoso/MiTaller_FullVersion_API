@@ -3640,6 +3640,10 @@ namespace MiTaller.Migrations
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("EmergencyCode")
+                        .HasMaxLength(10)
+                        .HasColumnType("nvarchar(10)");
+
                     b.Property<byte[]>("Image")
                         .HasColumnType("varbinary(max)");
 
@@ -3695,6 +3699,10 @@ namespace MiTaller.Migrations
                     b.HasIndex("BrandId");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("EmergencyCode")
+                        .IsUnique()
+                        .HasFilter("[EmergencyCode] IS NOT NULL");
 
                     b.HasIndex("VehicleModelId");
 

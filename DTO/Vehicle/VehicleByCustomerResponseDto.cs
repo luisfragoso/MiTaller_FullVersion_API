@@ -15,6 +15,7 @@
         public string Kms { get; set; } = string.Empty;
         public string VehicleFormat {  get; set; } = string.Empty;
         public byte[]? Image { get; set; }
+        public string? EmergencyCode { get; set; }
         public List<VehicleHistoryDto> VehicleHistory { get; set; } = new List<VehicleHistoryDto>();
     }
 

@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Security.Claims;
 using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
@@ -40,8 +40,9 @@ namespace MiTaller.Controllers
             Enum.TryParse<UserType>(User.FindFirst("UserType")?.Value, out var type) && type == UserType.Customer
             && Guid.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 
+        // Letters and digits only, so "N/A" (stored on bikes without plates) can never match anything
         private static string Normalize(string? plates) =>
-            (plates ?? string.Empty).Replace("-", "").Replace(" ", "").Trim().ToUpperInvariant();
+            new string((plates ?? string.Empty).Where(char.IsLetterOrDigit).ToArray()).ToUpperInvariant();
 
         private static AccidentResponseDto ToDto(Accident a, DateTime? previous = null) => new()
         {
@@ -150,7 +151,8 @@ namespace MiTaller.Controllers
         private async Task<int> NotifyOwnersContacts(Accident accident)
         {
             var vehicles = await _context.Vehicles
-                .Where(v => !v.IsDeleted && v.Plates.Replace("-", "").Replace(" ", "").ToUpper() == accident.Plates)
+                .Where(v => !v.IsDeleted && (v.EmergencyCode == accident.Plates
+                    || v.Plates.Replace("-", "").Replace(" ", "").ToUpper() == accident.Plates))
                 .Include(v => v.Brand).Include(v => v.VehicleModel).Include(v => v.Customer)
                 .ToListAsync();
 

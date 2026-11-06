@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Models.Customer;
@@ -27,6 +27,32 @@ namespace MiTaller.Data
     public class DataContext : IdentityDbContext<BaseIdentityUser, IdentityRole<Guid>, Guid>
     {
         public DataContext(DbContextOptions<DataContext> options) : base(options) { }
+
+        private const string CodeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+        /// <summary>"MT" + 6 unambiguous characters, e.g. MT7K3P9X (shown as MT-7K3P9X).</summary>
+        public static string NewEmergencyCode() =>
+            "MT" + new string(Enumerable.Range(0, 6)
+                .Select(_ => CodeAlphabet[System.Security.Cryptography.RandomNumberGenerator.GetInt32(CodeAlphabet.Length)])
+                .ToArray());
+
+        private void AssignEmergencyCodes()
+        {
+            foreach (var entry in ChangeTracker.Entries<Vehicle>().Where(e => e.State == EntityState.Added && e.Entity.EmergencyCode == null))
+                entry.Entity.EmergencyCode = NewEmergencyCode();
+        }
+
+        public override int SaveChanges(bool acceptAllChangesOnSuccess)
+        {
+            AssignEmergencyCodes();
+            return base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+        {
+            AssignEmergencyCodes();
+            return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        }
 
 
         // Admin (cuenta única de administrador de plataforma)
@@ -151,6 +177,11 @@ namespace MiTaller.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Vehicle>()
+                .HasIndex(v => v.EmergencyCode)
+                .IsUnique()
+                .HasFilter("[EmergencyCode] IS NOT NULL");
+
             base.OnModelCreating(builder);
 
             // AuditLog - índices para las consultas del portal admin (por registro,

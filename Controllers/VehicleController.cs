@@ -1,4 +1,4 @@
-﻿using MiTaller.Models.Domain;
+using MiTaller.Models.Domain;
 using MiTaller.Attributes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -149,6 +149,7 @@ namespace MiTaller.Controllers
                         RimRubber = v.RimRubber,
                         Kms = v.Kms,
                         VehicleFormat = v.VehicleFormat,
+                        EmergencyCode = v.EmergencyCode,
                         Image = v.Image
                     })
                     .FirstOrDefaultAsync();
@@ -185,6 +186,7 @@ namespace MiTaller.Controllers
                         RimRubber = v.RimRubber,
                         Kms = v.Kms,
                         VehicleFormat = v.VehicleFormat,
+                        EmergencyCode = v.EmergencyCode,
                         Image = v.Image
                     })
                     .ToListAsync();
@@ -233,6 +235,7 @@ namespace MiTaller.Controllers
                         RimRubber = v.RimRubber,
                         Kms = v.Kms,
                         VehicleFormat = v.VehicleFormat,
+                        EmergencyCode = v.EmergencyCode,
                         Image = v.Image
                     })
                     .ToListAsync();
