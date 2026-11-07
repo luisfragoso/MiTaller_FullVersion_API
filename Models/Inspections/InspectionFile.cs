@@ -4,8 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MiTaller.Models.Inspections
 {
     /// <summary>
-    /// Same shape as WorkshopVehicleFile/MotocycleInspectionFile: files are
-    /// stored inline as bytes in the DB, not as a path on disk.
+    /// Files are stored inline as bytes in the DB, not as a path on disk.
     /// </summary>
     public class InspectionFile
     {

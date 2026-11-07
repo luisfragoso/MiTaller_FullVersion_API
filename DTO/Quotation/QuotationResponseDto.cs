@@ -15,7 +15,6 @@ namespace MiTaller.DTO.Quotation
         public Guid CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public VehicleResponseDto? Vehicle { get; set; }
-        public int? WorkshopVehicleInspectionId { get; set; }
         public int? InspectionId { get; set; }
         public string Description { get; set; } = string.Empty;
         public  float PriceOfLabor { get; set; } = 0;

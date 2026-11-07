@@ -26,14 +26,7 @@ namespace MiTaller.Models
         [ForeignKey("VehicleId")]
         public Vehicle.Vehicle? Vehicle { get; set; }  // Opcional
 
-        // Si se llena, esta cotización es complementaria a una inspección de vehículo ya en curso
-        public int? WorkshopVehicleInspectionId { get; set; }
-        [ForeignKey("WorkshopVehicleInspectionId")]
-        public WorkshopVehicleInspection? WorkshopVehicleInspection { get; set; }
-
-        // Igual que WorkshopVehicleInspectionId, pero para el sistema genérico de
-        // inspecciones (Yate y futuros formatos). Convive con el campo legacy de
-        // arriba sin reemplazarlo.
+        // Si se llena, esta cotización es complementaria a esa inspección en curso
         public int? InspectionId { get; set; }
         [ForeignKey("InspectionId")]
         public Inspection? Inspection { get; set; }

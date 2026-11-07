@@ -77,8 +77,6 @@ namespace MiTaller.Data
         public DbSet<WorkshopBill> WorkshopBills { get; set; }
         public DbSet<WorkshopExpenseCategory> WorkshopExpenseCategories { get; set; }
         public DbSet<WorkshopRoadsideSettings> WorkshopRoadsideSettings { get; set; }
-        public DbSet<WorkshopVehicleInspection> WorkshopVehicleInspections { get; set; }
-        public DbSet<WorkshopVehicleFile> WorkshopVehicleFiles { get; set; }
         public DbSet<WorkshopIncomes> WorkshopIncomes { get; set; }
         public DbSet<WorkshopInbox> WorkshopInbox { get; set; }
 
@@ -132,12 +130,6 @@ namespace MiTaller.Data
         public DbSet<RoadsideAssistance> RoadsideAssistances { get; set; }
 
         // Inspections
-        public DbSet<VehicleInspectionDetailHistory> VehicleInspectionDetailHistory { get; set; }
-        public DbSet<VehicleInspectionHistory> VehicleInspectionHistory { get; set; }
-        public DbSet<WorkshopMotocycleInspection> WorkshopMotocycleInspections { get; set; }
-        public DbSet<MotocycleInspectionFile> MotocycleInspectionFiles { get; set; }
-        public DbSet<MotocycleInspectionHistory> MotocycleInspectionHistory { get; set; }
-        public DbSet<MotocycleInspectionDetailHistory> MotocycleInspectionDetailHistory { get; set; }
 
         // Generic (template-driven) inspections — used by any vehicle format
         // other than Automóvil/Motocicleta (e.g. Yate), which keep using the
@@ -523,32 +515,6 @@ namespace MiTaller.Data
                 .HasIndex(c => new { c.WorkshopId, c.Name })
                 .IsUnique();
 
-            // WorkshopVehicleInspections
-            builder.Entity<WorkshopVehicleInspection>()
-                .HasOne(wvi => wvi.Workshop)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.WorkshopId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<WorkshopVehicleInspection>()
-                .HasOne(wvi => wvi.Customer)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<WorkshopVehicleInspection>()
-                .HasOne(wvi => wvi.Vehicle)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.VehicleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // WorkshopVehicleFile
-            builder.Entity<WorkshopVehicleFile>()
-                .HasOne(wvf => wvf.WorkshopVehicleInspection)
-                .WithMany(wvi => wvi.Files)
-                .HasForeignKey(wvf => wvf.WorkshopVehicleInspectionId)
-                .OnDelete(DeleteBehavior.Cascade);
-
             // Accidents
             builder.Entity<Accident>()
                 .HasOne(a => a.Customer)
@@ -587,53 +553,6 @@ namespace MiTaller.Data
                 .HasOne(ra => ra.Customer)
                 .WithMany()
                 .HasForeignKey(ra => ra.CustomerId);
-
-            // Inspections History
-            builder.Entity<VehicleInspectionDetailHistory>()
-                .HasOne(v => v.VehicleInspection)
-                .WithMany()
-                .HasForeignKey(v => v.VehicleInspectionId);
-
-            builder.Entity<VehicleInspectionHistory>()
-                .HasOne(v => v.VehicleInspection)
-                .WithMany()
-                .HasForeignKey(v => v.VehicleInspectionId);
-
-            builder.Entity<MotocycleInspectionDetailHistory>()
-                .HasOne(v => v.MotocycleInspection)
-                .WithMany()
-                .HasForeignKey(v => v.MotocycleInspectionId);
-
-            builder.Entity<MotocycleInspectionHistory>()
-                .HasOne(v => v.MotocycleInspection)
-                .WithMany()
-                .HasForeignKey(v => v.MotocycleInspectionId);
-
-            // WorkshopMotocycleInspections
-            builder.Entity<WorkshopMotocycleInspection>()
-                .HasOne(wvi => wvi.Workshop)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.WorkshopId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<WorkshopMotocycleInspection>()
-                .HasOne(wvi => wvi.Customer)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.CustomerId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            builder.Entity<WorkshopMotocycleInspection>()
-                .HasOne(wvi => wvi.Vehicle)
-                .WithMany()
-                .HasForeignKey(wvi => wvi.VehicleId)
-                .OnDelete(DeleteBehavior.Restrict);
-
-            // MotocycleInspectionFile
-            builder.Entity<MotocycleInspectionFile>()
-                .HasOne(wvf => wvf.WorkshopMotocycleInspection)
-                .WithMany(wvi => wvi.Files)
-                .HasForeignKey(wvf => wvf.WorkshopMotocycleInspectionId)
-                .OnDelete(DeleteBehavior.Cascade);
 
             // Generic Inspection System (templates + inspections) //
 

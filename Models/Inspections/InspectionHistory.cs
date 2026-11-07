@@ -5,10 +5,7 @@ using MiTaller.Models.Audit;
 namespace MiTaller.Models.Inspections
 {
     /// <summary>
-    /// History/audit trail for a generic Inspection. Unlike
-    /// VehicleInspectionHistory/VehicleInspectionDetailHistory (car), this
-    /// keeps a simplified JSON snapshot of the results instead of a
-    /// per-item detail table, since the set of items is dynamic per template.
+    /// Audit trail of an Inspection: a JSON snapshot of the results, since items vary per template.
     /// </summary>
     public class InspectionHistory : INotAudited
     {

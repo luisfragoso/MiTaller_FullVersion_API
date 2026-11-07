@@ -5,11 +5,7 @@ using MiTaller.Models.Audit;
 namespace MiTaller.Models.Inspections
 {
     /// <summary>
-    /// Customer-facing progress-update timeline for a generic Inspection -
-    /// the equivalent of VehicleInspectionDetailHistory (car) /
-    /// MotocycleInspectionDetailHistory (moto). Not to be confused with
-    /// InspectionHistory, which is a separate (and currently unused)
-    /// audit/snapshot concept.
+    /// Customer-facing progress timeline of an Inspection (not the InspectionHistory audit).
     /// </summary>
     public class InspectionDetailHistory : INotAudited
     {

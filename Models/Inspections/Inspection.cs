@@ -7,10 +7,8 @@ using MiTaller.Models.Vehicle;
 namespace MiTaller.Models.Inspections
 {
     /// <summary>
-    /// A generic (template-driven) vehicle inspection, used by every vehicle
-    /// format. Automóvil/Motocicleta rows from the legacy
-    /// WorkshopVehicleInspection/WorkshopMotocycleInspection tables are copied
-    /// here and keep a pointer back via LegacySource/LegacyId.
+    /// Template-driven inspection for every vehicle format. LegacySource/LegacyId mark
+    /// rows copied from the old Auto/Moto tables (dropped in DropLegacyInspectionTables).
     /// </summary>
     public class Inspection
     {
