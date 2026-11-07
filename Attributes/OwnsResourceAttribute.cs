@@ -13,7 +13,6 @@ namespace MiTaller.Attributes
         Customer, Vehicle, CustomerFile, Appointment, Quotation, Review, Notification, CustomerTag,
         Inspection, InspectionFile, WorkshopBill, WorkshopExpenseCategory, WorkshopIncome, WorkshopNote, WorkshopCustomerNote,
         WorkshopEmployee, WorkshopFile, WorkshopService,
-        LegacyCarInspection, LegacyCarFile, LegacyCarHistory, LegacyMotoInspection, LegacyMotoFile, LegacyMotoHistory,
     }
 
     /// <summary>
@@ -125,22 +124,6 @@ namespace MiTaller.Attributes
                     return await First(db.WorkshopFiles.Where(x => x.Id == g).Select(x => new { x.WorkshopId }), x => (null, x.WorkshopId));
                 case ResourceKind.WorkshopService when isInt:
                     return await First(db.WorkshopServices.Where(x => x.Id == i).Select(x => new { x.WorkshopId }), x => (null, x.WorkshopId));
-                case ResourceKind.LegacyCarInspection when isInt:
-                    return await First(db.WorkshopVehicleInspections.Where(x => x.Id == i).Select(x => new { x.CustomerId, x.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
-                case ResourceKind.LegacyCarFile when isInt:
-                    return await First(db.WorkshopVehicleFiles.Where(x => x.Id == i)
-                        .Join(db.WorkshopVehicleInspections, f => f.WorkshopVehicleInspectionId, w => w.Id, (f, w) => new { w.CustomerId, w.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
-                case ResourceKind.LegacyCarHistory when isInt:
-                    return await First(db.VehicleInspectionHistory.Where(x => x.Id == i)
-                        .Join(db.WorkshopVehicleInspections, h => h.VehicleInspectionId, w => w.Id, (h, w) => new { w.CustomerId, w.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
-                case ResourceKind.LegacyMotoInspection when isInt:
-                    return await First(db.WorkshopMotocycleInspections.Where(x => x.Id == i).Select(x => new { x.CustomerId, x.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
-                case ResourceKind.LegacyMotoFile when isInt:
-                    return await First(db.MotocycleInspectionFiles.Where(x => x.Id == i)
-                        .Join(db.WorkshopMotocycleInspections, f => f.WorkshopMotocycleInspectionId, w => w.Id, (f, w) => new { w.CustomerId, w.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
-                case ResourceKind.LegacyMotoHistory when isInt:
-                    return await First(db.MotocycleInspectionHistory.Where(x => x.Id == i)
-                        .Join(db.WorkshopMotocycleInspections, h => h.MotocycleInspectionId, w => w.Id, (h, w) => new { w.CustomerId, w.WorkshopId }), x => (x.CustomerId, x.WorkshopId));
                 default:
                     return null;
             }
