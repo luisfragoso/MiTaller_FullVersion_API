@@ -9,11 +9,8 @@ using System.Linq;
 namespace MiTaller.Services.Documents
 {
     /// <summary>
-    /// QuestPDF document for the generic (template-driven) inspection system.
-    /// Unlike VehicleInspectionDocument/MotocycleInspectionDocument, this one
-    /// doesn't hardcode sections/items: it iterates whatever the associated
-    /// InspectionTemplate defines, so it serves every format (Auto/Moto
-    /// included) without changes.
+    /// QuestPDF document for template-driven inspections: renders whatever sections
+    /// the template defines, so it serves every vehicle format.
     /// </summary>
     public class GenericInspectionDocument : IDocument
     {
@@ -32,6 +29,18 @@ namespace MiTaller.Services.Documents
 
         public DocumentMetadata GetMetadata() => DocumentMetadata.Default;
 
+        private static readonly HashSet<string> Watercraft = new() { "Yate", "Lancha", "Bote" };
+
+        // Yate, Lancha and Bote share one template: title it after the actual vessel
+        private string DocumentTitle()
+        {
+            var format = _inspection.Vehicle?.VehicleFormat;
+            return format != null && format != _template.VehicleFormat
+                   && Watercraft.Contains(format) && Watercraft.Contains(_template.VehicleFormat ?? string.Empty)
+                ? $"Inspección de {format.ToLower()}"
+                : _template.Name;
+        }
+
         public void Compose(IDocumentContainer container)
         {
             container.Page(page =>
@@ -43,7 +52,7 @@ namespace MiTaller.Services.Documents
 
                 page.Header().Element(c => InspectionDocumentComponents.Header(
                     c,
-                    _template.Name,
+                    DocumentTitle(),
                     _inspection.Workshop?.WorkshopName ?? string.Empty,
                     _inspection.Folio ?? _inspection.Id.ToString(),
                     _inspection.InspectionDate));

@@ -659,6 +659,135 @@ namespace MiTaller.Controllers
             }
         }
 
+        // APP Clientes: the customer's vehicles currently in any workshop, every format
+        [HttpGet("customer/{customerId}/active")]
+        [OwnsResource(ResourceKind.Customer, "customerId")]
+        public async Task<ActionResult<ICollection<MiTaller.DTO.Workshop.VehicleInWorkshopResponseDto>>> GetActiveInspectionsByCustomer(Guid customerId)
+        {
+            try
+            {
+                var inspections = await _context.Inspections
+                    .AsNoTracking()
+                    .Where(i => i.CustomerId == customerId && i.IsActive)
+                    .Include(i => i.Workshop)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.Brand)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.VehicleModel)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.VehicleVersion)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.VehicleType)
+                    .OrderByDescending(i => i.InspectionDate)
+                    .ToListAsync();
+
+                return Ok(inspections.Select(i => new MiTaller.DTO.Workshop.VehicleInWorkshopResponseDto
+                {
+                    WorkshopInspectionId = i.Id,
+                    CustomerId = i.CustomerId,
+                    Status = i.Status,
+                    IsActive = i.IsActive,
+                    WorkshopName = i.Workshop?.WorkshopName,
+                    Vehicle = new VehicleResponseDto
+                    {
+                        Id = i.Vehicle.Id,
+                        Brand = i.Vehicle.BrandId == -1 ? i.Vehicle.OtherBrand : i.Vehicle.Brand.Name,
+                        Model = i.Vehicle.VehicleModelId == -1 ? i.Vehicle.OtherVehicleModel : i.Vehicle.VehicleModel.Model,
+                        Version = i.Vehicle.VehicleVersionId == -1 ? i.Vehicle.OtherVehicleVersion : i.Vehicle.VehicleVersion.Version,
+                        Type = i.Vehicle.VehicleTypeId == -1 ? i.Vehicle.OtherVehicleType : i.Vehicle.VehicleType.Type,
+                        Year = i.Vehicle.Year,
+                        SerialNumber = i.Vehicle.SerialNumber,
+                        Color = i.Vehicle.Color,
+                        Plates = i.Vehicle.Plates,
+                        RimRubber = i.Vehicle.RimRubber,
+                        Kms = i.Vehicle.Kms,
+                        VehicleFormat = i.Vehicle.VehicleFormat,
+                        Image = i.Vehicle.Image,
+                    },
+                }).ToList());
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        // APP Clientes: visits of one of the customer's vehicles across all workshops
+        [HttpPost("visits/customer-vehicle-pager")]
+        [CallerMatches("CustomerId")]
+        public async Task<ActionResult<PagerResponseDto<VehicleInspectionHistoryResponseDto>>> GetCustomerVehicleVisitsPaged([FromBody] CustomerVehicleBodyDto model, [FromQuery] PagerBodyDto pager)
+        {
+            try
+            {
+                var query = _context.Inspections
+                    .Where(i => i.CustomerId == model.CustomerId && i.VehicleId == model.VehicleId)
+                    .OrderByDescending(i => i.InspectionDate)
+                    .Select(i => new VehicleInspectionHistoryResponseDto
+                    {
+                        VehicleInspectionHistoryId = i.Id,
+                        Title = i.Title ?? string.Empty,
+                        Folio = i.Folio ?? string.Empty,
+                        CreatedAt = i.InspectionDate,
+                        VehicleId = i.VehicleId,
+                        VehicleFormat = i.Vehicle.VehicleFormat,
+                        Brand = i.Vehicle.BrandId == -1 ? i.Vehicle.OtherBrand : i.Vehicle.Brand.Name,
+                        Model = i.Vehicle.VehicleModelId == -1 ? i.Vehicle.OtherVehicleModel : i.Vehicle.VehicleModel.Model,
+                        Plates = i.Vehicle.Plates,
+                    });
+                var totalCount = await query.CountAsync();
+
+                return Ok(new PagerResponseDto<VehicleInspectionHistoryResponseDto>
+                {
+                    CurrentPage = pager.PageNumber,
+                    TotalPages = (int)Math.Ceiling((double)totalCount / pager.PageSize),
+                    Elements = await query
+                        .Skip((pager.PageNumber - 1) * pager.PageSize)
+                        .Take(pager.PageSize)
+                        .ToListAsync(),
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
+        // APP Clientes "Solicitar estatus": leaves a note in the workshop inbox
+        [HttpPost("customer-request-status/{inspectionId}")]
+        [OwnsResource(ResourceKind.Inspection, "inspectionId")]
+        public async Task<ActionResult> CustomerRequestStatus(int inspectionId)
+        {
+            try
+            {
+                var inspection = await _context.Inspections
+                    .Where(i => i.Id == inspectionId && i.IsActive)
+                    .Include(i => i.Customer)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.Brand)
+                    .Include(i => i.Vehicle).ThenInclude(v => v.VehicleModel)
+                    .FirstOrDefaultAsync();
+
+                if (inspection == null) return NotFound("not-found");
+
+                var v = inspection.Vehicle;
+                var vehicleName = $"{(v.BrandId == -1 ? v.OtherBrand : v.Brand?.Name)} {(v.VehicleModelId == -1 ? v.OtherVehicleModel : v.VehicleModel?.Model)} ({v.Plates})";
+
+                // "VehicleInspection" is the inbox type Talleres already routes to its Vehículos screen
+                _context.WorkshopInbox.Add(new MiTaller.Models.Workshop.WorkshopInbox
+                {
+                    WorkshopId = inspection.WorkshopId,
+                    CustomerId = inspection.CustomerId,
+                    VehicleId = inspection.VehicleId,
+                    ParentModelType = "VehicleInspection",
+                    ParentModelId = inspection.Id,
+                    Title = "Solicitud de estatus de inspección",
+                    Details = $"El cliente {inspection.Customer.FullName} solicita estatus de inspección para su vehículo {vehicleName}.",
+                });
+                await _context.SaveChangesAsync();
+
+                return Ok("message-sent");
+            }
+            catch (Exception)
+            {
+                return BadRequest("unkwnown-error");
+            }
+        }
+
         [HttpGet("history/{inspectionId}")]
         [OwnsResource(ResourceKind.Inspection, "inspectionId")]
         public async Task<ActionResult> GetInspectionHistory(int inspectionId)

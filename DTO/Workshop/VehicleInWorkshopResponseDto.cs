@@ -8,6 +8,7 @@ namespace MiTaller.DTO.Workshop
         public Guid CustomerId { get; set; }
         public string Status { get; set; } = string.Empty;
         public bool IsActive { get; set; }
+        public string? WorkshopName { get; set; }
         public VehicleResponseDto Vehicle { get; set; }
     }
 }
