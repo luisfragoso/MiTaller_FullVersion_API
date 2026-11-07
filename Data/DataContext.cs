@@ -164,6 +164,7 @@ namespace MiTaller.Data
         public DbSet<SupportTicket> SupportTickets { get; set; }
         public DbSet<SupportTicketMessage> SupportTicketMessages { get; set; }
         public DbSet<CommunityIdea> CommunityIdeas { get; set; }
+        public DbSet<MiTaller.Models.Interest.FeatureInterest> FeatureInterests { get; set; }
         public DbSet<CommunityVote> CommunityVotes { get; set; }
         public DbSet<CommunitySettings> CommunitySettings { get; set; }
 
@@ -553,6 +554,10 @@ namespace MiTaller.Data
                 .HasOne(ra => ra.Customer)
                 .WithMany()
                 .HasForeignKey(ra => ra.CustomerId);
+
+            builder.Entity<MiTaller.Models.Interest.FeatureInterest>()
+                .HasIndex(f => new { f.CustomerId, f.Feature })
+                .IsUnique();
 
             // Generic Inspection System (templates + inspections) //
 

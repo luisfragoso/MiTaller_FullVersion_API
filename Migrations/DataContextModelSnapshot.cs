@@ -2632,6 +2632,36 @@ namespace MiTaller.Migrations
                         });
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Interest.FeatureInterest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Feature")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.Property<DateTime?>("NotifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId", "Feature")
+                        .IsUnique();
+
+                    b.ToTable("FeatureInterests");
+                });
+
             modelBuilder.Entity("MiTaller.Models.Notification.NotificationSettings", b =>
                 {
                     b.Property<int>("Id")

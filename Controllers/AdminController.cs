@@ -36,6 +36,25 @@ namespace MiTaller.Controllers
             return Ok(new { id, email });
         }
 
+        // Demand for features not offered yet ("Avisarme cuando esté disponible"), per feature
+        [HttpGet("feature-interest")]
+        public async Task<ActionResult> GetFeatureInterest()
+        {
+            var since = DateTime.Now.AddDays(-7);
+            var rows = await _context.FeatureInterests
+                .GroupBy(f => f.Feature)
+                .Select(g => new
+                {
+                    feature = g.Key,
+                    total = g.Count(),
+                    last7Days = g.Count(f => f.CreatedAt >= since),
+                })
+                .ToListAsync();
+
+            return Ok(FeatureInterestController.Features
+                .Select(f => rows.FirstOrDefault(r => r.feature == f) ?? new { feature = f, total = 0, last7Days = 0 }));
+        }
+
         [HttpGet("users")]
         public async Task<ActionResult<PagerWithCountResponseDto<AdminUserListItemDto>>> GetUsers(
             [FromQuery] string? query, [FromQuery] string? userType, [FromQuery] bool deletedOnly = false,
