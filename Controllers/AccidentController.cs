@@ -164,7 +164,11 @@ namespace MiTaller.Controllers
             foreach (var vehicle in vehicles.Where(v => v.Customer != null && !v.Customer.IsDeleted).DistinctBy(v => v.CustomerId))
             {
                 var owner = vehicle.Customer;
-                var vehicleName = $"{(vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand?.Name)} {(vehicle.VehicleModelId == -1 ? vehicle.OtherVehicleModel : vehicle.VehicleModel?.Model)} ({vehicle.Plates})";
+                // Bikes carry "N/A" plates: identify them by their emergency code instead
+                var identifier = vehicle.Plates == "N/A" && vehicle.EmergencyCode is { Length: > 2 } code
+                    ? $"código {code[..2]}-{code[2..]}"
+                    : vehicle.Plates;
+                var vehicleName = $"{(vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand?.Name)} {(vehicle.VehicleModelId == -1 ? vehicle.OtherVehicleModel : vehicle.VehicleModel?.Model)} ({identifier})";
                 var contacts = await _context.EmergencyContacts
                     .Where(e => e.CustomerId == owner.Id && !e.IsDeleted && e.MustBeNotified)
                     .ToListAsync();
