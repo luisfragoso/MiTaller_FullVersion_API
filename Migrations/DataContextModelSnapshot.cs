@@ -4914,6 +4914,9 @@ namespace MiTaller.Migrations
                     b.Property<byte[]>("ProfileImage")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<byte[]>("ProfileImageThumb")
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

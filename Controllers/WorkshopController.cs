@@ -13,6 +13,7 @@ using MiTaller.DTO.Workshop.Services;
 using MiTaller.DTO.Tag;
 using MiTaller.DTO;
 using MiTaller.DTO.Pager;
+using MiTaller.Services;
 
 namespace MiTaller.Controllers
 {
@@ -143,7 +144,10 @@ namespace MiTaller.Controllers
                 using (var memoryStream = new MemoryStream())
                 {
                     await file.CopyToAsync(memoryStream);
-                    workshop.ProfileImage = memoryStream.ToArray();
+                    var full = ImageResizer.ToJpeg(memoryStream.ToArray(), ImageResizer.FullMaxSide);
+                    if (full == null) return BadRequest("invalid-image");
+                    workshop.ProfileImage = full;
+                    workshop.ProfileImageThumb = ImageResizer.ToJpeg(full, ImageResizer.ThumbMaxSide);
                 }
 
                 await _context.SaveChangesAsync();
@@ -337,12 +341,38 @@ namespace MiTaller.Controllers
 
         [HttpGet("profile-image/{workshopId}")]
         [AllowAnonymous]
-        public async Task<IActionResult> GetWorkshopProfileImage(Guid workshopId)
+        public async Task<IActionResult> GetWorkshopProfileImage(Guid workshopId, [FromQuery] string? size)
         {
-            var image = await _context.Workshops
-                .Where(w => w.Id == workshopId && !w.IsDeleted)
-                .Select(w => w.ProfileImage)
-                .FirstOrDefaultAsync();
+            byte[]? image;
+            if (size == "thumb")
+            {
+                image = await _context.Workshops
+                    .Where(w => w.Id == workshopId && !w.IsDeleted)
+                    .Select(w => w.ProfileImageThumb)
+                    .FirstOrDefaultAsync();
+                // Photos uploaded before thumbnails existed get theirs on first request
+                if (image == null)
+                {
+                    var workshop = await _context.Workshops
+                        .FirstOrDefaultAsync(w => w.Id == workshopId && !w.IsDeleted);
+                    if (workshop?.ProfileImage is { Length: > 0 } full)
+                    {
+                        image = ImageResizer.ToJpeg(full, ImageResizer.ThumbMaxSide);
+                        if (image != null)
+                        {
+                            workshop.ProfileImageThumb = image;
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                }
+            }
+            else
+            {
+                image = await _context.Workshops
+                    .Where(w => w.Id == workshopId && !w.IsDeleted)
+                    .Select(w => w.ProfileImage)
+                    .FirstOrDefaultAsync();
+            }
             if (image == null || image.Length == 0) return NotFound("not-found");
 
             Response.Headers.CacheControl = "public, max-age=3600";
@@ -1070,7 +1100,7 @@ namespace MiTaller.Controllers
                         Services = workshopServicesDto,
                         Address = accountAddressDto,
                         OneLineAddress = oneLineAddress,
-                        ProfileImage = workshop.ProfileImage
+                        ProfileImage = workshop.ProfileImageThumb ?? workshop.ProfileImage
                     };
 
                     workshopsList.Add(workshopDto);
@@ -1132,7 +1162,7 @@ namespace MiTaller.Controllers
                         WorkshopId = workshop.Id,
                         WorkshopName = workshop.WorkshopName,
                         Services = workshopServicesDto,
-                        Image = workshop.ProfileImage
+                        Image = workshop.ProfileImageThumb ?? workshop.ProfileImage
                     };
 
                     workshopsList.Add(workshopDto);
@@ -1200,7 +1230,7 @@ namespace MiTaller.Controllers
                         WorkshopId = workshop.Id,
                         WorkshopName = workshop.WorkshopName,
                         Services = workshopServicesDto,
-                        Image = workshop.ProfileImage
+                        Image = workshop.ProfileImageThumb ?? workshop.ProfileImage
                     };
 
                     workshopsList.Add(workshopDto);
