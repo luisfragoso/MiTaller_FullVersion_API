@@ -144,6 +144,21 @@ namespace MiTaller.Controllers
         }
 
 
+        // Only a customer who actually dealt with this workshop can review it
+        private async Task<bool> HasRelation(Guid customerId, Guid workshopId) =>
+            await _context.Appointments.AnyAsync(a => a.WorkshopId == workshopId && a.CustomerId == customerId) ||
+            await _context.Quotations.AnyAsync(q => q.WorkshopId == workshopId && q.CustomerId == customerId) ||
+            await _context.Inspections.AnyAsync(i => i.WorkshopId == workshopId && i.CustomerId == customerId);
+
+        // Lets the app hide "Calificar" instead of surfacing no-relation-customer-workshop
+        [HttpGet("can-review/{workshopId}")]
+        public async Task<ActionResult<bool>> CanReview(Guid workshopId)
+        {
+            var customerId = GetTokenCustomerId();
+            if (customerId == null) return StatusCode(StatusCodes.Status403Forbidden, "customer-only");
+            return Ok(await HasRelation(customerId.Value, workshopId));
+        }
+
         [HttpPost]
         [CallerMatches("CustomerId")]
         public async Task<ActionResult> CreateReview([FromBody] PostReviewDto model)
@@ -160,13 +175,7 @@ namespace MiTaller.Controllers
                 if (!customerExists) return NotFound("not-found");
                 if (!workshopExists) return NotFound("not-found");
 
-                // Only a customer who actually dealt with this workshop can review it
-                bool relationCustomerWorkshopExists =
-                    await _context.Appointments.AnyAsync(a => a.WorkshopId == model.WorkshopId && a.CustomerId == customerId) ||
-                    await _context.Quotations.AnyAsync(q => q.WorkshopId == model.WorkshopId && q.CustomerId == customerId) ||
-                    await _context.Inspections.AnyAsync(i => i.WorkshopId == model.WorkshopId && i.CustomerId == customerId);
-
-                if (!relationCustomerWorkshopExists) return NotFound("no-relation-customer-workshop");
+                if (!await HasRelation(customerId, model.WorkshopId)) return NotFound("no-relation-customer-workshop");
 
                 var existingReview = await _context.Reviews
                     .FirstOrDefaultAsync(r => r.CustomerId == customerId && r.WorkshopId == model.WorkshopId);
