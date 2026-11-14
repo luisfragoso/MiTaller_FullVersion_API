@@ -2963,6 +2963,40 @@ namespace MiTaller.Migrations
                     b.ToTable("ServiceCategories");
                 });
 
+            modelBuilder.Entity("MiTaller.Models.Settings.ContactSettings", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("InfoEmail")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<string>("SupportEmail")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("nvarchar(254)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ContactSettings");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            InfoEmail = "info@mitaller.io",
+                            SupportEmail = "info@mitaller.io"
+                        });
+                });
+
             modelBuilder.Entity("MiTaller.Models.Subscription.DiscountCode", b =>
                 {
                     b.Property<int>("Id")

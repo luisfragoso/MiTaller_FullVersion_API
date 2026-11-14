@@ -167,6 +167,7 @@ namespace MiTaller.Data
         public DbSet<MiTaller.Models.Interest.FeatureInterest> FeatureInterests { get; set; }
         public DbSet<CommunityVote> CommunityVotes { get; set; }
         public DbSet<CommunitySettings> CommunitySettings { get; set; }
+        public DbSet<MiTaller.Models.Settings.ContactSettings> ContactSettings { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -208,6 +209,12 @@ namespace MiTaller.Data
             builder.Entity<CommunityVote>().HasIndex(v => new { v.IdeaId, v.AccountId, v.Month }).IsUnique();
             builder.Entity<CommunityVote>().HasIndex(v => new { v.AccountId, v.Month });
             builder.Entity<CommunitySettings>().HasData(new CommunitySettings { Id = 1, VotesPerMonth = 3 });
+            builder.Entity<MiTaller.Models.Settings.ContactSettings>(e =>
+            {
+                e.Property(c => c.InfoEmail).HasMaxLength(254);
+                e.Property(c => c.SupportEmail).HasMaxLength(254);
+                e.HasData(new MiTaller.Models.Settings.ContactSettings { Id = 1, InfoEmail = "info@mitaller.io", SupportEmail = "info@mitaller.io" });
+            });
 
             builder.Entity<Customer>().ToTable("Customers");
             builder.Entity<Workshop>().ToTable("Workshops");

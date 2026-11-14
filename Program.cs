@@ -148,6 +148,7 @@ try
     builder.Services.AddScoped<JwtService>();
     builder.Services.AddScoped<SubscriptionService>();
     builder.Services.AddScoped<CommunityService>();
+    builder.Services.AddScoped<ContactSettingsService>();
 
     // Audit log (historial global de cambios) - necesita saber quién hizo la request.
     builder.Services.AddHttpContextAccessor();

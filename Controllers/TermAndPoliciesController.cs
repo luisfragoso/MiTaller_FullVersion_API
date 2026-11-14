@@ -8,10 +8,16 @@ namespace MiTaller.Controllers
     [ApiController]
     public class TermAndPoliciesController : ControllerBase
     {
+        private readonly MiTaller.Services.ContactSettingsService _contact;
+
+        public TermAndPoliciesController(MiTaller.Services.ContactSettingsService contact) => _contact = contact;
+
         [HttpGet("Terms")]
-        public IActionResult GetTerms()
+        public async Task<IActionResult> GetTerms()
         {
-            try {
+            try
+            {
+                var info = await _contact.InfoEmailAsync();
                 var terminosJson = new
                 {
                     titulo = "TÉRMINOS Y CONDICIONES DE USO",
@@ -40,7 +46,7 @@ namespace MiTaller.Controllers
                                     tipo = "lista",
                                     elementos = new List<string>
                                     {
-                                        "Correo electrónico: info@mitaller.io",
+                                        $"Correo electrónico: {info}",
                                         "Domicilio: Calle Yuca, Casa 54, Colonia Las vegas, Texcoco Estado de México.",
                                     }
                                 },
@@ -260,7 +266,7 @@ namespace MiTaller.Controllers
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "Los Usuarios pueden cancelar su cuenta en cualquier momento enviando una solicitud a info@mitaller.io"
+                                    valor = $"Los Usuarios pueden cancelar su cuenta en cualquier momento enviando una solicitud a {info}"
                                 },
                                 new {
                                     tipo = "lista",
@@ -322,7 +328,7 @@ namespace MiTaller.Controllers
                                     tipo = "lista",
                                     elementos = new List<string>
                                     {
-                                        "Correo electrónico: info@mitaller.io",
+                                        $"Correo electrónico: {info}",
                                         "Domicilio: Calle Yuca, Casa 54, Colonia Las vegas, Texcoco Estado de México.",
                                     }
                                 },
@@ -340,10 +346,11 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("Privacy")]
-        public IActionResult GetPrivacyPolicy()
+        public async Task<IActionResult> GetPrivacyPolicy()
         {
             try
             {
+                var info = await _contact.InfoEmailAsync();
                 var avisoPrivacidadJson = new
                 {
                     titulo = "AVISO DE PRIVACIDAD INTEGRAL",
@@ -365,7 +372,7 @@ namespace MiTaller.Controllers
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "Para cualquier duda o solicitud en relación con sus datos personales, puede contactarnos en info@mitaller.io."
+                                    valor = $"Para cualquier duda o solicitud en relación con sus datos personales, puede contactarnos en {info}."
                                 }
                             }
                         },
@@ -437,7 +444,7 @@ namespace MiTaller.Controllers
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "Si no desea que sus datos sean utilizados para finalidades secundarias, puede solicitarlo enviando un correo a info@mitaller.io"
+                                    valor = $"Si no desea que sus datos sean utilizados para finalidades secundarias, puede solicitarlo enviando un correo a {info}"
                                 },
                             }
                         },
@@ -528,7 +535,7 @@ namespace MiTaller.Controllers
                                 },
                                 new {
                                     tipo = "texto",
-                                    valor = "Para ejercer estos derechos, envíe una solicitud al correo info@mitaller.io con la siguiente información:"
+                                    valor = $"Para ejercer estos derechos, envíe una solicitud al correo {info} con la siguiente información:"
                                 },
                                 new {
                                     tipo = "lista",
@@ -552,7 +559,7 @@ namespace MiTaller.Controllers
                             {
                                 new {
                                     tipo = "texto",
-                                    valor = "Si desea revocar su consentimiento para el tratamiento de sus datos o eliminar su cuenta de Mi Taller, puede solicitarlo en info@mitaller.io"
+                                    valor = $"Si desea revocar su consentimiento para el tratamiento de sus datos o eliminar su cuenta de Mi Taller, puede solicitarlo en {info}"
                                 },
                                 new {
                                     tipo = "texto",
@@ -610,7 +617,7 @@ namespace MiTaller.Controllers
                                     tipo = "lista",
                                     elementos = new List<string>
                                     {
-                                        "Correo electrónico: info@mitaller.io",
+                                        $"Correo electrónico: {info}",
                                         "Domicilio: Calle Yuca, Casa 54, Colonia Las vegas, Texcoco Estado de México.",
                                     }
                                 },
@@ -633,10 +640,11 @@ namespace MiTaller.Controllers
         }
 
         [HttpGet("DataProcessingAgreement")]
-        public IActionResult GetDataProcessingAgreement()
+        public async Task<IActionResult> GetDataProcessingAgreement()
         {
             try
             {
+                var info = await _contact.InfoEmailAsync();
                 // BORRADOR pendiente de revision por un abogado antes de publicarse como vinculante.
                 // Sin numeros de articulo: la LFPDPPP se reemplazo en marzo de 2025 y las referencias deben validarse contra la ley vigente.
                 var contratoJson = new
@@ -912,7 +920,7 @@ namespace MiTaller.Controllers
                                     tipo = "lista",
                                     elementos = new List<string>
                                     {
-                                        "Correo electrónico: info@mitaller.io",
+                                        $"Correo electrónico: {info}",
                                         "Domicilio: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, Estado de México.",
                                     }
                                 },
