@@ -376,13 +376,13 @@ namespace MiTaller.Controllers
 <head><meta charset=""UTF-8"" /><title>Mi Taller</title></head>
 <body style=""margin:0;font-family:Arial,sans-serif;background-color:#ffffff;"">
   <div style=""background-color:#f52222;padding:20px 0;text-align:center;"">
-    <h1 style=""margin:0;color:white;""><span style=""font-weight:bold;"">MiTaller</span> <span style=""color:black;"">Financiero</span></h1>
+    <h1 style=""margin:0;color:white;""><span style=""font-weight:bold;"">MiTaller</span></h1>
   </div>
   <div style=""padding:30px 40px;color:#333;font-size:16px;"">{body}
-    <p>MiTaller Financiero – Conectando movilidad y seguridad</p>
+    <p>MiTaller – Conectando movilidad y seguridad</p>
   </div>
   <div style=""padding:20px 30px;font-size:12px;color:#555;"">
-    <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. Mi Taller Financiero informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
+    <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
     <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
   </div>
 </body>
