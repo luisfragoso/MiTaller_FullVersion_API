@@ -1,10 +1,12 @@
-using MiTaller.DTO.Inspections;
+﻿using MiTaller.DTO.Inspections;
 using MiTaller.Models.Inspections;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
+
+using MiTaller.Services.Localization;
 
 namespace MiTaller.Services.Documents
 {
@@ -17,11 +19,13 @@ namespace MiTaller.Services.Documents
         private readonly Inspection _inspection;
         private readonly InspectionTemplate _template;
         private readonly List<WorkshopVehicleFileDto> _files;
+        private readonly string _lang;
 
-        public GenericInspectionDocument(Inspection inspection, InspectionTemplate template)
+        public GenericInspectionDocument(Inspection inspection, InspectionTemplate template, string lang = Lang.Es)
         {
             _inspection = inspection;
             _template = template;
+            _lang = lang;
             _files = inspection.Files
                 .Select(f => new WorkshopVehicleFileDto { FileName = f.FileName, FileType = f.FileType, FileData = f.FileData })
                 .ToList();
@@ -37,7 +41,7 @@ namespace MiTaller.Services.Documents
             var format = _inspection.Vehicle?.VehicleFormat;
             return format != null && format != _template.VehicleFormat
                    && Watercraft.Contains(format) && Watercraft.Contains(_template.VehicleFormat ?? string.Empty)
-                ? $"Inspección de {format.ToLower()}"
+                ? T.Get(_lang, "pdf.inspectionOf", format.ToLower())
                 : _template.Name;
         }
 
@@ -55,7 +59,8 @@ namespace MiTaller.Services.Documents
                     DocumentTitle(),
                     _inspection.Workshop?.WorkshopName ?? string.Empty,
                     _inspection.Folio ?? _inspection.Id.ToString(),
-                    _inspection.InspectionDate));
+                    _inspection.InspectionDate,
+                    _lang));
 
                 page.Content().PaddingHorizontal(32).PaddingVertical(20).Column(col =>
                 {
@@ -70,13 +75,13 @@ namespace MiTaller.Services.Documents
                         col.Item().Element(c => RenderSection(c, section));
                     }
 
-                    col.Item().Element(c => InspectionDocumentComponents.PhotosSection(c, _files));
+                    col.Item().Element(c => InspectionDocumentComponents.PhotosSection(c, _files, _lang));
                     col.Item().Element(RenderGeneralObservations);
-                    col.Item().Element(InspectionDocumentComponents.Disclaimer);
+                    col.Item().Element(c => InspectionDocumentComponents.Disclaimer(c, _lang));
                 });
 
                 page.Footer().PaddingHorizontal(32).PaddingBottom(16)
-                    .Element(InspectionDocumentComponents.Footer);
+                    .Element(c => InspectionDocumentComponents.Footer(c, _lang));
             });
         }
 
@@ -85,20 +90,20 @@ namespace MiTaller.Services.Documents
             var vehicle = _inspection.Vehicle;
             var title = vehicle?.VehicleFormat switch
             {
-                "Motocicleta" => "Información de la motocicleta",
-                "Yate" or "Lancha" or "Bote" => "Información de la embarcación",
-                "Avión" => "Información de la aeronave",
-                _ => "Información del vehículo",
+                "Motocicleta" => T.Get(_lang, "pdf.info.motorcycle"),
+                "Yate" or "Lancha" or "Bote" => T.Get(_lang, "pdf.info.watercraft"),
+                "Avión" => T.Get(_lang, "pdf.info.aircraft"),
+                _ => T.Get(_lang, "pdf.info.vehicle"),
             };
 
             InspectionDocumentComponents.InfoCard(container, title, new (string, string)[]
             {
-                ("Placas/Matrícula", vehicle?.Plates ?? string.Empty),
-                ("Año", vehicle?.Year ?? string.Empty),
-                ("Marca", vehicle?.BrandId == -1 ? vehicle?.OtherBrand ?? string.Empty : vehicle?.Brand?.Name ?? string.Empty),
-                ("Modelo", vehicle?.VehicleModelId == -1 ? vehicle?.OtherVehicleModel ?? string.Empty : vehicle?.VehicleModel?.Model ?? string.Empty),
-                ("Versión", vehicle?.VehicleVersionId == -1 ? vehicle?.OtherVehicleVersion ?? string.Empty : vehicle?.VehicleVersion?.Version ?? string.Empty),
-                ("Tipo", vehicle?.VehicleTypeId == -1 ? vehicle?.OtherVehicleType ?? string.Empty : vehicle?.VehicleType?.Type ?? string.Empty),
+                (T.Get(_lang, "pdf.plates"), vehicle?.Plates ?? string.Empty),
+                (T.Get(_lang, "pdf.year"), vehicle?.Year ?? string.Empty),
+                (T.Get(_lang, "pdf.make"), vehicle?.BrandId == -1 ? vehicle?.OtherBrand ?? string.Empty : vehicle?.Brand?.Name ?? string.Empty),
+                (T.Get(_lang, "pdf.model"), vehicle?.VehicleModelId == -1 ? vehicle?.OtherVehicleModel ?? string.Empty : vehicle?.VehicleModel?.Model ?? string.Empty),
+                (T.Get(_lang, "pdf.trim"), vehicle?.VehicleVersionId == -1 ? vehicle?.OtherVehicleVersion ?? string.Empty : vehicle?.VehicleVersion?.Version ?? string.Empty),
+                (T.Get(_lang, "pdf.type"), vehicle?.VehicleTypeId == -1 ? vehicle?.OtherVehicleType ?? string.Empty : vehicle?.VehicleType?.Type ?? string.Empty),
             });
         }
 
@@ -106,19 +111,19 @@ namespace MiTaller.Services.Documents
         private static string ShortId(Guid? id) => id?.ToString().Substring(0, 13) ?? string.Empty;
 
         private void RenderClientInfo(IContainer container) =>
-            InspectionDocumentComponents.InfoCard(container, "Información del Cliente", new (string, string)[]
+            InspectionDocumentComponents.InfoCard(container, T.Get(_lang, "pdf.customerInfo"), new (string, string)[]
             {
-                ("Nombre", _inspection.Customer?.FullName ?? string.Empty),
-                ("Número de Teléfono", _inspection.Customer?.NormalizedPhoneNumber ?? string.Empty),
-                ("Número de Cliente", ShortId(_inspection.Customer?.Id)),
+                (T.Get(_lang, "pdf.name"), _inspection.Customer?.FullName ?? string.Empty),
+                (T.Get(_lang, "pdf.phone"), _inspection.Customer?.NormalizedPhoneNumber ?? string.Empty),
+                (T.Get(_lang, "pdf.customerNumber"), ShortId(_inspection.Customer?.Id)),
             });
 
         private void RenderWorkshopInfo(IContainer container) =>
-            InspectionDocumentComponents.InfoCard(container, "Información del Taller", new (string, string)[]
+            InspectionDocumentComponents.InfoCard(container, T.Get(_lang, "pdf.shopInfo"), new (string, string)[]
             {
-                ("Nombre", _inspection.Workshop?.WorkshopName ?? string.Empty),
-                ("Número de Teléfono", _inspection.Workshop?.NormalizedPhoneNumber ?? string.Empty),
-                ("Número de Taller", ShortId(_inspection.Workshop?.Id)),
+                (T.Get(_lang, "pdf.name"), _inspection.Workshop?.WorkshopName ?? string.Empty),
+                (T.Get(_lang, "pdf.phone"), _inspection.Workshop?.NormalizedPhoneNumber ?? string.Empty),
+                (T.Get(_lang, "pdf.shopNumber"), ShortId(_inspection.Workshop?.Id)),
             });
 
         private void RenderSection(IContainer container, InspectionTemplateSection section)
@@ -183,20 +188,20 @@ namespace MiTaller.Services.Documents
 
             container.Column(col =>
             {
-                col.Item().Element(c => InspectionDocumentComponents.SectionTitle(c, "Observaciones generales"));
+                col.Item().Element(c => InspectionDocumentComponents.SectionTitle(c, T.Get(_lang, "pdf.generalObservations")));
                 col.Item().PaddingTop(8)
                     .Element(c => InspectionDocumentComponents.NoteBox(c, _inspection.GeneralObservations!));
             });
         }
 
-        private static void ConditionBadge(IContainer container, InspectionItemValue value)
+        private void ConditionBadge(IContainer container, InspectionItemValue value)
         {
             var (background, foreground, border, text) = value switch
             {
-                InspectionItemValue.Optimal => ("#E8F5E9", "#2E7D32", "#A5D6A7", "Óptimo"),
-                InspectionItemValue.NeedsAttention => ("#FFF8E1", "#B78103", "#FFE082", "Requiere atención"),
-                InspectionItemValue.UrgentAttention => ("#FFEBEE", "#C62828", "#EF9A9A", "Atención urgente"),
-                InspectionItemValue.NotApplicable => ("#F5F5F5", "#616161", "#E0E0E0", "No aplica"),
+                InspectionItemValue.Optimal => ("#E8F5E9", "#2E7D32", "#A5D6A7", T.Get(_lang, "pdf.optimal")),
+                InspectionItemValue.NeedsAttention => ("#FFF8E1", "#B78103", "#FFE082", T.Get(_lang, "pdf.needsAttention")),
+                InspectionItemValue.UrgentAttention => ("#FFEBEE", "#C62828", "#EF9A9A", T.Get(_lang, "pdf.urgent")),
+                InspectionItemValue.NotApplicable => ("#F5F5F5", "#616161", "#E0E0E0", T.Get(_lang, "pdf.notApplicable")),
                 _ => ("#F5F5F5", "#616161", "#E0E0E0", "-"),
             };
 

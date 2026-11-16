@@ -18,6 +18,8 @@ using MiTaller.Models.Auth;
 using MiTaller.Services;
 using System.Security.Claims;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/appointments")]
@@ -284,6 +286,7 @@ namespace MiTaller.Controllers
 
                 if (bookedByCustomer)
                 {
+                    var shopLang = await _context.LanguageOfAsync(model.WorkshopId);
                     // WorkshopInbox
                     var workshopInbox = new WorkshopInbox
                     {
@@ -292,7 +295,7 @@ namespace MiTaller.Controllers
                         VehicleId = model.VehicleId,
                         ParentModelType = "Appointment",
                         ParentModelId = appointment.Id,
-                        Title = $"{customer.FullName} ha solicitado una cita para la fecha del {formattedDate} a las {formattedTime}",
+                        Title = T.Get(shopLang, "appt.requested", customer.FullName, appointment.Date.ShortDate(shopLang), appointment.Date.ShortTime(shopLang)),
                         Details = appointment.Description,
                     };
                     _context.WorkshopInbox.Add(workshopInbox);

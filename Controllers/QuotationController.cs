@@ -24,6 +24,8 @@ using MiTaller.Services;
 using System.Collections.Generic;
 using System.Security.Claims;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -662,7 +664,7 @@ namespace MiTaller.Controllers
                 await _context.SaveChangesAsync();
 
                 var vehicleBrand = vehicle.BrandId == -1 ? vehicle.OtherBrand : vehicle.Brand.Name;
-                var vehicleModel = vehicle.VehicleModelId == -1 ? vehicle.OtherBrand : vehicle.VehicleModel.Model;
+                var vehicleModel = vehicle.VehicleModelId == -1 ? vehicle.OtherVehicleModel : vehicle.VehicleModel.Model;
                 
                 if (byCustomer)
                 {
@@ -674,7 +676,7 @@ namespace MiTaller.Controllers
                         VehicleId = model.VehicleId,
                         ParentModelType = "Quotation",
                         ParentModelId = quotation.Id,
-                        Title = $"Cotización del vehículo {vehicleBrand} - {vehicleModel} - {vehicle.Year} - {vehicle.Plates}",
+                        Title = T.Get(await _context.LanguageOfAsync(model.WorkshopId), "quote.title", vehicleBrand, vehicleModel, vehicle.Year, vehicle.Plates),
                         Details = quotation.Description,
                     };
                     _context.WorkshopInbox.Add(workshopInbox);
@@ -696,7 +698,7 @@ namespace MiTaller.Controllers
                     {
                         UserId = model.CustomerId,
                         UserType = UserType.Customer,
-                        Title = $"Cotización del vehículo {vehicleBrand} - {vehicleModel} - {vehicle.Year} - {vehicle.Plates}",
+                        Title = T.Get(await _context.LanguageOfAsync(model.CustomerId), "quote.title", vehicleBrand, vehicleModel, vehicle.Year, vehicle.Plates),
                         Content = quotation.Description,
                         Event = "QuotationCreated"
                     };
@@ -755,6 +757,7 @@ namespace MiTaller.Controllers
 
                 if (byCustomer)
                 {
+                    var shopLang = await _context.LanguageOfAsync(quotation.WorkshopId);
                     if (quotation.Status == "Canceled")
                     {
                         // WorkshopInbox
@@ -765,8 +768,8 @@ namespace MiTaller.Controllers
                             VehicleId = quotation.VehicleId,
                             ParentModelType = "Quotation",
                             ParentModelId = quotation.Id,
-                            Title = $"Cambio de estatus en cotización",
-                            Details = "La cotización ha sido cancelada por el cliente.",
+                            Title = T.Get(shopLang, "quote.statusChanged"),
+                            Details = T.Get(shopLang, "quote.canceledByCustomer"),
                         };
                         _context.WorkshopInbox.Add(workshopInbox);
                         await _context.SaveChangesAsync();
@@ -790,8 +793,8 @@ namespace MiTaller.Controllers
                             VehicleId = quotation.VehicleId,
                             ParentModelType = "Quotation",
                             ParentModelId = quotation.Id,
-                            Title = $"Cambio de estatus en cotización",
-                            Details = "La cotización ha sido aprobada por el cliente.",
+                            Title = T.Get(shopLang, "quote.statusChanged"),
+                            Details = T.Get(shopLang, "quote.approvedByCustomer"),
                         };
                         _context.WorkshopInbox.Add(workshopInbox);
                         await _context.SaveChangesAsync();
@@ -809,12 +812,13 @@ namespace MiTaller.Controllers
                 } else
                 {
                     // Customer Notifications
+                    var customerLang = await _context.LanguageOfAsync(quotation.CustomerId);
                     var notification = new Notifications
                     {
                         UserId = quotation.CustomerId,
                         UserType = UserType.Customer,
-                        Title = $"Cambio de estatus en cotización",
-                        Content = "La cotización ha sido modificada, favor de revisarla.",
+                        Title = T.Get(customerLang, "quote.statusChanged"),
+                        Content = T.Get(customerLang, "quote.updated"),
                         Event = "QuotationUpdated"
                     };
                     _context.Notifications.Add(notification);

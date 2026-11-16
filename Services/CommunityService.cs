@@ -1,10 +1,12 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
 using MiTaller.DTO.Community;
 using MiTaller.Models.Auth;
 using MiTaller.Models.Community;
 using MiTaller.Models.Notification;
+
+using MiTaller.Services.Localization;
 
 namespace MiTaller.Services
 {
@@ -53,8 +55,11 @@ namespace MiTaller.Services
             }
         }
 
-        /// <summary>Queues an in-app notification for the workshop or customer account (caller saves).</summary>
-        public void Notify(CommunityAudience audience, Guid accountId, string title, string content, string eventName) =>
+        /// <summary>Queues an in-app notification for the workshop or customer account, in its language (caller saves).</summary>
+        public async Task NotifyAsync(CommunityAudience audience, Guid accountId,
+            Func<string, (string Title, string Content)> build, string eventName)
+        {
+            var (title, content) = build(await _context.LanguageOfAsync(accountId));
             _context.Notifications.Add(new Notifications
             {
                 UserId = accountId,
@@ -63,6 +68,7 @@ namespace MiTaller.Services
                 Content = content,
                 Event = eventName,
             });
+        }
 
         public async Task<Dictionary<Guid, string>> AccountNamesAsync(IEnumerable<(CommunityAudience Audience, Guid Id)> accounts)
         {

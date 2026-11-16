@@ -18,6 +18,8 @@ using MiTaller.Models.Workshop;
 using MiTaller.Services;
 using System.Security.Claims;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -123,6 +125,8 @@ namespace MiTaller.Controllers
                 }
 
                 user.LastLoginAt = DateTime.Now;
+                // The apps send their active language; emails and push to this account follow it
+                if (Request.Headers.ContainsKey("Accept-Language")) user.PreferredLanguage = Lang.FromRequest(Request);
                 await _userManager.UpdateAsync(user);
 
                 var token = _jwtService.GenerateToken(user);
@@ -178,6 +182,7 @@ namespace MiTaller.Controllers
 
                 var customer = new Customer
                 {
+                    PreferredLanguage = Lang.FromRequest(Request),
                     Id = Guid.NewGuid(),
                     UserName = model.Email + "_customer",
                     Email = model.Email,
@@ -216,8 +221,8 @@ namespace MiTaller.Controllers
                 {
                     UserId = customer.Id,
                     UserType = UserType.Customer,
-                    Title = "Cuenta creada exitosamente",
-                    Content = "¡Tu cuenta ha sido creada con éxito! Ahora puedes acceder a todas las funcionalidades de tu cuenta.",
+                    Title = T.Get(Lang.FromRequest(Request), "account.created.title"),
+                    Content = T.Get(Lang.FromRequest(Request), "account.created.content"),
                     Event = "AccountCreated"
                 };
 
@@ -254,6 +259,7 @@ namespace MiTaller.Controllers
 
                 var workshop = new Workshop
                 {
+                    PreferredLanguage = Lang.FromRequest(Request),
                     Id = Guid.NewGuid(),
                     UserName = model.Email + "_workshop",
                     Email = model.Email,
@@ -292,8 +298,8 @@ namespace MiTaller.Controllers
                 {
                     UserId = workshop.Id,
                     UserType = UserType.Workshop,
-                    Title = "Cuenta creada exitosamente",
-                    Content = "¡Tu cuenta ha sido creada con éxito! Ahora puedes acceder a todas las funcionalidades de tu cuenta.",
+                    Title = T.Get(Lang.FromRequest(Request), "account.created.title"),
+                    Content = T.Get(Lang.FromRequest(Request), "account.created.content"),
                     Event = "AccountCreated"
                 };
 
@@ -338,37 +344,8 @@ namespace MiTaller.Controllers
 
             await _userManager.UpdateAsync(user);
 
-            var htmlBody = $@"
-                <!DOCTYPE html>
-                <html lang=""es"">
-                    <head>
-                    <meta charset=""UTF-8"" />
-                    <title>Verificación MiTaller</title>
-                    </head>
-                    <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                    <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                        <h1 style=""margin: 0; color: white;"">
-                        <span style=""font-weight: bold;"">MiTaller</span>
-                        </h1>
-                    </div>
-
-                    <div style=""padding: 30px; text-align: center; color: #333;"">
-                        <h2 style=""margin-top: 0;"">Hola</h2>
-                        <p style=""font-size: 18px;"">Este es tu código de verificación para acceder a la app MiTaller.</p>
-                        <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{verificationCode}</p>
-                        <p style=""margin-top: 20px;"">Este código expirará en 15 minutos.</p>
-                        <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                    </div>
-
-                    <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                        <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                    </div>
-                    </body>
-                </html>
-                ";
-
-            await _emailSender.SendEmailAsync(user.Email, "Verificación de Correo", htmlBody);
+            await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "verify.subject"),
+                EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "verify.intro"), verificationCode));
             
             return Ok("email-sent");
         }
@@ -440,37 +417,8 @@ namespace MiTaller.Controllers
 
             if (user.EmailVerificationCode != null && user.EmailVerificationExpires > DateTime.UtcNow)
             {
-                var htmlBody = $@"
-                <!DOCTYPE html>
-                <html lang=""es"">
-                    <head>
-                    <meta charset=""UTF-8"" />
-                    <title>Verificación MiTaller</title>
-                    </head>
-                    <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                    <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                        <h1 style=""margin: 0; color: white;"">
-                        <span style=""font-weight: bold;"">MiTaller</span>
-                        </h1>
-                    </div>
-
-                    <div style=""padding: 30px; text-align: center; color: #333;"">
-                        <h2 style=""margin-top: 0;"">Hola</h2>
-                        <p style=""font-size: 18px;"">Este es tu código de verificación para acceder a la app MiTaller.</p>
-                        <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{user.EmailVerificationCode}</p>
-                        <p style=""margin-top: 20px;"">Este código expirará en 15 minutos.</p>
-                        <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                    </div>
-
-                    <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                        <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                    </div>
-                    </body>
-                </html>
-                ";
-
-                await _emailSender.SendEmailAsync(user.Email, "Verificación de Correo", htmlBody);
+                await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "verify.subject"),
+                    EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "verify.intro"), user.EmailVerificationCode));
 
                 return Ok("email-sent");
             }
@@ -482,37 +430,8 @@ namespace MiTaller.Controllers
 
             await _userManager.UpdateAsync(user);
 
-            var htmlBody2 = $@"
-                <!DOCTYPE html>
-                <html lang=""es"">
-                    <head>
-                    <meta charset=""UTF-8"" />
-                    <title>Verificación MiTaller</title>
-                    </head>
-                    <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                    <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                        <h1 style=""margin: 0; color: white;"">
-                        <span style=""font-weight: bold;"">MiTaller</span>
-                        </h1>
-                    </div>
-
-                    <div style=""padding: 30px; text-align: center; color: #333;"">
-                        <h2 style=""margin-top: 0;"">Hola</h2>
-                        <p style=""font-size: 18px;"">Este es tu código de verificación para acceder a la app MiTaller.</p>
-                        <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{verificationCode}</p>
-                        <p style=""margin-top: 20px;"">Este código expirará en 15 minutos.</p>
-                        <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                    </div>
-
-                    <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                        <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                    </div>
-                    </body>
-                </html>
-                ";
-
-            await _emailSender.SendEmailAsync(user.Email, "Verificación de Correo", htmlBody2);
+            await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "verify.subject"),
+                EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "verify.intro"), verificationCode));
 
 
             return Ok("email-sent");
@@ -592,40 +511,8 @@ namespace MiTaller.Controllers
 
                 await _userManager.UpdateAsync(user);
 
-                var htmlBody = $@"
-                    <!DOCTYPE html>
-                    <html lang=""es"">
-                      <head>
-                        <meta charset=""UTF-8"" />
-                        <title>Recuperación MiTaller</title>
-                      </head>
-                      <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                        <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                          <h1 style=""margin: 0; color: white;"">
-                            <span style=""font-weight: bold;"">MiTaller</span>
-                          </h1>
-                        </div>
-
-                        <div style=""padding: 30px; text-align: center; color: #333;"">
-                          <h2 style=""margin-top: 0;"">Hola</h2>
-                          <p style=""font-size: 18px;"">
-                            Este es tu código de verificación para recuperar tu contraseña y que<br/>
-                            puedas acceder a la app MiTaller.
-                          </p>
-                          <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{resetCode}</p>
-                          <p style=""margin-top: 20px;"">Este código expirará el 15 minutos.</p>
-                          <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                        </div>
-
-                        <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                        <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                    </div>
-                      </body>
-                    </html>
-                    ";
-
-                await _emailSender.SendEmailAsync(user.Email, "Recuperación de Contraseña", htmlBody);
+                await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "reset.subject"),
+                    EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "reset.intro"), resetCode));
 
                 return Ok("email-sent");
             }
@@ -780,40 +667,8 @@ namespace MiTaller.Controllers
 
             if (user.PasswordResetCode != null && user.PasswordResetCodeExpires > DateTime.UtcNow)
             {
-                var htmlBody = $@"
-                    <!DOCTYPE html>
-                    <html lang=""es"">
-                      <head>
-                        <meta charset=""UTF-8"" />
-                        <title>Recuperación MiTaller</title>
-                      </head>
-                      <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                        <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                          <h1 style=""margin: 0; color: white;"">
-                            <span style=""font-weight: bold;"">MiTaller</span>
-                          </h1>
-                        </div>
-
-                        <div style=""padding: 30px; text-align: center; color: #333;"">
-                          <h2 style=""margin-top: 0;"">Hola</h2>
-                          <p style=""font-size: 18px;"">
-                            Este es tu código de verificación para recuperar tu contraseña y que<br/>
-                            puedas acceder a la app MiTaller.
-                          </p>
-                          <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{user.PasswordResetCode}</p>
-                          <p style=""margin-top: 20px;"">Este código expirará el 15 minutos.</p>
-                          <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                        </div>
-
-                        <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                            <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                        </div>
-                      </body>
-                    </html>
-                    ";
-
-                await _emailSender.SendEmailAsync(user.Email, "Recuperación de Contraseña", htmlBody);
+                await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "reset.subject"),
+                    EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "reset.intro"), user.PasswordResetCode));
 
                 return Ok("email-sent");
             }
@@ -826,40 +681,8 @@ namespace MiTaller.Controllers
             await _userManager.UpdateAsync(user);
 
 
-            var htmlBody2 = $@"
-                    <!DOCTYPE html>
-                    <html lang=""es"">
-                      <head>
-                        <meta charset=""UTF-8"" />
-                        <title>Recuperación MiTaller</title>
-                      </head>
-                      <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                        <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                          <h1 style=""margin: 0; color: white;"">
-                            <span style=""font-weight: bold;"">MiTaller</span>
-                          </h1>
-                        </div>
-
-                        <div style=""padding: 30px; text-align: center; color: #333;"">
-                          <h2 style=""margin-top: 0;"">Hola</h2>
-                          <p style=""font-size: 18px;"">
-                            Este es tu código de verificación para recuperar tu contraseña y que<br/>
-                            puedas acceder a la app MiTaller.
-                          </p>
-                          <p style=""font-size: 32px; font-weight: bold; color: #f52222;"">{resetCode}</p>
-                          <p style=""margin-top: 20px;"">Este código expirará el 15 minutos.</p>
-                          <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                        </div>
-
-                        <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                        <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                        <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                    </div>
-                      </body>
-                    </html>
-                    ";
-
-            await _emailSender.SendEmailAsync(user.Email, "Recuperación de Contraseña", htmlBody2);
+            await _emailSender.SendEmailAsync(user.Email, T.Get(Lang.FromRequest(Request), "reset.subject"),
+                EmailLayout.Code(Lang.FromRequest(Request), T.Get(Lang.FromRequest(Request), "reset.intro"), resetCode));
 
 
             return Ok("email-sent");

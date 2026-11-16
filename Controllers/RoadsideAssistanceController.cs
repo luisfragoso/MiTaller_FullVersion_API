@@ -21,6 +21,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using MiTaller.Services;
 using System.Collections.Generic;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -146,13 +148,14 @@ namespace MiTaller.Controllers
                         v.Plates,
                     })
                     .FirstOrDefaultAsync();
-                var vehicleName = vehicle == null ? "Vehículo" : $"{vehicle.Brand} {vehicle.Model} {vehicle.Plates}".Trim();
+                var shopLang = await _context.LanguageOfAsync(model.WorkshopId);
+                var vehicleName = vehicle == null ? T.Get(shopLang, "roadside.vehicle") : $"{vehicle.Brand} {vehicle.Model} {vehicle.Plates}".Trim();
                 var hasLocation = double.TryParse(model.Latitude, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var lat)
                     && double.TryParse(model.Longitude, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var lng)
                     && Math.Abs(lat) <= 90 && Math.Abs(lng) <= 180;
                 var details = roadsideAssistance.Description;
                 if (hasLocation)
-                    details += $"\nUbicación: https://www.google.com/maps?q={model.Latitude},{model.Longitude}";
+                    details += "\n" + T.Get(shopLang, "roadside.location", $"https://www.google.com/maps?q={model.Latitude},{model.Longitude}");
 
                 var workshopInbox = new WorkshopInbox
                 {
@@ -161,7 +164,7 @@ namespace MiTaller.Controllers
                     VehicleId = model.VehicleId,
                     ParentModelType = "RoadsideAssistance",
                     ParentModelId = roadsideAssistance.Id,
-                    Title = $"Asistencia vial: {vehicleName}",
+                    Title = T.Get(shopLang, "roadside.title", vehicleName),
                     Details = details,
                 };
 

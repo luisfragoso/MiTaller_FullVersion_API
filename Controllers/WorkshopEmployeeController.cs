@@ -13,6 +13,8 @@ using MiTaller.Models.Workshop;
 using MiTaller.Services;
 using System.Security.Claims;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -87,6 +89,7 @@ namespace MiTaller.Controllers
                 // Create Employee identity user
                 var newEmployeeUser = new Employee
                 {
+                    PreferredLanguage = Lang.FromRequest(Request),
                     Id = Guid.NewGuid(),
                     UserName = model.Email + "_employee",
                     FullName = model.FullName,
@@ -123,42 +126,10 @@ namespace MiTaller.Controllers
                 await _context.WorkshopEmployees.AddAsync(employee);
 
                 // Send welcome email
-                var subject = "¡Bienvenid@ a Mi taller!";
-                var htmlBody = $@"
-                    <!DOCTYPE html>
-                    <html lang=""es"">
-                      <head>
-                        <meta charset=""UTF-8"" />
-                        <title>Bienvenida MiTaller</title>
-                      </head>
-                      <body style=""margin: 0; font-family: Arial, sans-serif; background-color: #ffffff;"">
-                        <div style=""background-color: #f52222; padding: 20px 0; text-align: center;"">
-                          <h1 style=""margin: 0; color: white;"">
-                            <span style=""font-weight: bold;"">MiTaller</span>
-                          </h1>
-                        </div>
-
-                        <div style=""padding: 30px; text-align: center; color: #333;"">
-                          <h2 style=""margin-top: 0;"">Hola</h2>
-                          <p style=""font-size: 18px;"">
-                            Hola <strong>{WebUtility.HtmlEncode(newEmployeeUser.FullName)}</strong>. Te damos la bienvenida a MiTaller. Tu cuenta ha sido creada por el taller <strong>{WebUtility.HtmlEncode(workshop.WorkshopName)}</strong>.
-                          </p>
-                          <p style=""font-size: 18px; margin-top: 20px;"">
-                            Para comenzar a usar tu cuenta, descarga la aplicación y<br />
-                            restablece tu contraseña
-                          </p>
-                          <p style=""margin-top: 30px;"">¡Saludos, gracias por tu descarga!</p>
-                        </div>
-
-                        <div style=""padding: 20px 30px; font-size: 12px; color: #555;"">
-                            <p><strong>AVISO DE CONFIDENCIALIDAD.</strong> Este correo y la información contenida o adjunta al mismo es privada y confidencial y va dirigida exclusivamente a su destinatario. MiTaller informa a quien pueda haber recibido este correo por error que contiene información confidencial cuyo uso, copia, reproducción o distribución está expresamente prohibida. Si no eres el destinatario del mismo y recibes este correo por error, te pedimos pongas en conocimiento al emisor y procedas a la eliminación sin copiarlo, imprimirlo o utilizarlo de ningún modo.</p>
-                            <p><strong>CONFIDENTIALITY WARNING.</strong> This message and the information contained in or attached to it are private and confidential and intended exclusively for the addressee. MiTaller informs whoever may receive it in error that it contains privileged information and its use, copy, reproduction or distributions is prohibited.  If you are not an intended recipient of this E-mail, please notify the sender, delete it and do not read, act upon, print, disclose, copy, retain or redistribute any portion of this E-mail.</p>
-                        </div>
-                      </body>
-                    </html>
-                    ";
-
-                await _emailSender.SendEmailAsync(newEmployeeUser.Email, subject, htmlBody);
+                var mailLang = Lang.FromRequest(Request);
+                await _emailSender.SendEmailAsync(newEmployeeUser.Email, T.Get(mailLang, "welcome.subject"),
+                    EmailLayout.Welcome(mailLang, T.Get(mailLang, "welcome.employeeHtml", EmailLayout.E(newEmployeeUser.FullName), EmailLayout.E(workshop.WorkshopName)),
+                        T.Get(mailLang, "welcome.employeeNext")));
 
                 // Create NotificationSettings
                 var notificationSettings = new NotificationSettings

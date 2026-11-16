@@ -21,6 +21,9 @@ namespace MiTaller.Models.Auth
         public int VerificationCodeFailedAttempts { get; set; }
         public DateTime? VerificationCodeLockedUntil { get; set; }
         public string DeviceTokens { get; set; } = string.Empty;
+        // "es" or "en"; used for emails, push and inbox messages sent to this user.
+        [System.ComponentModel.DataAnnotations.MaxLength(5)]
+        public string PreferredLanguage { get; set; } = "es";
     }
 
     public enum UserType

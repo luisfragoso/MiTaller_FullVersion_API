@@ -1,9 +1,11 @@
-using MiTaller.DTO.Inspections;
+﻿using MiTaller.DTO.Inspections;
 using MiTaller.Helpers;
 using MiTaller.Models.Vehicle;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+
+using MiTaller.Services.Localization;
 
 namespace MiTaller.Services.Documents
 {
@@ -26,7 +28,8 @@ namespace MiTaller.Services.Documents
             string documentTitle,
             string workshopName,
             string folio,
-            DateTime date)
+            DateTime date,
+            string lang = Lang.Es)
         {
             container
                 .Background(BrandRed)
@@ -44,12 +47,12 @@ namespace MiTaller.Services.Documents
                         col.Item().AlignRight().Text(documentTitle.ToUpper())
                             .FontSize(11).Bold().FontColor(Colors.White).LetterSpacing(0.05f);
                         col.Item().AlignRight().Text($"Folio: {folio}").FontSize(9).FontColor(Colors.White);
-                        col.Item().AlignRight().Text($"{date:dd/MM/yyyy}").FontSize(9).FontColor(Colors.White);
+                        col.Item().AlignRight().Text(date.LongDate(lang)).FontSize(9).FontColor(Colors.White);
                     });
                 });
         }
 
-        public static void Footer(IContainer container)
+        public static void Footer(IContainer container, string lang = Lang.Es)
         {
             container
                 .BorderTop(1)
@@ -57,13 +60,13 @@ namespace MiTaller.Services.Documents
                 .PaddingTop(6)
                 .Row(row =>
                 {
-                    row.RelativeItem().Text("Generado por MiTaller").FontSize(8).FontColor(Muted);
+                    row.RelativeItem().Text(T.Get(lang, "pdf.generatedBy")).FontSize(8).FontColor(Muted);
                     row.RelativeItem().AlignRight().Text(text =>
                     {
                         text.DefaultTextStyle(style => style.FontSize(8).FontColor(Muted));
-                        text.Span("Página ");
+                        text.Span(T.Get(lang, "pdf.page"));
                         text.CurrentPageNumber();
-                        text.Span(" de ");
+                        text.Span(T.Get(lang, "pdf.of"));
                         text.TotalPages();
                     });
                 });
@@ -215,14 +218,14 @@ namespace MiTaller.Services.Documents
                 .Image(diagram.FileData, ImageScaling.FitArea);
         }
 
-        public static void PhotosSection(IContainer container, IEnumerable<WorkshopVehicleFileDto> photos)
+        public static void PhotosSection(IContainer container, IEnumerable<WorkshopVehicleFileDto> photos, string lang = Lang.Es)
         {
             var images = photos.Where(p => !IsChasisDiagram(p) && IsRenderableImage(p)).ToList();
             if (images.Count == 0) return;
 
             container.PreventPageBreak().Column(col =>
             {
-                col.Item().Element(c => SectionTitle(c, "Fotos del vehículo"));
+                col.Item().Element(c => SectionTitle(c, T.Get(lang, "pdf.photos")));
                 col.Item().PaddingTop(8);
 
                 var pairs = images
@@ -247,15 +250,12 @@ namespace MiTaller.Services.Documents
             });
         }
 
-        public static void Disclaimer(IContainer container)
+        public static void Disclaimer(IContainer container, string lang = Lang.Es)
         {
             container
                 .Background(Surface)
                 .Padding(10)
-                .Text(
-                    "Este reporte refleja el estado del vehículo únicamente al momento de la " +
-                    "inspección y tiene fines informativos; no constituye una garantía ni un " +
-                    "diagnóstico definitivo de fallas futuras.")
+                .Text(T.Get(lang, "pdf.disclaimer"))
                 .FontSize(8).FontColor(Muted).AlignCenter();
         }
     }

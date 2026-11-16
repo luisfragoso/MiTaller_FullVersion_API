@@ -78,7 +78,7 @@ namespace MiTaller.Services
             foreach (var appointment in dueForReminder)
             {
                 if (appointment.BookedBy == Models.Domain.RecordOrigin.Self)
-                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, "hoy");
+                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, today: true);
                 else
                     await notificationService.NotifyReminderAsync(appointment, appointment.Customer, appointment.Workshop);
                 appointment.ReminderSentAt = now;
@@ -106,7 +106,7 @@ namespace MiTaller.Services
             foreach (var appointment in dueForExpiringNotice)
             {
                 if (appointment.BookedBy == Models.Domain.RecordOrigin.Self)
-                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, "ya");
+                    notificationService.NotifyWorkshopPending(appointment, appointment.Customer, today: false);
                 else
                     await notificationService.NotifyExpiringAsync(appointment, appointment.Customer, appointment.Workshop);
                 appointment.ExpiringNoticeSentAt = now;

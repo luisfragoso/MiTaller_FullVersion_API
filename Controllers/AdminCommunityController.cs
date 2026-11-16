@@ -1,4 +1,4 @@
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +7,8 @@ using MiTaller.Data;
 using MiTaller.DTO.Community;
 using MiTaller.Models.Community;
 using MiTaller.Services;
+
+using MiTaller.Services.Localization;
 
 namespace MiTaller.Controllers
 {
@@ -139,7 +141,7 @@ namespace MiTaller.Controllers
             ticket.UnreadByUser = true;
             ticket.UnreadByAdmin = false;
             ticket.LastMessageAt = DateTime.Now;
-            _community.Notify(ticket.Audience, ticket.AccountId, $"Respondimos tu ticket #{ticket.Id}", ticket.Subject, "SupportTicketReply");
+            await _community.NotifyAsync(ticket.Audience, ticket.AccountId, l => (T.Get(l, "ticket.replied", ticket.Id), ticket.Subject), "SupportTicketReply");
             await _context.SaveChangesAsync();
             return Ok(await DetailAsync(ticket, false));
         }
@@ -153,8 +155,8 @@ namespace MiTaller.Controllers
 
             if (ticket.Status != model.Status && model.Status is SupportTicketStatus.Resolved or SupportTicketStatus.Closed)
             {
-                _community.Notify(ticket.Audience, ticket.AccountId,
-                    $"Tu ticket #{ticket.Id} está {CommunityService.StatusLabel(model.Status).ToLower()}", ticket.Subject, "SupportTicketStatus");
+                var key = model.Status == SupportTicketStatus.Resolved ? "ticket.resolved" : "ticket.closed";
+                await _community.NotifyAsync(ticket.Audience, ticket.AccountId, l => (T.Get(l, key, ticket.Id), ticket.Subject), "SupportTicketStatus");
             }
             ticket.Status = model.Status;
             await _context.SaveChangesAsync();
@@ -251,17 +253,17 @@ namespace MiTaller.Controllers
             if (model.Status == IdeaStatus.Rejected) idea.AdminNote = string.IsNullOrEmpty(note) ? null : note;
             else if (model.Status == IdeaStatus.Approved) idea.AdminNote = null;
 
-            var (title, content) = model.Status switch
+            Func<string, (string, string)>? build = model.Status switch
             {
                 IdeaStatus.Approved when previous != IdeaStatus.Implemented =>
-                    ("Tu idea ya está en Comunidad", $"\"{idea.Title}\" ya se puede votar."),
+                    l => (T.Get(l, "idea.approved.title"), T.Get(l, "idea.approved.content", idea.Title)),
                 IdeaStatus.Rejected =>
-                    ("Tu idea no se publicó", string.IsNullOrEmpty(note) ? $"\"{idea.Title}\"" : $"\"{idea.Title}\": {note}"),
+                    l => (T.Get(l, "idea.rejected.title"), string.IsNullOrEmpty(note) ? $"\"{idea.Title}\"" : $"\"{idea.Title}\": {note}"),
                 IdeaStatus.Implemented =>
-                    ("¡Hicimos tu idea realidad!", $"\"{idea.Title}\" ya está disponible en MiTaller. Gracias por proponerla."),
-                _ => ((string?)null, (string?)null),
+                    l => (T.Get(l, "idea.implemented.title"), T.Get(l, "idea.implemented.content", idea.Title)),
+                _ => null,
             };
-            if (title != null) _community.Notify(idea.Audience, idea.AccountId, title, content!, "CommunityIdea");
+            if (build != null) await _community.NotifyAsync(idea.Audience, idea.AccountId, build, "CommunityIdea");
 
             await _context.SaveChangesAsync();
             return NoContent();
@@ -294,9 +296,9 @@ namespace MiTaller.Controllers
             idea.Status = IdeaStatus.Merged;
             idea.MergedIntoId = target.Id;
             idea.ReviewedAt = DateTime.Now;
-            idea.AdminNote = $"Ya existía una idea igual: \"{target.Title}\". Tus votos pasaron a esa idea.";
-            _community.Notify(idea.Audience, idea.AccountId, "Unimos tu idea con otra igual",
-                $"\"{idea.Title}\" ahora suma votos en \"{target.Title}\".", "CommunityIdea");
+            idea.AdminNote = T.Get(await _context.LanguageOfAsync(idea.AccountId), "idea.merged.note", target.Title);
+            await _community.NotifyAsync(idea.Audience, idea.AccountId,
+                l => (T.Get(l, "idea.merged.title"), T.Get(l, "idea.merged.content", idea.Title, target.Title)), "CommunityIdea");
             await _context.SaveChangesAsync();
             return NoContent();
         }
