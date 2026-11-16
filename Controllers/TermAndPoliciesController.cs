@@ -9,14 +9,35 @@ namespace MiTaller.Controllers
     public class TermAndPoliciesController : ControllerBase
     {
         private readonly MiTaller.Services.ContactSettingsService _contact;
+        private readonly IConfiguration _configuration;
+        private readonly IWebHostEnvironment _environment;
 
-        public TermAndPoliciesController(MiTaller.Services.ContactSettingsService contact) => _contact = contact;
+        public TermAndPoliciesController(MiTaller.Services.ContactSettingsService contact,
+            IConfiguration configuration, IWebHostEnvironment environment)
+        {
+            _contact = contact;
+            _configuration = configuration;
+            _environment = environment;
+        }
+
+        // English translations live in Legal/*.en.json and stay off until the lawyer approves them (Legal:EnglishEnabled).
+        private async Task<IActionResult?> EnglishVersionAsync(string file)
+        {
+            if (!_configuration.GetValue<bool>("Legal:EnglishEnabled")
+                || MiTaller.Services.Localization.Lang.FromRequest(Request) != MiTaller.Services.Localization.Lang.En)
+                return null;
+            var path = Path.Combine(_environment.ContentRootPath, "Legal", file);
+            if (!System.IO.File.Exists(path)) return null;
+            var json = (await System.IO.File.ReadAllTextAsync(path)).Replace("{info}", await _contact.InfoEmailAsync());
+            return Content(json, "application/json; charset=utf-8");
+        }
 
         [HttpGet("Terms")]
         public async Task<IActionResult> GetTerms()
         {
             try
             {
+                if (await EnglishVersionAsync("terms.en.json") is { } english) return english;
                 var info = await _contact.InfoEmailAsync();
                 var terminosJson = new
                 {
@@ -350,6 +371,7 @@ namespace MiTaller.Controllers
         {
             try
             {
+                if (await EnglishVersionAsync("privacy.en.json") is { } english) return english;
                 var info = await _contact.InfoEmailAsync();
                 var avisoPrivacidadJson = new
                 {
@@ -644,6 +666,7 @@ namespace MiTaller.Controllers
         {
             try
             {
+                if (await EnglishVersionAsync("dpa.en.json") is { } english) return english;
                 var info = await _contact.InfoEmailAsync();
                 // BORRADOR pendiente de revision por un abogado antes de publicarse como vinculante.
                 // Sin numeros de articulo: la LFPDPPP se reemplazo en marzo de 2025 y las referencias deben validarse contra la ley vigente.

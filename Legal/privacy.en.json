@@ -1,0 +1,48 @@
+{"titulo":"COMPREHENSIVE PRIVACY NOTICE","secciones":[
+{"titulo":"MITALLER – DIGITAL PLATFORM FOR AUTO REPAIR SHOPS AND THEIR CUSTOMERS."},
+{"tipo":"texto","valor":"This English version is a convenience translation. In case of any discrepancy, the Spanish version prevails."},
+{"titulo":"1. IDENTITY AND ADDRESS OF THE DATA CONTROLLER","contenido":[
+{"tipo":"texto","valor":"MI TALLER S.A. DE C.V. (hereinafter, MiTaller), with address at Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico, is responsible for the processing of your personal data under the terms of this Privacy Notice."},
+{"tipo":"texto","valor":"For any questions or requests regarding your personal data, you can contact us at {info}."}]},
+{"titulo":"2. PERSONAL DATA COLLECTED","contenido":[
+{"tipo":"texto","valor":"To provide our services, MiTaller may collect the following categories of personal data:"},
+{"tipo":"lista","elementos":["Identification data: full name, CURP, RFC (tax ID), official ID (INE/passport), date of birth.","Contact data: phone, email, address.","Financial and asset data: bank account information, credit history, income, expenses, financial statements.","Geolocation data: real-time device location (if explicit consent is given in the app).","Data about your auto repair shop: trade name, legal name, location, tax records, customers served."]},
+{"tipo":"texto","valor":"MiTaller does not collect sensitive personal data, such as health data, religion, ethnic origin or sexual orientation, among others."}]},
+{"titulo":"3. PURPOSES OF DATA PROCESSING","contenido":[
+{"tipo":"texto","valor":"The personal data collected will be used for the following purposes:"},
+{"tipo":"subtitulo","valor":"Primary purposes (required for the service)"},
+{"tipo":"lista","elementos":["Creating and managing your MiTaller account.","Registering and managing your auto repair shop on the platform.","Connecting with customers, insurance companies, auto parts suppliers and fintechs to offer financial and commercial services.","Managing credit applications with partner fintechs.","Evaluating your credit history if you apply for financing.","Invoicing and collecting subscriptions or transactions made on the platform.","Preventing fraud, money laundering and illicit financing.","Complying with tax and regulatory obligations."]},
+{"tipo":"subtitulo","valor":"Secondary purposes (optional)"},
+{"tipo":"lista","elementos":["Sending advertising and promotions.","Data analysis to improve the user experience.","Satisfaction surveys and market research."]},
+{"tipo":"texto","valor":"If you do not want your data to be used for secondary purposes, you can request it by sending an email to {info}"}]},
+{"titulo":"4. TRANSFER OF PERSONAL DATA","contenido":[
+{"tipo":"texto","valor":"Your personal data may be shared with the following third parties, solely for the purposes described herein:"},
+{"tipo":"lista","elementos":["Financial institutions and Fintechs: to process credit or financing applications.","Insurance companies: to quote policies and vehicle insurance.","Auto parts suppliers: to purchase parts and materials for your shop.","Tax and regulatory authorities: in compliance with legal and tax obligations."]},
+{"tipo":"texto","valor":"Data transfers are carried out under strict security measures and in compliance with the LFPDPPP (Mexican Federal Law on the Protection of Personal Data Held by Private Parties)."}]},
+{"titulo":"5. LEGAL BASIS FOR PROCESSING","contenido":[
+{"tipo":"texto","valor":"Your data is processed on the basis of:"},
+{"tipo":"lista","elementos":["Express consent given by the user when signing up on the platform.","Contractual obligations arising from the use of MiTaller's services.","Legitimate interests in fraud prevention and platform security.","Legal obligations applicable to MiTaller and its business partners."]}]},
+{"titulo":"6. SECURITY MEASURES","contenido":[
+{"tipo":"texto","valor":"To protect your personal data, MiTaller implements administrative, technical and physical security measures, including:"},
+{"tipo":"lista","elementos":["Encryption of sensitive data.","Access to information restricted to authorized personnel only.","Secure storage on servers with advanced security protocols."]}]},
+{"titulo":"7. ARCO RIGHTS (Access, Rectification, Cancellation and Opposition)","contenido":[
+{"tipo":"texto","valor":"You have the right to:"},
+{"tipo":"lista","elementos":["Access your personal data held by MiTaller.","Rectify inaccurate or incomplete data.","Cancel your data when you consider it is not necessary for the purposes described.","Oppose the use of your data for secondary or commercial purposes."]},
+{"tipo":"texto","valor":"To exercise these rights, send a request to {info} with the following information:"},
+{"tipo":"lista","elementos":["•\tFull name.","•\tCopy of official ID.","•\tClear description of the right you wish to exercise."]},
+{"tipo":"texto","valor":"Requests will be answered within a maximum of 20 business days."}]},
+{"titulo":"8. WITHDRAWAL OF CONSENT AND ACCOUNT DELETION","contenido":[
+{"tipo":"texto","valor":"If you wish to withdraw your consent to the processing of your data or delete your MiTaller account, you can request it at {info}"},
+{"tipo":"texto","valor":"Data will be deleted within 30 business days, unless there is a legal obligation to keep it."}]},
+{"titulo":"9. USE OF COOKIES AND SIMILAR TECHNOLOGIES","contenido":[
+{"tipo":"texto","valor":"MiTaller may use cookies and tracking technologies to improve the user experience on the platform. You can disable cookies in your browser settings."}]},
+{"titulo":"10. CHANGES TO THE PRIVACY NOTICE","contenido":[
+{"tipo":"texto","valor":"MiTaller reserves the right to modify this privacy notice at any time. Changes will be notified through our platform and/or by email."}]},
+{"titulo":"11. JURISDICTION AND APPLICABLE LAWS","contenido":[
+{"tipo":"texto","valor":"This Privacy Notice is governed by the Mexican Federal Law on the Protection of Personal Data Held by Private Parties (LFPDPPP) and other applicable regulations in Mexico."},
+{"tipo":"texto","valor":"In the event of a dispute, the parties submit to the jurisdiction of the courts of the State of Mexico, waiving any other jurisdiction that may correspond to them."}]},
+{"titulo":"12. CONTACT","contenido":[
+{"tipo":"texto","valor":"For any questions or clarifications about this Privacy Notice, you can contact us at:"},
+{"tipo":"lista","elementos":["Email: {info}","Address: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico."]},
+{"tipo":"texto","valor":"Last updated: March 18, 2025"}]}
+]}

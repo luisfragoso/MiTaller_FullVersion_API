@@ -1,0 +1,54 @@
+{"titulo":"TERMS AND CONDITIONS OF USE","secciones":[
+{"tipo":"texto","valor":"This English version is a convenience translation. In case of any discrepancy, the Spanish version prevails."},
+{"tipo":"texto","valor":"Last updated: March 18, 2025"},
+{"titulo":"1. IDENTITY OF THE PROVIDER","contenido":[
+{"tipo":"texto","valor":"This document sets out the terms and conditions under which MiTaller (the Platform), operated by MiTaller (We), offers its services to users (Users) in Mexico."},
+{"tipo":"texto","valor":"For any questions, Users can contact us at:"},
+{"tipo":"lista","elementos":["Email: {info}","Address: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico."]}]},
+{"titulo":"2. ACCEPTANCE OF THE TERMS AND CONDITIONS","contenido":[
+{"tipo":"texto","valor":"By signing up for MiTaller, Users confirm that they have read and understood these terms and agree to comply with them. If they do not agree, they must not use the platform."}]},
+{"titulo":"3. SERVICES OFFERED","contenido":[
+{"tipo":"texto","valor":"MiTaller offers auto repair shops and their customers a digital solution for shop management, including:"},
+{"tipo":"lista","elementos":["Management of the shop's income and expenses.","Credit applications to affiliated financial institutions (Fintechs).","Customer and vehicle management.","Sending quotes and communicating with customers.","Sale of advertising space within the platform to promote shops' services.","Future integration with insurance companies and auto parts suppliers."]},
+{"tipo":"texto","valor":"Services may be modified or expanded without prior notice, as determined by MiTaller."}]},
+{"titulo":"4. REQUIREMENTS TO USE THE PLATFORM","contenido":[
+{"tipo":"texto","valor":"To access MiTaller, Users must:"},
+{"tipo":"lista","elementos":["Be at least 18 years old.","Provide truthful and up-to-date information.","Not use the platform for unlawful purposes."]},
+{"tipo":"texto","valor":"MiTaller reserves the right to suspend or cancel accounts if it detects false information or misuse."}]},
+{"titulo":"5. USER RESPONSIBILITIES","contenido":[
+{"tipo":"texto","valor":"Users agree to:"},
+{"tipo":"lista","elementos":["Use the platform in accordance with the law and these terms.","Not share their account with third parties.","Not attempt to access other users' information without authorization.","Keep their information on the platform up to date."]},
+{"tipo":"texto","valor":"Failure to meet these responsibilities may result in the suspension or cancellation of the account."}]},
+{"titulo":"6. CREDIT APPLICATIONS AND RELATIONSHIP WITH FINTECHS","contenido":[
+{"tipo":"texto","valor":"The platform allows shops to apply for credit through affiliated Fintechs."},
+{"tipo":"lista","elementos":["MiTaller is not a financial institution and acts only as a technology intermediary.","Credit approval depends exclusively on the Fintechs, according to their policies and risk analysis.","By applying for credit, the user authorizes the sharing of their information with the selected Fintechs."]},
+{"tipo":"texto","valor":"Disclaimer: MiTaller is not responsible for the granting or rejection of credit, nor for the terms applied by the Fintechs."}]},
+{"titulo":"7. PRIVACY AND USE OF DATA","contenido":[
+{"tipo":"texto","valor":"The processing of personal data is governed by our Privacy Notice."},
+{"tipo":"texto","valor":"Main considerations:"},
+{"tipo":"lista","elementos":["Data may be shared with Fintechs, insurance companies, auto parts suppliers and other third parties in order to provide the services.","Users may exercise their ARCO rights (Access, Rectification, Cancellation and Opposition) under the Mexican Federal Law on the Protection of Personal Data Held by Private Parties."]},
+{"tipo":"texto","valor":"MiTaller implements security measures to protect information, but is not responsible for security breaches beyond its control."}]},
+{"titulo":"8. FEES, SUBSCRIPTIONS AND ADVERTISING","contenido":[
+{"tipo":"lista","elementos":["Signing up for MiTaller is free.","A subscription will apply when the shop registers more than 16 customers on the platform.","Subscription fees will be communicated on the platform and may change without prior notice.","MiTaller also sells advertising space within the platform so shops can promote their services to other users.","Advertising prices and conditions will be set by MiTaller and may change at any time."]},
+{"tipo":"texto","valor":"MiTaller reserves the right to suspend services in case of non-payment, both for subscriptions and for purchased advertising."}]},
+{"titulo":"9. INTELLECTUAL PROPERTY","contenido":[
+{"tipo":"texto","valor":"All rights to the platform, its design, code and content belong to MiTaller."},
+{"tipo":"lista","elementos":["Users may not copy, modify or distribute the software without authorization.","Use of the brand or logos without written permission is prohibited."]},
+{"tipo":"texto","valor":"Any violation of these rights will be sanctioned under the Mexican Federal Copyright Law and other applicable regulations."}]},
+{"titulo":"10. LIMITATION OF LIABILITY","contenido":[
+{"tipo":"texto","valor":"MiTaller is not responsible for:"},
+{"tipo":"lista","elementos":["Errors or interruptions on the platform.","Financial losses arising from the use of the service.","Breaches by Fintechs, insurance companies or other third parties.","Decisions made by Users based on information on the platform.","Results obtained from advertising purchased within the platform.","The use each shop makes of the personal data of its customers that the shop itself enters on the platform, for which the shop is responsible under the Data Processing Agreement."]}]},
+{"titulo":"11. ACCOUNT CANCELLATION AND DATA DELETION","contenido":[
+{"tipo":"texto","valor":"Users may cancel their account at any time by sending a request to {info}"},
+{"tipo":"lista","elementos":["MiTaller will delete the data in accordance with applicable regulations, except where there is a legal obligation to keep it.","If the User has a debt with an affiliated Fintech, cancelling the account does not cancel their obligations to that entity."]}]},
+{"titulo":"12. CHANGES TO THE TERMS AND CONDITIONS","contenido":[
+{"tipo":"texto","valor":"MiTaller may modify these terms at any time. Changes will be notified through the platform or by email."},
+{"tipo":"texto","valor":"Continued use of the platform implies acceptance of the changes."}]},
+{"titulo":"13. JURISDICTION AND GOVERNING LAW","contenido":[
+{"tipo":"texto","valor":"These terms are governed by the laws of Mexico."},
+{"tipo":"lista","elementos":["Any dispute will be resolved before the courts of the State of Mexico."]},
+{"tipo":"texto","valor":"MiTaller encourages resolving disputes amicably before resorting to legal proceedings."}]},
+{"titulo":"14. CONTACT AND SUPPORT","contenido":[
+{"tipo":"texto","valor":"For questions or clarifications, Users can contact us at:"},
+{"tipo":"lista","elementos":["Email: {info}","Address: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico."]}]}
+]}

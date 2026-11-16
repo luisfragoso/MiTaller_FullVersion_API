@@ -1,0 +1,49 @@
+{"titulo":"PERSONAL DATA PROCESSING AGREEMENT","secciones":[
+{"tipo":"texto","valor":"This English version is a convenience translation. In case of any discrepancy, the Spanish version prevails."},
+{"tipo":"texto","valor":"Last updated: November 1, 2026 — Document under legal review."},
+{"titulo":"1. PARTIES","contenido":[
+{"tipo":"texto","valor":"This Personal Data Processing Agreement (the Agreement) is entered into between:"},
+{"tipo":"lista","elementos":["The Controller: the auto repair shop that signs up on the MiTaller platform, which determines the purposes and means of processing the personal data of its own customers.","The Processor: MI TALLER S.A. DE C.V., with address at Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico, which processes personal data on behalf of the Controller solely to provide it with the shop management software service."]},
+{"tipo":"texto","valor":"By accepting this Agreement during sign-up, the Controller formalizes the processing relationship under the current Mexican Federal Law on the Protection of Personal Data Held by Private Parties (LFPDPPP) and other applicable regulations."}]},
+{"titulo":"2. PURPOSE OF THE AGREEMENT","contenido":[
+{"tipo":"texto","valor":"The Processor will process, on behalf of the Controller, the personal data of the customers and vehicles that the Controller enters, uploads or manages on the MiTaller platform, exclusively to provide the shop management services (calendar, quotes, inspections, customer and vehicle records, finances and messages), in accordance with the platform's Terms and Conditions."}]},
+{"titulo":"3. PERSONAL DATA COVERED","contenido":[
+{"tipo":"texto","valor":"The processing covers, among others, the following personal data that the Controller enters on the platform about its own customers:"},
+{"tipo":"lista","elementos":["Identification and contact data: name, phone, email, address.","Vehicle data: make, model, plates, photos, service and inspection history.","Business relationship data: appointments, quotes, service notes, payment history."]},
+{"tipo":"texto","valor":"This Agreement does not cover data that a customer enters themselves when creating and using their own account in the MiTaller customer app. For that data, MiTaller acts as data controller under its Privacy Notice."}]},
+{"titulo":"4. RECORD OF THE ORIGIN OF THE DATA","contenido":[
+{"tipo":"texto","valor":"For each customer and each vehicle, the platform records who entered the information:"},
+{"tipo":"lista","elementos":["Whether it was entered by the customer from their own account in the customer app.","Whether it was entered by the Controller, identifying the shop and the specific account (owner or employee) that entered it.","The date on which it was entered."]},
+{"tipo":"texto","valor":"This record allows the parties to show who is responsible for each piece of data and to handle requests from data subjects or the authorities. The Controller acknowledges that information entered from its account or its employees' accounts is considered entered by the Controller."}]},
+{"titulo":"5. INSTRUCTIONS FROM THE CONTROLLER","contenido":[
+{"tipo":"texto","valor":"The Processor will only process personal data in accordance with the Controller's documented instructions, expressed through the normal use of the platform's features. The Processor will not process the data for its own purposes or for purposes other than those set out in this Agreement."},
+{"tipo":"texto","valor":"If the Processor considers that an instruction violates the LFPDPPP or other applicable regulations, it will notify the Controller, without being obliged to carry it out."}]},
+{"titulo":"6. OBLIGATIONS OF THE CONTROLLER","contenido":[
+{"tipo":"texto","valor":"The Controller agrees to:"},
+{"tipo":"lista","elementos":["Have its own Privacy Notice for its customers and make it available to them before entering their data on the platform.","Obtain its customers' consent when required by law, and enter only lawful, accurate data that is necessary for the relationship with them.","Refrain from entering sensitive personal data, unless it is essential and it has the express written consent of the data subject.","Handle the requests for access, rectification, cancellation, opposition and withdrawal of consent that its customers submit regarding the data it entered.","Use its customers' contact data, including for sending messages or promotions, only for the purposes stated in its Privacy Notice.","Be responsible for the acts of its employees and of anyone it grants access to its account, and keep its credentials confidential."]}]},
+{"titulo":"7. OBLIGATIONS OF THE PROCESSOR","contenido":[
+{"tipo":"texto","valor":"The Processor agrees to:"},
+{"tipo":"lista","elementos":["Process personal data only in accordance with the Controller's instructions.","Refrain from processing the data for purposes other than those instructed by the Controller.","Implement and maintain the security measures required by applicable regulations.","Keep the personal data processed confidential.","Inform the Controller, without undue delay, of any security breach affecting the data processed on its behalf.","Support the Controller, within the scope of the platform's features, in handling its customers' requests.","Delete the personal data processed once the legal relationship with the Controller ends, or keep it only for the period required by law, unless the Controller instructs otherwise.","Refrain from transferring the personal data, unless the Controller so determines, the communication arises from a subcontracting permitted by this Agreement, or a competent authority requires it."]}]},
+{"titulo":"8. REQUESTS FROM DATA SUBJECTS","contenido":[
+{"tipo":"texto","valor":"If a customer of the Controller sends the Processor a request about data that the Controller entered, the Processor will forward it to the Controller to handle, and will only respond directly when required by law."}]},
+{"titulo":"9. SUB-PROCESSORS AND TRANSFERS","contenido":[
+{"tipo":"texto","valor":"To operate the platform, the Processor may rely on technology infrastructure providers (hosting, storage, messaging and payment processing) acting as sub-processors, subject to confidentiality and security obligations equivalent to those in this Agreement."},
+{"tipo":"texto","valor":"When the Controller expressly requests to share a customer's data with third parties outside the operation of the platform (for example, insurance companies or auto parts suppliers), such communication will be made in accordance with the Controller's instructions and under its responsibility as the owner of that decision."}]},
+{"titulo":"10. SECURITY MEASURES","contenido":[
+{"tipo":"texto","valor":"The Processor maintains administrative, technical and physical security measures to protect the personal data processed on behalf of the Controller, including access control by shop and by employee permissions, encryption of communications, recording of the origin of the information and data backups."}]},
+{"titulo":"11. CONFIDENTIALITY","contenido":[
+{"tipo":"texto","valor":"The Processor and its authorized personnel agree to keep the personal data processed confidential, even after the relationship with the Controller ends."}]},
+{"titulo":"12. TERM AND TERMINATION","contenido":[
+{"tipo":"texto","valor":"This Agreement will remain in force while the Controller has an active account on the MiTaller platform. When the account is cancelled, the Processor will delete or return the personal data processed on behalf of the Controller, as set out in the data deletion section of the Terms and Conditions, unless there is a legal obligation to keep it."}]},
+{"titulo":"13. LIABILITY AND INDEMNIFICATION","contenido":[
+{"tipo":"texto","valor":"Each party is responsible for fulfilling its own obligations:"},
+{"tipo":"lista","elementos":["The Controller is solely responsible, before its customers, third parties and authorities, for the lawfulness of entering the data it puts on the platform, for having the necessary Privacy Notice and consents, and for the use that it or its employees make of that data.","The Processor will not be responsible for data entered by the Controller without a legal basis, inaccurate data, or data used for purposes not disclosed to the data subjects, nor for the use the Controller makes of the information outside the platform.","The Processor will only be responsible for breaching the obligations that this Agreement and the law impose on it as processor, in particular those of security and confidentiality."]},
+{"tipo":"texto","valor":"The Controller agrees to hold the Processor harmless and to compensate it for any damages, costs and penalties it suffers when a claim by a data subject, a third party or an authority arises from the Controller's breach of this Agreement or of personal data protection regulations."}]},
+{"titulo":"14. CHANGES","contenido":[
+{"tipo":"texto","valor":"The Processor may update this Agreement to reflect changes to the platform or to applicable regulations. Changes will be notified through the platform or by email."}]},
+{"titulo":"15. GOVERNING LAW AND JURISDICTION","contenido":[
+{"tipo":"texto","valor":"This Agreement is governed by the current Mexican Federal Law on the Protection of Personal Data Held by Private Parties and other applicable provisions in Mexico. For any dispute, the parties submit to the courts of the State of Mexico."}]},
+{"titulo":"16. CONTACT","contenido":[
+{"tipo":"texto","valor":"For any questions about this Data Processing Agreement, you can contact us at:"},
+{"tipo":"lista","elementos":["Email: {info}","Address: Calle Yuca, Casa 54, Colonia Las Vegas, Texcoco, State of Mexico."]}]}
+]}
