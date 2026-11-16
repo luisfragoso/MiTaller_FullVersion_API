@@ -1631,6 +1631,9 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameEn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("VehicleFormat")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -1746,6 +1749,9 @@ namespace MiTaller.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Order")
@@ -2471,6 +2477,9 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameEn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
@@ -2931,6 +2940,9 @@ namespace MiTaller.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameEn")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("ServiceCategoryId")
                         .HasColumnType("int");
 
@@ -2957,6 +2969,9 @@ namespace MiTaller.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NameEn")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")

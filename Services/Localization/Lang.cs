@@ -29,6 +29,10 @@ namespace MiTaller.Services.Localization
             Lang.Normalize(await Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstOrDefaultAsync(
                 context.Users.Where(u => u.Id == userId).Select(u => u.PreferredLanguage)));
 
+        /// Catalog name in the caller's language, falling back to the Spanish one.
+        public static string Localized(this string name, string? nameEn, string lang) =>
+            lang == Lang.En && !string.IsNullOrWhiteSpace(nameEn) ? nameEn : name;
+
         public static string ShortDate(this DateTime date, string lang) =>
             date.ToString(lang == Lang.En ? "MM/dd/yy" : "dd/MM/yy");
 

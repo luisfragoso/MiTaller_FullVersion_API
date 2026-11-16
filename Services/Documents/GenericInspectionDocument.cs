@@ -42,7 +42,7 @@ namespace MiTaller.Services.Documents
             return format != null && format != _template.VehicleFormat
                    && Watercraft.Contains(format) && Watercraft.Contains(_template.VehicleFormat ?? string.Empty)
                 ? T.Get(_lang, "pdf.inspectionOf", format.ToLower())
-                : _template.Name;
+                : _template.Name.Localized(_template.NameEn, _lang);
         }
 
         public void Compose(IDocumentContainer container)
@@ -140,7 +140,7 @@ namespace MiTaller.Services.Documents
 
             container.PreventPageBreak().Column(col =>
             {
-                col.Item().Element(c => InspectionDocumentComponents.SectionTitle(c, section.Name));
+                col.Item().Element(c => InspectionDocumentComponents.SectionTitle(c, section.Name.Localized(section.NameEn, _lang)));
 
                 if (diagram != null)
                 {
@@ -163,7 +163,7 @@ namespace MiTaller.Services.Documents
                             .Padding(8)
                             .Row(row =>
                             {
-                                row.RelativeItem(2).AlignMiddle().Text(item.Name)
+                                row.RelativeItem(2).AlignMiddle().Text(item.Name.Localized(item.NameEn, _lang))
                                     .FontSize(9.5f).FontColor(InspectionDocumentComponents.Ink);
                                 row.RelativeItem(1).Row(badgeRow =>
                                 {

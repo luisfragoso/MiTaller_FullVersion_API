@@ -15,6 +15,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -22,6 +24,8 @@ namespace MiTaller.Controllers
     [Authorize]
     public class WorkshopStatisticsController : ControllerBase
     {
+        private string ReqLang => Lang.FromRequest(Request);
+
         private readonly DataContext _context;
 
         public WorkshopStatisticsController(DataContext context)
@@ -265,7 +269,7 @@ namespace MiTaller.Controllers
                         {
                             WorkshopServiceId = income.WorkshopServices?.Id ?? 0,
                             Name = income.WorkshopServices != null
-                                ? income.WorkshopServices.Service.Name
+                                ? income.WorkshopServices.Service.Name.Localized(income.WorkshopServices.Service.NameEn, ReqLang)
                                 : (income.CustomDescription ?? "Otro"),
                         },
                         Amount = income.Amount,

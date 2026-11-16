@@ -1,4 +1,4 @@
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MiTaller.Models.Inspections
 {
@@ -15,6 +15,8 @@ namespace MiTaller.Models.Inspections
 
         [Required]
         public string Name { get; set; } = string.Empty;
+        // English display name; null falls back to Name (custom services, rows added later).
+        public string? NameEn { get; set; }
 
         public bool IsActive { get; set; } = true;
 

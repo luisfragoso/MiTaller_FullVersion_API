@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MiTaller.Data;
@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using MiTaller.Services.Localization;
 
 namespace MiTaller.Controllers
 {
@@ -61,25 +63,28 @@ namespace MiTaller.Controllers
                     .FirstOrDefaultAsync();
 
                 if (template == null) return NotFound("not-found");
+                var lang = Lang.FromRequest(Request);
 
                 var responseDto = new InspectionTemplateResponseDto
                 {
                     Id = template.Id,
                     VehicleFormat = template.VehicleFormat,
-                    Name = template.Name,
+                    Name = template.Name.Localized(template.NameEn, lang),
                     Sections = template.Sections
                         .OrderBy(s => s.Order)
                         .Select(s => new InspectionTemplateSectionResponseDto
                         {
                             Id = s.Id,
-                            Name = s.Name,
+                            Key = s.Name,
+                            Name = s.Name.Localized(s.NameEn, lang),
                             Order = s.Order,
                             Items = s.Items
                                 .OrderBy(i => i.Order)
                                 .Select(i => new InspectionTemplateItemResponseDto
                                 {
                                     Id = i.Id,
-                                    Name = i.Name,
+                                    Key = i.Name,
+                                    Name = i.Name.Localized(i.NameEn, lang),
                                     Order = i.Order,
                                     AllowNotApplicable = i.AllowNotApplicable
                                 }).ToList()

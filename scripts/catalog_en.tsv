@@ -1,0 +1,583 @@
+# Catalog translations (Spanish name<TAB>English name). Source for the AddCatalogEnglishNames migration.
+## templates
+Inspección de Autobús	Bus inspection
+Inspección de Tractocamión	Semi-truck inspection
+Inspección de Camión	Truck inspection
+Inspección de Motocicleta	Motorcycle inspection
+Inspección de Automóvil	Car inspection
+Inspección de Bicicleta	Bicycle inspection
+Inspección de Aire Acondicionado	Air conditioning inspection
+Inspección de Suspensión y Alineación	Suspension and alignment inspection
+Inspección de Frenos	Brake inspection
+Inspección de Mofles y Escapes	Muffler and exhaust inspection
+Inspección Eléctrica Automotriz	Automotive electrical inspection
+Inspección de Radiadores	Radiator inspection
+Inspección de Avión	Aircraft inspection
+Inspección de Yate	Yacht inspection
+## sections
+Accesorios y Seguridad	Accessories and safety
+Aceite y otros niveles	Oil and other levels
+Área de Pasajeros	Passenger area
+Aviónica y Navegación	Avionics and navigation
+Batería	Battery
+Cabina e Instrumentos	Cockpit and instruments
+Cabina y Carrocería	Cab and body
+Carrocería y Puertas	Body and doors
+Casco y Exterior	Hull and exterior
+Chasis	Chassis
+Cuadro y Dirección	Frame and steering
+Cubierta e Interior	Deck and interior
+Equipo de Seguridad	Safety equipment
+Frenos	Brakes
+Frenos de aire	Air brakes
+Frenos y neumáticos	Brakes and tires
+Fuselaje y Exterior	Fuselage and exterior
+Interior y exterior	Interior and exterior
+Llantas y Rines	Tires and rims
+Luces y controles	Lights and controls
+Marco y suspensión	Frame and suspension
+Motor	Engine
+Motor y Hélice	Engine and propeller
+Navegación y Electrónica	Navigation and electronics
+Quinta rueda y Remolque	Fifth wheel and trailer
+Ruedas y Llantas	Wheels and tires
+Sala de Máquinas / Motor	Engine room / engine
+Sentina y Achique	Bilge and pumping
+Sistema de Aire Acondicionado	Air conditioning system
+Sistema de Enfriamiento	Cooling system
+Sistema de Escape	Exhaust system
+Sistema de Frenos	Brake system
+Sistema Eléctrico	Electrical system
+Sistema Eléctrico (Bicicletas Eléctricas)	Electrical system (e-bikes)
+Sistema Eléctrico y Luces	Electrical system and lights
+Suspensión y Dirección	Suspension and steering
+Suspensión y Ejes	Suspension and axles
+Transmisión	Transmission
+Transmisión y Tren motriz	Transmission and drivetrain
+Tren de Aterrizaje	Landing gear
+## service categories
+Aire Acondicionado y Climatización	Air conditioning and climate control
+Asistencia a Automovilistas	Driver assistance
+Asistencia a Moticiclistas	Rider assistance
+Aviónica	Avionics
+Bicicletas Eléctricas	E-bikes
+Casco y Cubierta	Hull and deck
+Diagnóstico Computarizado	Computer diagnostics
+Diagnóstico Electrónico	Electronic diagnostics
+Eléctrico y Diagnóstico	Electrical and diagnostics
+Enderezado y Pintura	Body work and paint
+Estética y Personalización	Detailing and customization
+Estructura y Tren de Aterrizaje	Structure and landing gear
+Frenos	Brakes
+Frenos de Aire	Air brakes
+Frenos y Llantas	Brakes and tires
+Hélice	Propeller
+Hélice y Transmisión	Propeller and drive
+Inspecciones	Inspections
+Instalación y Modificaciones	Installation and modifications
+Llantas	Tires
+Mantenimiento General	General maintenance
+Mantenimiento Preventivo	Preventive maintenance
+Motor	Engine
+Motor Diésel	Diesel engine
+Reparacion de Motor	Engine repair
+Reparaciones Mecánicas	Mechanical repairs
+Ruedas y Llantas	Wheels and tires
+Seguridad y Temporada	Safety and seasonal
+Servicio a Flotillas	Fleet service
+Sistema de Enfriamiento	Cooling system
+Sistema de Escape	Exhaust system
+Sistema de Escape y Emisiones	Exhaust and emissions system
+Sistema de Frenos	Brake system
+Sistema de Transmisión	Transmission system
+Sistema Eléctrico	Electrical system
+Sistema Eléctrico y Electrónica	Electrical and electronics
+Suspensión	Suspension
+Suspensión y Dirección	Suspension and steering
+Transmisión	Transmission
+Transmisión y Diferencial	Transmission and differential
+Verificación	Emissions test
+## services
+Actualización de controlador	Controller update
+Administración y seguimiento de unidades	Fleet management and tracking
+Afinación de motor	Engine tune-up
+Ajuste de cambios	Gear adjustment
+Ajuste de frenos	Brake adjustment
+Ajuste de frenos de aire	Air brake adjustment
+Ajuste de frenos y revisión de pastillas	Brake adjustment and pad check
+Ajuste general (tune-up)	General tune-up
+Ajuste y calibración de válvulas	Valve adjustment and calibration
+Alineación de ejes	Axle alignment
+Alineación y centrado de rines	Rim alignment and truing
+Armado de bicicleta nueva	New bicycle assembly
+Asistencia en carretera y grúa	Roadside assistance and towing
+Balanceo de llantas	Tire balancing
+Balanceo dinámico de hélice	Dynamic propeller balancing
+Balanceo y alineación de ruedas	Wheel balancing and alignment
+Calibración de inyectores	Injector calibration
+Cambio de aceite de pata	Lower unit oil change
+Cambio de aceite de transmisión	Transmission oil change
+Cambio de aceite y filtro	Oil and filter change
+Cambio de aceite y filtros	Oil and filters change
+Cambio de amortiguadores y resortes	Shock absorber and spring replacement
+Cambio de anillos y pistones	Ring and piston replacement
+Cambio de ánodos de sacrificio	Sacrificial anode replacement
+Cambio de arbol de levas y valvulas	Camshaft and valve replacement
+Cambio de balatas	Brake pad replacement
+Cambio de balatas, discos y tambores	Brake pad, rotor and drum replacement
+Cambio de bomba de agua	Water pump replacement
+Cambio de bujes y soportes de suspensión	Suspension bushing and mount replacement
+Cambio de bujias y afinación de motor	Spark plug replacement and engine tune-up
+Cambio de cables y fundas	Cable and housing replacement
+Cambio de cadena	Chain replacement
+Cambio de cadena de distribución	Timing chain replacement
+Cambio de cámaras de freno	Brake chamber replacement
+Cambio de cassette o piñones	Cassette or sprocket replacement
+Cambio de clutch	Clutch replacement
+Cambio de clutch y revisión de embrague	Clutch replacement and inspection
+Cambio de convertidores cataliticos	Catalytic converter replacement
+Cambio de filtros de cabina	Cabin filter replacement
+Cambio de filtros de combustible y aire	Fuel and air filter replacement
+Cambio de impulsor de bomba de agua	Water pump impeller replacement
+Cambio de llanta o cámara	Tire or inner tube replacement
+Cambio de llantas y frenos	Tire and brake replacement
+Cambio de muelles	Leaf spring replacement
+Cambio de pastillas o zapatas	Brake pad or shoe replacement
+Cambio de platos y bielas	Chainring and crank replacement
+Cambio de retenes de motor	Engine seal replacement
+Cambio de rodillos en CVT (scooters)	CVT roller replacement (scooters)
+Cambio de termostato y mangueras	Thermostat and hose replacement
+Cambio e instalación de batería	Battery replacement and installation
+Cambio y ajuste de liquido de frenos	Brake fluid change and adjustment
+Cambio y rotación de llantas	Tire replacement and rotation
+Carga de gas refrigerante	Refrigerant recharge
+Centrado de rin	Rim truing
+Conversión a tubeless	Tubeless conversion
+Coordinación de overhaul de motor	Engine overhaul coordination
+Diagnóstico computarizado del vehiculo	Computer vehicle diagnostics
+Diagnóstico de ABS y sensores de frenos	ABS and brake sensor diagnostics
+Diagnóstico de motor diésel	Diesel engine diagnostics
+Diagnóstico eléctrico	Electrical diagnostics
+Diagnóstico electrónico con escáner de pesados	Heavy-duty scanner electronic diagnostics
+Diagnóstico y reparación de diferenciales	Differential diagnostics and repair
+Diagnóstico y reparación de fugas de aceite y refrigerante	Oil and coolant leak diagnostics and repair
+Diagnóstico y reparación de sensores (MAP, MAF, TPS, etc.)	Sensor diagnostics and repair (MAP, MAF, TPS, etc.)
+Diagnóstico y reparación del sistema de calefacción	Heating system diagnostics and repair
+Eliminación de catalizador (off-road only)	Catalytic converter removal (off-road only)
+Eliminación de errores del sistema	System error code clearing
+Engrasado general	General greasing
+Engrase de componentes móviles	Lubrication of moving parts
+Escaneo de centralita (ECU)	ECU scan
+Escaneo y diagnóstico con computadora OBD-II	OBD-II computer scan and diagnostics
+Inflado de llantas con nitrógeno	Nitrogen tire inflation
+Inspección anual	Annual inspection
+Inspección boroscópica	Borescope inspection
+Inspección de 100 horas	100-hour inspection
+Inspección de 50 horas	50-hour inspection
+Inspección de hélice	Propeller inspection
+Inspección y cambio de bateria	Battery inspection and replacement
+Instalación de alarmas y corta corriente	Alarm and kill switch installation
+Instalación de alarmas y sistemas de seguridad	Alarm and security system installation
+Instalación de electrónica (GPS, sonar, radio)	Electronics installation (GPS, sonar, radio)
+Instalación de equipo de aviónica	Avionics equipment installation
+Instalación de escape deportivo	Performance exhaust installation
+Instalación de kits de turbo o supercargadores	Turbo or supercharger kit installation
+Instalación de puerto USB y luces LED	USB port and LED light installation
+Instalación de sonido y pantallas multimedia	Audio and multimedia screen installation
+Instalación de vinilos y calcomanías	Vinyl wrap and decal installation
+Lavado completo y detallado	Full wash and detailing
+Limpieza y lubricación de transmisión	Drivetrain cleaning and lubrication
+Limpieza y pulido de casco	Hull cleaning and polishing
+Llantas renovadas	Retreaded tires
+Mantenimiento de baterías	Battery maintenance
+Mantenimiento de neumáticos y válvulas	Tire and valve maintenance
+Mantenimiento preventivo y correctivo para empresas	Preventive and corrective maintenance for businesses
+Modificación de faros y luces LED	Headlight and LED light modification
+Modificación y ajuste de suspensión deportiva	Sport suspension modification and tuning
+Overhaul de motor	Engine overhaul
+Pintura antiincrustante	Antifouling paint
+Pintura de piezas y carenado	Parts and fairing paint
+Pintura general o parcial	Full or partial paint job
+Preparación para almacenaje	Storage preparation
+Preparación para inspección vehicular	Vehicle inspection preparation
+Preparación para pista o circuito	Track preparation
+Preparación para verificación físico-mecánica	Safety inspection preparation
+Prueba de pitot-estático y transpondedor	Pitot-static and transponder test
+Pulido de cromos y plásticos	Chrome and plastic polishing
+Pulido y encerado de carroceria	Body polishing and waxing
+Purgado de frenos hidráulicos	Hydraulic brake bleeding
+Rectificación de cabeza o bloque del motor	Cylinder head or engine block machining
+Rectificación de discos	Rotor resurfacing
+Rectificación de discos y tambores	Rotor and drum resurfacing
+Reparación completa de motor	Complete engine rebuild
+Reparación de fibra de vidrio	Fiberglass repair
+Reparación de golpes y abolladuras	Dent and ding repair
+Reparación de luces principales y auxiliares	Headlight and auxiliary light repair
+Reparación de mofles y silenciadores	Muffler and silencer repair
+Reparación de ponchadura	Flat tire repair
+Reparación de sistema eléctrico	Electrical system repair
+Reparación de turbo	Turbo repair
+Reparación estructural menor	Minor structural repair
+Reparación o cambio de junta de cabeza	Head gasket repair or replacement
+Reparación o reemplazo de terminales y rótulas	Tie rod end and ball joint repair or replacement
+Reparación y balanceo de hélice	Propeller repair and balancing
+Reparación y reemplazo de alternadores y motores de arranque	Alternator and starter repair and replacement
+Reparaciones programadas y atención prioritaria	Scheduled repairs and priority service
+Reprogramación de ECU	ECU reprogramming
+Restauración de autos clasicos	Classic car restoration
+Restauración de gelcoat	Gelcoat restoration
+Revisión de aviónica	Avionics check
+Revisión de batería	Battery check
+Revisión de bombas de achique	Bilge pump check
+Revisión de compresor y válvulas	Compressor and valve check
+Revisión de equipo de seguridad	Safety equipment check
+Revisión de flecha y sellos	Shaft and seal check
+Revisión de niveles de fluidos (aceite, frenos, transmisión)	Fluid level check (oil, brakes, transmission)
+Revisión de niveles y fugas	Level and leak check
+Revisión de seguridad	Safety check
+Revisión de sensores de oxígeno y temperatura	Oxygen and temperature sensor check
+Revisión de sistema de carga y alternador	Charging system and alternator check
+Revisión de sistema eléctrico	Electrical system check
+Revisión de sistema hidráulico de frenos	Hydraulic brake system check
+Revisión de suspensión delantera y trasera	Front and rear suspension check
+Revisión de tren de aterrizaje	Landing gear check
+Revisión del sistema de dirección	Steering system check
+Revisión y ajuste de cadena	Chain check and adjustment
+Revisión y ajuste de caja de dirección	Steering box check and adjustment
+Revisión y cambio de bujías	Spark plug check and replacement
+Revisión y cambio de frenos (balatas, discos, liquido)	Brake check and replacement (pads, rotors, fluid)
+Revisión y cambio de neumáticos	Tire check and replacement
+Revisión y reparación de carburador o sistema de inyección	Carburetor or fuel injection check and repair
+Revisión y reparación de compresor de aire acondicionado	A/C compressor check and repair
+Revisión y reparación de mofle	Muffler check and repair
+Revisión y reparación de radiadores	Radiator check and repair
+Revisión y reparación de sensores de oxigeno	Oxygen sensor check and repair
+Revisión y reparación de sistema de encendido	Ignition system check and repair
+Revisión y reparación del sistema electrico del vehiculo	Vehicle electrical system check and repair
+Sacado y botado	Haul-out and launch
+Servicio de amortiguador trasero	Rear shock service
+Servicio de diferencial	Differential service
+Servicio de horquilla	Fork service
+Servicio de limpieza y purgado del sistema de refrigeración	Cooling system flush and bleed
+Servicio de magnetos	Magneto service
+Servicio de motor dentro de borda o centrocola	Inboard or sterndrive engine service
+Servicio de motor diésel (aceite y filtros)	Diesel engine service (oil and filters)
+Servicio de motor fuera de borda	Outboard engine service
+Servicio de transmisión	Transmission service
+Servicio para reducir emisiones contaminantes	Emissions reduction service
+Servicio y reparación de transmisión automatica	Automatic transmission service and repair
+Servicio y reparación de transmisión manual	Manual transmission service and repair
+Suspensión neumática (bolsas de aire)	Air suspension (air bags)
+Tapicería de asientos personalizada	Custom seat upholstery
+Tratamiento de corrosión	Corrosion treatment
+Verificación de niveles de líquidos	Fluid level check
+## items
+Abrazaderas y soportes	Clamps and brackets
+Aceite de engranajes	Gear oil
+Aceite de transmisión por eje	Axle drive oil
+Aceite del motor	Engine oil
+Aire acondicionado/calefacción	Air conditioning/heating
+Aire acondicionado/ventilación	Air conditioning/ventilation
+Ajuste y potencia de frenado	Brake adjustment and stopping power
+Alas y superficies de control	Wings and control surfaces
+Alineación	Alignment
+Alineación - Delantero Derecho	Alignment - Front right
+Alineación - Delantero Izquierdo	Alignment - Front left
+Alineación - Posterior Derecho	Alignment - Rear right
+Alineación - Posterior Izquierdo	Alignment - Rear left
+Alternador	Alternator
+Alternador/generador	Alternator/generator
+Altímetro	Altimeter
+Amortiguadores	Shock absorbers
+Amortiguadores delanteros	Front shock absorbers
+Amortiguadores traseros	Rear shock absorbers
+Ánodos de sacrificio	Sacrificial anodes
+Antenas	Antennas
+Asiento y cinturón del conductor	Driver seat and seat belt
+Asientos	Seats
+Balanceo	Balancing
+Balatas/pastillas delanteras	Front brake pads
+Balatas/pastillas traseras	Rear brake pads
+Balatas/zapatas	Brake pads/shoes
+Balsa salvavidas	Life raft
+Banda de accesorios	Accessory belt
+Bandas y mangueras	Belts and hoses
+Bandas y poleas	Belts and pulleys
+Batería	Battery
+Batería (carga y bornes)	Battery (charge and terminals)
+Baterías	Batteries
+Bielas y plato(s)	Cranks and chainring(s)
+Birlos y tuercas	Wheel studs and lug nuts
+Bolsas de aire	Airbags
+Bomba de agua	Water pump
+Bomba de sentina	Bilge pump
+Bombas de achique	Bilge pumps
+Botiquín	First aid kit
+Brújula	Compass
+Bujes (delantero/trasero)	Hubs (front/rear)
+Bujes de suspensión	Suspension bushings
+Bujes del basculante	Swingarm bushings
+Bujes y abrazaderas	Bushings and clamps
+Bujías	Spark plugs
+Cableado	Wiring
+Cableado eléctrico	Electrical wiring
+Cableado y conexiones	Wiring and connections
+Cables	Cables
+Cables/mangueras de freno	Brake cables/hoses
+Cadena (desgaste/lubricación)	Chain (wear/lubrication)
+Cadena o correa	Chain or belt
+Caja de dirección	Steering box
+Caja de velocidades	Gearbox
+Calzas para llantas	Wheel chocks
+Cámaras de freno	Brake chambers
+Cámaras y matracas	Brake chambers and slack adjusters
+Cámaras/válvulas	Inner tubes/valves
+Cargador	Charger
+Carrocería (golpes y corrosión)	Body (dents and corrosion)
+Carrocería/caja (golpes y corrosión)	Body/box (dents and corrosion)
+Casco/gelcoat	Hull/gelcoat
+Cassette/piñones	Cassette/sprockets
+Catalizador	Catalytic converter
+Chalecos salvavidas	Life jackets
+Cintas reflejantes	Reflective tape
+Cinturones de seguridad	Seat belts
+Claxon	Horn
+Claxon y alarma de reversa	Horn and backup alarm
+Clutch/embrague	Clutch
+Combustible	Fuel
+Compartimentos de equipaje	Luggage compartments
+Compás	Compass
+Compresión de cilindros	Cylinder compression
+Compresor	Compressor
+Compresor de aire	Air compressor
+Condensador	Condenser
+Condensador del aire acondicionado	A/C condenser
+Condición de la sentina	Bilge condition
+Condición del limpia parabrisas	Windshield wiper condition
+Condición del marco	Frame condition
+Condiciones generales de la batería	General battery condition
+Conector eléctrico del remolque	Trailer electrical connector
+Cono y spinner de hélice	Propeller cone and spinner
+Controlador/display	Controller/display
+Controles de vuelo (yugo/palanca)	Flight controls (yoke/stick)
+Cremallera y terminales de dirección	Steering rack and tie rod ends
+Cuadro (grietas/golpes)	Frame (cracks/dents)
+Defensas	Bumpers
+Defensas y loderas	Bumpers and mud flaps
+Descargadores de estática	Static wicks
+Desviador delantero	Front derailleur
+Desviador trasero	Rear derailleur
+Dibujo de llanta	Tire tread
+Dibujo de llanta - Delantero	Tire tread - Front
+Dibujo de llanta - Delantero Derecho	Tire tread - Front right
+Dibujo de llanta - Delantero Izquierdo	Tire tread - Front left
+Dibujo de llanta - Posterior	Tire tread - Rear
+Dibujo de llanta - Posterior Derecho	Tire tread - Rear right
+Dibujo de llanta - Posterior Izquierdo	Tire tread - Rear left
+Diferencial(es)	Differential(s)
+Discos de freno	Brake rotors
+Discos/tambores	Rotors/drums
+Ejes y mazas	Axles and hubs
+ELT (transmisor localizador de emergencia)	ELT (emergency locator transmitter)
+Empenaje y cola	Empennage and tail
+EPIRB	EPIRB
+Escape y DPF/catalizador	Exhaust and DPF/catalytic converter
+Escobillas del limpia parabrisas	Windshield wiper blades
+Espejo derecho	Right mirror
+Espejo izquierdo	Left mirror
+Espejos	Mirrors
+Espejos retrovisores	Rearview mirrors
+Estado de mangueras	Hose condition
+Extintor	Fire extinguisher
+Extintores	Fire extinguishers
+Faro	Headlight
+Faros	Headlights
+Filtro de aire	Air filter
+Filtro de aire acondicionado	A/C filter
+Filtro de cabina	Cabin filter
+Flecha cardán y crucetas	Driveshaft and U-joints
+Fluido hidráulico	Hydraulic fluid
+Forro de frenos - Delantero	Brake lining - Front
+Forro de frenos - Posterior	Brake lining - Rear
+Freno - Delantero Derecho	Brake - Front right
+Freno - Delantero Izquierdo	Brake - Front left
+Freno - Posterior Derecho	Brake - Rear right
+Freno - Posterior Izquierdo	Brake - Rear left
+Freno de emergencia	Emergency brake
+Freno de estacionamiento	Parking brake
+Freno de mano	Hand brake
+Freno de motor	Engine brake
+Frenos	Brakes
+Fugas	Leaks
+Fugas de escape	Exhaust leaks
+Fugas en el sistema	System leaks
+Fugas en radiador	Radiator leaks
+Funcionamiento de limpia parabrisas	Windshield wiper operation
+Funcionamiento general del sistema	General system operation
+Fusibles y relevadores	Fuses and relays
+GPS	GPS
+GPS/chartplotter	GPS/chartplotter
+Guardafangos	Fenders
+Guardafangos y loderas	Fenders and mud flaps
+Hélice (palas)	Propeller (blades)
+Hélice de proa	Bow thruster
+Hélices y ejes	Propellers and shafts
+Herrajes de cubierta	Deck hardware
+Herramienta básica	Basic tools
+Horizonte artificial/actitud	Attitude indicator
+Horquilla	Fork
+Horquillas delanteras	Front forks
+Iluminación interior	Interior lighting
+Indicador de velocidad	Airspeed indicator
+Instrumentos del tablero	Dashboard instruments
+Interruptores	Switches
+Jarcia/aparejos	Rigging
+Juego de dirección (tazas)	Headset
+Limpiaparabrisas	Windshield wipers
+Líneas de aire al remolque (manitas)	Trailer air lines (gladhands)
+Líneas y mangueras de freno	Brake lines and hoses
+Líquido de dirección hidráulica	Power steering fluid
+Líquido de transmisión	Transmission fluid
+Líquido del limpia parabrisas	Windshield washer fluid
+Llanta de refacción	Spare tire
+Llantas (desgaste)	Tires (wear)
+Llantas delanteras	Front tires
+Llantas traseras/duales	Rear/dual tires
+Luces de advertencia de peligro	Hazard lights
+Luces de emergencia	Emergency lights
+Luces de freno	Brake lights
+Luces de freno y direccionales	Brake lights and turn signals
+Luces de gálibo/demarcación	Clearance/marker lights
+Luces de giro	Turn signals
+Luces de navegación	Navigation lights
+Luces de reversa	Backup lights
+Luces delantera/trasera	Front/rear lights
+Luces delanteras	Headlights
+Luces exteriores	Exterior lights
+Luces interiores	Interior lights
+Luces traseras	Taillights
+Luz de aterrizaje	Landing light
+Luz de freno	Brake light
+Luz de placa	License plate light
+Luz estroboscópica/anticolisión	Strobe/anti-collision light
+Luz trasera	Taillight
+Malacate de ancla	Anchor windlass
+Mangueras	Hoses
+Mangueras de calefacción	Heater hoses
+Mangueras de freno	Brake hoses
+Mangueras del sistema de refrigeración	Cooling system hoses
+Manijas de cambio (shifters)	Shifters
+Manual de vuelo y documentos	Flight manual and documents
+Manubrio	Handlebar
+Manubrios	Handlebars
+Marcha (motor de arranque)	Starter (starter motor)
+Martillos rompevidrios	Emergency glass hammers
+Mástil	Mast
+Matracas (ajustadores)	Slack adjusters
+Mofle/silenciador	Muffler/silencer
+Montaje	Mounting
+Motor de arranque	Starter motor
+Motor eléctrico	Electric motor
+Motor(es)	Engine(s)
+Muelles/hojas	Leaf springs
+Neumáticos	Tires
+Nivel de gas refrigerante	Refrigerant level
+Nivel de líquido de frenos	Brake fluid level
+Nivel de refrigerante	Coolant level
+Nivel y fugas de aceite	Oil level and leaks
+Nivel y fugas de aceite de transmisión	Transmission oil level and leaks
+Niveles de líquido aceite	Oil fluid level
+Niveles de líquido frenos	Brake fluid level
+Niveles de líquido refrigerante	Coolant fluid level
+Niveles y fugas de aceite	Oil levels and leaks
+Palanca de clutch	Clutch lever
+Palanca del acelerador	Throttle lever
+Palancas de freno	Brake levers
+Palancas y pedal	Levers and pedal
+Panel de instrumentos	Instrument panel
+Parabrisas y cristales	Windshield and windows
+Pasacascos	Through-hulls
+Pasamanos y barras	Handrails and grab bars
+Pastillas/zapatas de freno	Brake pads/shoes
+Patines/soportes del remolque	Trailer landing gear
+Patrón de desgaste - Delantero	Wear pattern - Front
+Patrón de desgaste - Posterior	Wear pattern - Rear
+Pedales	Pedals
+Pedales de timón	Rudder pedals
+Perno rey	Kingpin
+Piel del fuselaje	Fuselage skin
+Piloto automático	Autopilot
+Pintura y corrosión	Paint and corrosion
+Piso y escalones	Floor and steps
+Planta/inversor	Generator/inverter
+Plomería y sanitarios	Plumbing and heads
+Potencia (stem)	Stem
+Presión de llantas	Tire pressure
+Presión de neumáticos	Tire pressure
+Puertas de servicio y mecanismo	Service doors and mechanism
+Puertas y ventanas	Doors and windows
+Puertas, chapas y bisagras	Doors, locks and hinges
+Puños/cintas de manubrio	Grips/handlebar tape
+Quilla	Keel
+Quinta rueda (placa y mordaza)	Fifth wheel (plate and jaws)
+Radar	Radar
+Radio COM	COM radio
+Radio NAV	NAV radio
+Radio VHF	VHF radio
+Radios - Delantero	Spokes - Front
+Radios - Posterior	Spokes - Rear
+Rayos y tensión	Spokes and tension
+Reflejantes	Reflectors
+Refrigerante	Coolant
+Refrigerante y radiador	Coolant and radiator
+Rines	Rims
+Rodamientos - Delantero	Bearings - Front
+Rodamientos - Posterior	Bearings - Rear
+Rodamientos de la dirección	Steering bearings
+Rótulas	Ball joints
+Salidas de emergencia	Emergency exits
+Sanitario	Head (toilet)
+Sellos - Delantero	Seals - Front
+Sellos - Posterior	Seals - Rear
+Señales de auxilio	Distress signals
+Señalización de salidas	Exit signs
+Sensor de oxígeno	Oxygen sensor
+Sillín/asiento	Saddle/seat
+Sistema ABS	ABS system
+Sistema de agua dulce	Fresh water system
+Sistema de combustible	Fuel system
+Sistema de combustible (diésel)	Fuel system (diesel)
+Sistema de enfriamiento	Cooling system
+Sistema de escape	Exhaust system
+Sonda	Depth sounder
+Soporte central	Center stand
+Soporte lateral	Kickstand
+Soportes del motor	Engine mounts
+Sujetadores	Fasteners
+Tablero e indicadores	Dashboard and gauges
+Tambores/discos	Drums/rotors
+Tanques de aire y purga	Air tanks and draining
+Tapa de tanque de combustible	Fuel cap
+Tapicería/interior	Upholstery/interior
+Tapón de radiador	Radiator cap
+Tapones de drenaje	Drain plugs
+Terminales de batería	Battery terminals
+Terminales de dirección	Tie rod ends
+Terminales y barra de dirección	Tie rod ends and steering linkage
+Termostato	Thermostat
+Tija de asiento	Seatpost
+Timbre/claxon	Bell/horn
+Timón	Rudder
+Toma de fuerza (PTO)	Power take-off (PTO)
+Transmisión/cola	Transmission/drive
+Transpondedor	Transponder
+Tren de nariz/cola	Nose/tail gear
+Tren principal	Main gear
+Triángulos reflejantes	Reflective triangles
+Tubo de escape	Exhaust pipe
+Turbocargador	Turbocharger
+Válvulas de pasacascos	Seacocks
+Válvulas y líneas de aire	Air valves and lines
+Velas	Sails
+Ventilador de enfriamiento	Cooling fan
+Winches	Winches

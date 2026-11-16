@@ -33,6 +33,8 @@ namespace MiTaller.Controllers
     [Authorize]
     public class QuotationController : ControllerBase
     {
+        private string ReqLang => Lang.FromRequest(Request);
+
         private readonly DataContext _context;
         private readonly FirebaseNotificationService _firebaseNotificationService;
 
@@ -146,7 +148,7 @@ namespace MiTaller.Controllers
                     Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                     {
                         ServiceId = qs.WorkshopServiceId,
-                        ServiceName = qs.Service.Service.Name,
+                        ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                         Price = qs.Price ?? 0,
                     }).ToList()
                 };
@@ -241,7 +243,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -342,7 +344,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -450,7 +452,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -552,7 +554,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -939,7 +941,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -1029,7 +1031,7 @@ namespace MiTaller.Controllers
                         Services = quotationServices.Select(qs => new WorkshopServiceResponseDto
                         {
                             ServiceId = qs.WorkshopServiceId,
-                            ServiceName = qs.Service.Service.Name,
+                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                             Price = qs.Price ?? 0,
                         }).ToList()
                     };
@@ -1122,7 +1124,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1226,7 +1228,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1331,7 +1333,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1434,7 +1436,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1540,7 +1542,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1647,7 +1649,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1754,7 +1756,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1861,7 +1863,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -1968,7 +1970,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -2075,7 +2077,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -2176,7 +2178,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -2280,7 +2282,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null
@@ -2385,7 +2387,7 @@ namespace MiTaller.Controllers
                                         .Select(qs => new WorkshopServiceResponseDto
                                         {
                                             ServiceId = qs.WorkshopServiceId,
-                                            ServiceName = qs.Service.Service.Name,
+                                            ServiceName = qs.Service.Service.Name.Localized(qs.Service.Service.NameEn, ReqLang),
                                             Price = qs.Price ?? 0
                                         }).ToList()
                                     : null

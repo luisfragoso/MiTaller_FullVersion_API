@@ -10,6 +10,8 @@ using MiTaller.Models.Auth;
 using MiTaller.Models.Services;
 using MiTaller.Models.Workshop;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -17,6 +19,8 @@ namespace MiTaller.Controllers
     [Authorize]
     public class WorkshopServiceController : ControllerBase
     {
+        private string ReqLang => Lang.FromRequest(Request);
+
         private readonly UserManager<BaseIdentityUser> _userManager;
         private readonly DataContext _context;
 
@@ -46,7 +50,7 @@ namespace MiTaller.Controllers
                     var serviceCategoryDto = new ServiceCategoryResponseDto
                     {
                         Id = serviceCategory.Id,
-                        Name = serviceCategory.Name,
+                        Name = serviceCategory.Name.Localized(serviceCategory.NameEn, ReqLang),
                     };
                     serviceCategoriesDto.Add(serviceCategoryDto);
                 }
@@ -88,7 +92,7 @@ namespace MiTaller.Controllers
                     var serviceCategoryDto = new ServiceResponseDto
                     {
                         Id = service.Id,
-                        Name = service.Name,
+                        Name = service.Name.Localized(service.NameEn, ReqLang),
                     };
                     servicesDto.Add(serviceCategoryDto);
                 }
@@ -245,7 +249,7 @@ namespace MiTaller.Controllers
                     {
                         WorkshopId = model.WorkshopId,
                         ServiceId = model.Id,
-                        ServiceName = model.Service.Name,
+                        ServiceName = model.Service.Name.Localized(model.Service.NameEn, ReqLang),
                         Price = model.Price,
                         ServiceType = model.Service.ServiceCategory?.Type ?? string.Empty,
                         IsCustom = model.Service.WorkshopId != null,
@@ -280,7 +284,7 @@ namespace MiTaller.Controllers
                 var serviceDto = new WorkshopServiceResponseDto
                 {
                     WorkshopId = workshopService.WorkshopId,
-                    ServiceName = workshopService.Service.Name,
+                    ServiceName = workshopService.Service.Name.Localized(workshopService.Service.NameEn, ReqLang),
                     Price = workshopService.Price,
                 };
 

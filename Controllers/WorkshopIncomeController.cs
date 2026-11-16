@@ -10,6 +10,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -18,6 +20,8 @@ namespace MiTaller.Controllers
     [Authorize]
     public class WorkshopIncomeController : ControllerBase
     {
+        private string ReqLang => Lang.FromRequest(Request);
+
         private readonly DataContext _context;
 
         public WorkshopIncomeController(DataContext context)
@@ -39,7 +43,7 @@ namespace MiTaller.Controllers
                     .Select(b => new
                     {
                         WorkshopId = b.WorkshopId,
-                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name : (b.CustomDescription ?? "Otro"),
+                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name.Localized(b.WorkshopServices.Service.NameEn, ReqLang) : (b.CustomDescription ?? "Otro"),
                         Amount = b.Amount
                     })
                     .FirstOrDefaultAsync();
@@ -77,7 +81,7 @@ namespace MiTaller.Controllers
                     .Select(b => new WorkshopIncomeResponseDto
                     {
                         WorkshopServiceId = b.WorkshopServices != null ? b.WorkshopServices.Id : 0,
-                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name : (b.CustomDescription ?? "Otro"),
+                        Name = b.WorkshopServices != null ? b.WorkshopServices.Service.Name.Localized(b.WorkshopServices.Service.NameEn, ReqLang) : (b.CustomDescription ?? "Otro"),
                         Amount = b.Amount
                     })
                     .ToListAsync();

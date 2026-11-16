@@ -1,4 +1,4 @@
-namespace MiTaller.DTO.Inspections
+﻿namespace MiTaller.DTO.Inspections
 {
     public class InspectionTemplateResponseDto
     {
@@ -10,6 +10,8 @@ namespace MiTaller.DTO.Inspections
 
     public class InspectionTemplateSectionResponseDto
     {
+        /// Spanish catalog name, stable across languages (the apps key icons by it).
+        public string Key { get; set; } = string.Empty;
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Order { get; set; }
@@ -18,6 +20,8 @@ namespace MiTaller.DTO.Inspections
 
     public class InspectionTemplateItemResponseDto
     {
+        /// Spanish catalog name, stable across languages (the apps key icons by it).
+        public string Key { get; set; } = string.Empty;
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public int Order { get; set; }

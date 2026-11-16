@@ -15,6 +15,8 @@ using MiTaller.DTO;
 using MiTaller.DTO.Pager;
 using MiTaller.Services;
 
+using MiTaller.Services.Localization;
+
 namespace MiTaller.Controllers
 {
     [Route("api/[controller]")]
@@ -22,6 +24,8 @@ namespace MiTaller.Controllers
 
     public class WorkshopController : ControllerBase
     {
+        private string ReqLang => Lang.FromRequest(Request);
+
         private readonly UserManager<BaseIdentityUser> _userManager;
         private readonly DataContext _context;
 
@@ -1063,7 +1067,7 @@ namespace MiTaller.Controllers
                     var workshopServicesDto = workshopServices.Select(s => new WorkshopServiceResponseDto
                     {
                         ServiceId = s.Id,
-                        ServiceName = s.Service.Name,
+                        ServiceName = s.Service.Name.Localized(s.Service.NameEn, ReqLang),
                         Price = s.Price
                     }).ToList();
 
@@ -1152,7 +1156,7 @@ namespace MiTaller.Controllers
                     var workshopServicesDto = workshopServices.Select(s => new ServiceSimpleResponseDto
                     {
                         ServiceId = s.Id,
-                        ServiceName = s.Service.Name,
+                        ServiceName = s.Service.Name.Localized(s.Service.NameEn, ReqLang),
                         Price = s.Price
                     }).ToList();
 
@@ -1221,7 +1225,7 @@ namespace MiTaller.Controllers
                     var workshopServicesDto = workshopServices.Select(s => new ServiceSimpleResponseDto
                     {
                         ServiceId = s.Id,
-                        ServiceName = s.Service.Name,
+                        ServiceName = s.Service.Name.Localized(s.Service.NameEn, ReqLang),
                         Price = s.Price
                     }).ToList();
 
