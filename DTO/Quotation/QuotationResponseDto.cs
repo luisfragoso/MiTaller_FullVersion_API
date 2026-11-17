@@ -12,6 +12,7 @@ namespace MiTaller.DTO.Quotation
         public int Id { get; set; }
         public Guid WorkshopId { get; set; }
         public string WorkshopName { get; set; } = string.Empty;
+        public string WorkshopResponsible { get; set; } = string.Empty;
         public Guid CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public VehicleResponseDto? Vehicle { get; set; }
