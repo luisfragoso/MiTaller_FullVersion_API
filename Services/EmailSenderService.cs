@@ -27,7 +27,9 @@ namespace MiTaller.Services
 
                 var mailMessage = new MailMessage
                 {
-                    From = new MailAddress(_emailSettings.SmtpUser),
+                    From = new MailAddress(
+                        string.IsNullOrWhiteSpace(_emailSettings.FromAddress) ? _emailSettings.SmtpUser : _emailSettings.FromAddress,
+                        _emailSettings.FromName),
                     Subject = subject,
                     Body = message,
                     IsBodyHtml = true
