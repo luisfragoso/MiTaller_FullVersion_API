@@ -1,0 +1,6 @@
+# /etc/caddy/Caddyfile. Domain sites live in mitaller-sites.caddy; uncomment the import once DNS points here.
+:80 {
+	respond "MiTaller" 200
+}
+
+# import /etc/caddy/mitaller-sites.caddy

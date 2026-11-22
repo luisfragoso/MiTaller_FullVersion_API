@@ -1,0 +1,10 @@
+[Unit]
+Description=MiTaller backup (%i)
+After=mssql-server.service
+Requires=mssql-server.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/mitaller-backup.sh %i
+Nice=10
+IOSchedulingClass=idle

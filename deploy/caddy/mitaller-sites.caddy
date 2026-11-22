@@ -1,0 +1,27 @@
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		-Server
+	}
+}
+
+api.mitaller.io {
+	import security_headers
+	encode zstd gzip
+	@swagger path /swagger /swagger/*
+	respond @swagger 404
+	request_body {
+		max_size 30MB
+	}
+	reverse_proxy 127.0.0.1:5000
+}
+
+plataforma.mitaller.io {
+	import security_headers
+	encode zstd gzip
+	root * /var/www/plataforma
+	try_files {path} /index.html
+	file_server
+}

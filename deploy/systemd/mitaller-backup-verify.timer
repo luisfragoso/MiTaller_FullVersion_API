@@ -1,0 +1,10 @@
+[Unit]
+Description=MiTaller restore test, weekly
+
+[Timer]
+OnCalendar=Sun *-*-* 05:00:00 America/Mexico_City
+Persistent=true
+Unit=mitaller-backup@verify.service
+
+[Install]
+WantedBy=timers.target

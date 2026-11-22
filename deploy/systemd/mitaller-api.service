@@ -1,0 +1,19 @@
+[Unit]
+Description=MiTaller API
+After=network.target mssql-server.service
+Wants=mssql-server.service
+
+[Service]
+User=mitaller
+WorkingDirectory=/opt/mitaller/api
+EnvironmentFile=/etc/mitaller/api.env
+ExecStart=/usr/bin/dotnet /opt/mitaller/api/MiTaller.dll
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

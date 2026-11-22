@@ -1,0 +1,10 @@
+[Unit]
+Description=MiTaller full backup, nightly
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 America/Mexico_City
+Persistent=true
+Unit=mitaller-backup@full.service
+
+[Install]
+WantedBy=timers.target
