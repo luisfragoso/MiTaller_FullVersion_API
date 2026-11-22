@@ -57,41 +57,25 @@ try
 
     });
 
-    //CORS
-    //var allowedOrigins = new[]
-    //{
-    //"http://localhost:49475",
-    //"https://app.mitaller.com",
-    //"https://plataforma.mitaller.io",
-    //"https://mitaller.io"
-    //};
-
-    //builder.Services.AddCors(options =>
-    //{
-    //    options.AddPolicy("AllowSpecificOrigins", policy =>
-    //    {
-    //        policy
-    //            .WithOrigins(allowedOrigins)  
-    //            .AllowAnyHeader()
-    //            .AllowAnyMethod()
-    //            .AllowCredentials(); 
-    //    });
-    //});
-
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAll", policy =>
+        var adminOrigins = (builder.Configuration["Admin:AllowedOrigins"] ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        // Mobile apps and server-to-server feeds send no Origin, so only browser web apps need listing.
+        var webOrigins = (builder.Configuration["Cors:AllowedOrigins"] ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Concat(adminOrigins)
+            .ToArray();
+        var isDev = builder.Environment.IsDevelopment();
+        options.AddPolicy("WebApps", policy =>
         {
             policy
-                .AllowAnyOrigin()
+                .SetIsOriginAllowed(origin => webOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase)
+                    || (isDev && Uri.TryCreate(origin, UriKind.Absolute, out var uri) && uri.IsLoopback))
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         });
 
-        // Política dedicada y restrictiva para /api/Admin - no esperamos a la limpieza
-        // general de CORS (AllowAll) para proteger el endpoint de mayor valor si se filtra.
-        var adminOrigins = (builder.Configuration["Admin:AllowedOrigins"] ?? "")
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         options.AddPolicy("AdminPortal", policy =>
         {
             policy
@@ -249,7 +233,7 @@ try
     // Locally the web (http 5191) and the emulator (https 7032) share one process; a redirect breaks CORS preflights
     if (!app.Environment.IsDevelopment())
         app.UseHttpsRedirection();
-    app.UseCors("AllowAll");
+    app.UseCors("WebApps");
     app.UseRateLimiter();
     app.UseAuthentication();
     app.UseAuthorization();
