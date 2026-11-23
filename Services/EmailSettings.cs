@@ -10,5 +10,7 @@
         // Visible sender; must be an alias of SmtpUser. Empty = SmtpUser.
         public string FromAddress { get; set; } = string.Empty;
         public string FromName { get; set; } = "MiTaller";
+        // Staging guard: comma-separated addresses or @domains; non-empty = only these get mail, the rest is logged and skipped.
+        public string AllowedRecipients { get; set; } = string.Empty;
     }
 }

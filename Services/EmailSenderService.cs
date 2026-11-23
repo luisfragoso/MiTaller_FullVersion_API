@@ -16,6 +16,11 @@ namespace MiTaller.Services
 
         public async Task SendEmailAsync(string email, string subject, string message)
         {
+            if (!IsAllowedRecipient(email))
+            {
+                Console.WriteLine($"Email to {email} skipped (EmailSettings:AllowedRecipients), subject {subject}");
+                return;
+            }
             try
             {
                 using var smtpClient = new SmtpClient(_emailSettings.SmtpServer)
@@ -47,6 +52,16 @@ namespace MiTaller.Services
                 // Log the error
                 Console.WriteLine($"Error sending email: {ex.Message}");
             }
+        }
+
+        private bool IsAllowedRecipient(string email)
+        {
+            var allowed = _emailSettings.AllowedRecipients
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (allowed.Length == 0) return true;
+            return allowed.Any(a => a.StartsWith('@')
+                ? email.EndsWith(a, StringComparison.OrdinalIgnoreCase)
+                : string.Equals(email.Trim(), a, StringComparison.OrdinalIgnoreCase));
         }
     }
 }
