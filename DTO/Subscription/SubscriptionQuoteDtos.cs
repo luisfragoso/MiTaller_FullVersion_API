@@ -10,6 +10,12 @@ namespace MiTaller.DTO.Subscription
         public int? DiscountSourceId { get; set; }
     }
 
+    public class CheckoutResponseDto
+    {
+        public string CheckoutUrl { get; set; } = string.Empty;
+        public int PaymentId { get; set; }
+    }
+
     /// <summary>What a payment would cost and cover right now. Nothing is charged or redeemed.</summary>
     public class SubscriptionQuoteDto
     {

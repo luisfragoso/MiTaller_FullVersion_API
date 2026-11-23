@@ -3141,11 +3141,21 @@ namespace MiTaller.Migrations
                     b.Property<decimal>("Discount")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int?>("DiscountCodeId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("DiscountSourceId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Iva")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("Method")
                         .HasColumnType("int");
+
+                    b.Property<string>("MpOrderId")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MpPaymentId")
                         .HasMaxLength(100)

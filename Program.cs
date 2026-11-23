@@ -131,6 +131,8 @@ try
     // JWT
     builder.Services.AddScoped<JwtService>();
     builder.Services.AddScoped<SubscriptionService>();
+    builder.Services.Configure<MercadoPagoSettings>(builder.Configuration.GetSection("MercadoPago"));
+    builder.Services.AddHttpClient<MercadoPagoClient>();
     builder.Services.AddScoped<CommunityService>();
     builder.Services.AddScoped<ContactSettingsService>();
 

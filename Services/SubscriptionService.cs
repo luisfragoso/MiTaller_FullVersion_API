@@ -184,6 +184,124 @@ namespace MiTaller.Services
             }, null);
         }
 
+        public const string PaymentReferencePrefix = "mitaller-pago-";
+
+        /// <summary>
+        /// Re-prices on the server (the amount never comes from the client), stores a Pending payment and
+        /// creates the Mercado Pago order. Returns the URL to send the owner to, or an error code.
+        /// </summary>
+        public async Task<(string? CheckoutUrl, int? PaymentId, string? Error)> CreateCheckoutAsync(
+            Guid workshopId, SubscriptionQuoteRequestDto request, MercadoPagoClient mp)
+        {
+            if (!mp.IsConfigured) return (null, null, "payments-not-configured");
+            var (quote, error) = await QuoteAsync(workshopId, request);
+            if (quote == null) return (null, null, error);
+
+            var codeId = quote.Code == null ? null
+                : await _context.DiscountCodes.Where(c => c.Code == quote.Code).Select(c => (int?)c.Id).FirstOrDefaultAsync();
+            var payment = new SubscriptionPayment
+            {
+                WorkshopId = workshopId,
+                BillingPeriod = request.BillingPeriod,
+                Method = PaymentMethod.Manual,
+                Status = PaymentStatus.Pending,
+                Subtotal = quote.Subtotal,
+                Discount = quote.Discount,
+                Iva = quote.Iva,
+                Total = quote.Total,
+                DiscountCodeId = codeId,
+                DiscountSourceId = codeId == null ? null : request.DiscountSourceId,
+            };
+            _context.SubscriptionPayments.Add(payment);
+            await _context.SaveChangesAsync();
+
+            var email = await _context.Workshops.Where(w => w.Id == workshopId).Select(w => w.Email).FirstOrDefaultAsync();
+            var title = request.BillingPeriod == BillingPeriod.Annual ? "MiTaller Pro - plan anual" : "MiTaller Pro - plan mensual";
+            var order = await mp.CreateOrderAsync($"{PaymentReferencePrefix}{payment.Id}", title, quote.Total, email,
+                $"{mp.ReturnUrl}?pago={payment.Id}");
+            if (order == null)
+            {
+                payment.Status = PaymentStatus.Rejected;
+                await _context.SaveChangesAsync();
+                return (null, null, "payment-provider-error");
+            }
+            payment.MpOrderId = order.Value.OrderId;
+            await _context.SaveChangesAsync();
+            return (order.Value.CheckoutUrl, payment.Id, null);
+        }
+
+        /// <summary>
+        /// Applies what Mercado Pago says about an order to its payment, once: processed = approved and the
+        /// paid period starts where the current coverage ends; failed/canceled = rejected. Safe to call repeatedly.
+        /// </summary>
+        public async Task<SubscriptionPayment?> ApplyOrderAsync(MpOrder order)
+        {
+            var payment = await FindPaymentAsync(order);
+            if (payment == null) return null;
+
+            if (order.Status == "processed" && payment.Status == PaymentStatus.Pending)
+            {
+                if (order.TotalPaidAmount > 0 && order.TotalPaidAmount < payment.Total)
+                    return payment; // partial amounts never activate a plan
+                var settings = await GetSettingsAsync();
+                var subscription = await GetOrCreateAsync(payment.WorkshopId);
+                var now = DateTime.Now;
+                var start = new[] { now, subscription.TrialEndsAt, subscription.CurrentPeriodEnd ?? now }.Max();
+                var end = payment.BillingPeriod == BillingPeriod.Annual ? start.AddYears(1) : start.AddMonths(1);
+
+                payment.Status = PaymentStatus.Approved;
+                payment.MpPaymentId = order.PaymentId ?? payment.MpPaymentId;
+                payment.PeriodStart = start;
+                payment.PeriodEnd = end;
+
+                subscription.Status = SubscriptionStatus.Active;
+                subscription.BillingPeriod = payment.BillingPeriod;
+                subscription.PaymentMethod = PaymentMethod.Manual;
+                subscription.CurrentPeriodEnd = end;
+                subscription.GraceEndsAt = end.AddDays(settings.GraceDays);
+                subscription.UpdatedAt = DateTime.UtcNow;
+
+                if (payment.DiscountCodeId is int codeId && payment.DiscountSourceId is int sourceId
+                    && !await _context.DiscountRedemptions.AnyAsync(r => r.DiscountCodeId == codeId && r.WorkshopId == payment.WorkshopId))
+                {
+                    var code = await _context.DiscountCodes.SingleAsync(c => c.Id == codeId);
+                    code.UsedCount++;
+                    _context.DiscountRedemptions.Add(new DiscountRedemption
+                    {
+                        DiscountCodeId = codeId,
+                        WorkshopId = payment.WorkshopId,
+                        DiscountSourceId = sourceId,
+                    });
+                    subscription.DiscountCodeId = codeId;
+                    subscription.DiscountChargesRemaining = code.Charges == null ? null : Math.Max(0, code.Charges.Value - 1);
+                }
+                await _context.SaveChangesAsync();
+            }
+            else if (order.Status is "failed" or "canceled" && payment.Status == PaymentStatus.Pending)
+            {
+                payment.Status = PaymentStatus.Rejected;
+                await _context.SaveChangesAsync();
+            }
+            else if (order.Status == "refunded" && payment.Status == PaymentStatus.Approved)
+            {
+                // Coverage is not taken back automatically; the admin decides from Portal Admin.
+                payment.Status = PaymentStatus.Refunded;
+                await _context.SaveChangesAsync();
+            }
+            return payment;
+        }
+
+        private async Task<SubscriptionPayment?> FindPaymentAsync(MpOrder order)
+        {
+            var byOrder = await _context.SubscriptionPayments.FirstOrDefaultAsync(p => p.MpOrderId == order.Id);
+            if (byOrder != null) return byOrder;
+            var reference = order.ExternalReference;
+            if (reference == null || !reference.StartsWith(PaymentReferencePrefix)
+                || !int.TryParse(reference[PaymentReferencePrefix.Length..], out var id)) return null;
+            // Only a payment whose order id was never stored (create call timed out) is matched by reference.
+            return await _context.SubscriptionPayments.FirstOrDefaultAsync(p => p.Id == id && p.MpOrderId == null);
+        }
+
         private static string DescribeCode(DiscountCode code)
         {
             var value = code.Type == DiscountType.Percent ? $"{code.Value:0.##}%" : $"${code.Value:N2}";

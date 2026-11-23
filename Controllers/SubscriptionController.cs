@@ -49,6 +49,37 @@ namespace MiTaller.Controllers
             return error != null ? BadRequest(error) : Ok(quote);
         }
 
+        /// <summary>One-time payment with Checkout Pro: returns the Mercado Pago URL to open.</summary>
+        [HttpPost("workshop/{workshopId}/checkout")]
+        [OwnWorkshop]
+        public async Task<ActionResult<CheckoutResponseDto>> Checkout(
+            Guid workshopId, [FromBody] SubscriptionQuoteRequestDto model, [FromServices] MercadoPagoClient mp)
+        {
+            if (!CallerIsOwner) return Forbid();
+            var (url, paymentId, error) = await _subscriptions.CreateCheckoutAsync(workshopId, model, mp);
+            return error != null ? BadRequest(error) : Ok(new CheckoutResponseDto { CheckoutUrl = url!, PaymentId = paymentId!.Value });
+        }
+
+        /// <summary>
+        /// Called when the owner comes back from Mercado Pago: asks MP for the order so the plan
+        /// activates even if the webhook hasn't arrived yet.
+        /// </summary>
+        [HttpPost("workshop/{workshopId}/payments/{paymentId:int}/sync")]
+        [OwnWorkshop]
+        public async Task<ActionResult<SubscriptionPaymentDto>> SyncPayment(
+            Guid workshopId, int paymentId, [FromServices] MercadoPagoClient mp)
+        {
+            if (!CallerIsOwner) return Forbid();
+            var payment = await _context.SubscriptionPayments.FirstOrDefaultAsync(p => p.Id == paymentId && p.WorkshopId == workshopId);
+            if (payment == null) return NotFound();
+            if (payment.Status == PaymentStatus.Pending && payment.MpOrderId != null && mp.IsConfigured)
+            {
+                var order = await mp.GetOrderAsync(payment.MpOrderId);
+                if (order != null) payment = await _subscriptions.ApplyOrderAsync(order) ?? payment;
+            }
+            return Ok(SubscriptionService.ToPaymentDto(payment));
+        }
+
         /// <summary>The workshop's own payments, newest first, optionally by year and status.</summary>
         [HttpGet("workshop/{workshopId}/payments")]
         [OwnWorkshop]

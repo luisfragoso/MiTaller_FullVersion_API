@@ -72,6 +72,12 @@ namespace MiTaller.Models.Subscription
         public string Currency { get; set; } = "MXN";
         [MaxLength(100)]
         public string? MpPaymentId { get; set; }
+        // Checkout Pro order; a Pending row is created first and approved when MP confirms the order.
+        [MaxLength(100)]
+        public string? MpOrderId { get; set; }
+        // Code and channel quoted at checkout, redeemed only once the payment is approved.
+        public int? DiscountCodeId { get; set; }
+        public int? DiscountSourceId { get; set; }
         public DateTime? PeriodStart { get; set; }
         public DateTime? PeriodEnd { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

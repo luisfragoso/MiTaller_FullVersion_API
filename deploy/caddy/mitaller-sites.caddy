@@ -22,6 +22,8 @@ plataforma.mitaller.io {
 	import security_headers
 	encode zstd gzip
 	root * /var/www/plataforma
+	# Flutter file names aren't hashed: make browsers revalidate so a deploy is seen at once.
+	header Cache-Control "no-cache"
 	try_files {path} /index.html
 	file_server
 }
