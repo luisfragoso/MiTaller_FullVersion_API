@@ -9,6 +9,12 @@
 
 api.mitaller.io {
 	import security_headers
+	# JSON API; the only HTML is the accident false-alarm page (inline styles + self-posting form).
+	header {
+		Content-Security-Policy "default-src 'none'; img-src 'self' data:; style-src 'unsafe-inline'; form-action 'self'; frame-ancestors 'none'; base-uri 'none'"
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()"
+	}
 	encode zstd gzip
 	@swagger path /swagger /swagger/*
 	respond @swagger 404
@@ -20,6 +26,13 @@ api.mitaller.io {
 
 plataforma.mitaller.io {
 	import security_headers
+	# Flutter web: CanvasKit from gstatic, fallback fonts (fonts.gstatic/githack), pdf.js from unpkg (printing).
+	# Any new third-party embed (AdSense, Maps JS) must be added here.
+	header {
+		Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://www.gstatic.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://api.mitaller.io https://images.prd.kavak.io; font-src 'self' data: https://fonts.gstatic.com https://rawcdn.githack.com; connect-src 'self' https://api.mitaller.io https://www.gstatic.com https://fonts.gstatic.com https://fonts.googleapis.com https://rawcdn.githack.com https://unpkg.com; worker-src 'self' blob: https://unpkg.com; frame-src 'self' blob:; frame-ancestors 'self'; object-src 'none'; base-uri 'self'; form-action 'self'"
+		X-Frame-Options SAMEORIGIN
+		Permissions-Policy "camera=(self), microphone=(), geolocation=(self), payment=(), usb=(), browsing-topics=()"
+	}
 	encode zstd gzip
 	root * /var/www/plataforma
 	# Flutter file names aren't hashed: make browsers revalidate so a deploy is seen at once.
